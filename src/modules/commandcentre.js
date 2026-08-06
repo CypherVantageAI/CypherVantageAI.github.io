@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import { getState } from '../core/db.js';
+import { showModal } from '../components/ui.js';
 
 let activeQueryId = 'aws-outage'; // Default active question
 let customQueryText = '';
@@ -28,8 +29,12 @@ export function renderCommandCentre() {
         Interactive operational resilience twin and automated blast-radius impact simulator.
       </p>
     </div>
-    <div style="font-size: 0.65rem; color: var(--text-muted); background: rgba(6, 182, 212, 0.08); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.15); font-weight: 700; text-transform: uppercase;">
-      🛡️ DORA Art. 11/14 Assurance Twin
+    <div style="display:flex; gap: 8px; align-items:center;">
+      <div style="font-size: 0.65rem; color: var(--text-muted); background: rgba(6, 182, 212, 0.08); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.15); font-weight: 700; text-transform: uppercase;">
+        🛡️ DORA Article 11/14 Assurance Twin
+      </div>
+      <button class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.7rem;" onclick="document.getElementById('view-manager-command-centre').requestFullscreen().catch(e=>console.log(e))" title="Full Screen">⛶</button>
+      <button class="btn btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.7rem;" onclick="window.showModal('Command Centre Help', 'Use this module to simulate outages and test disaster recovery scenarios.<br><br>Select a preset prompt or type a custom query to view blast-radius impacts, recovery times, and compliance gaps.')" title="Help">❓</button>
     </div>
   `;
   container.appendChild(header);
@@ -56,7 +61,7 @@ export function renderCommandCentre() {
       <h3 style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0;">
         Ask Custom Question
       </h3>
-      <textarea id="custom-prompt-input" placeholder="Type a custom scenario (e.g. 'What breaks if GCP fails?' or 'Analyze oracle database outage')..." style="width: 100%; height: 65px; font-size: 0.68rem; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: var(--text-primary); resize: none; font-family: var(--font-body); line-height: 1.4;"></textarea>
+      <textarea id="custom-prompt-input" placeholder="Type a custom scenario (e.g. 'What breaks if GCP fails?' or 'Analyze oracle database outage')..." style="width: 100%; height: 65px; font-size: 0.68rem; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); resize: none; font-family: var(--font-body); line-height: 1.4;"></textarea>
       <button class="btn btn-primary btn-sm" id="btn-submit-custom-prompt" style="font-size: 0.68rem; justify-content: center; width: 100%;">
         🤖 Simulate Outage
       </button>
@@ -194,16 +199,16 @@ function processCustomQuery(query) {
 function renderCustomQueryResponse(data) {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Custom Query Matches</span>
         <div style="font-size: 0.85rem; font-weight: 700; color: var(--color-cyan); margin-top: 4px; word-break: break-all;">"${data.rawQuery}"</div>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">${data.recoveryTime}</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">${data.alertText}</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Compliance Status</span>
         <div style="font-size: 1.1rem; font-weight: 800; color: #f59e0b; margin-top: 6px;">Audit Triggered</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">${data.doraArticles}</span>
@@ -216,7 +221,7 @@ function renderCustomQueryResponse(data) {
         <h4 style="font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0 0 10px 0;">
           Dynamic SVG Outage Impact Graph
         </h4>
-        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
+        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
           <svg width="100%" height="280" viewBox="0 0 450 280">
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -312,17 +317,17 @@ function renderQueryResponse(target, queryId) {
 function generateAWSOutageResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Affected Services</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">2 Services</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Digital Banking & Wholesale Clearing</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">14.5 Hours</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">⚠️ Exceeds RTO Limit (4h)</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Regulatory Exposure</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">High</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">DORA Articles 11 & 24 triggered</span>
@@ -334,7 +339,7 @@ function generateAWSOutageResponse() {
         <h4 style="font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0 0 10px 0;">
           SVG Blast Radius Dependency Map
         </h4>
-        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
+        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
           <svg width="100%" height="280" viewBox="0 0 450 280">
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -432,17 +437,17 @@ function generateAWSOutageResponse() {
 function generateSupplierFailureResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Affected Services</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">1 Service</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Identity Directory CIS</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">6.0 Hours</div>
         <span style="font-size: 0.6rem; color: #f59e0b; font-weight:700;">⚠️ SLA Target Exceeded (4h)</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Regulatory Exposure</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #eab308; margin-top: 4px;">Medium</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">DORA Articles 28 & 30 triggered</span>
@@ -454,7 +459,7 @@ function generateSupplierFailureResponse() {
         <h4 style="font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0 0 10px 0;">
           SVG Blast Radius Dependency Map
         </h4>
-        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
+        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
           <svg width="100%" height="280" viewBox="0 0 450 280">
             <line x1="225" y1="240" x2="225" y2="140" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)" stroke-dasharray="4"/>
             <line x1="225" y1="140" x2="225" y2="50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)"/>
@@ -651,17 +656,17 @@ function generateLackingTestingResponse() {
 function generateRansomwareOutbreakResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Infection Scope</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">Critical</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Direct Active Directory compromise</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Recovery Timeline</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">22.0 Hours</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">⚠️ Massive compliance breach risk</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">DORA Violation</span>
         <div style="font-size: 1.1rem; font-weight: 800; color: #ef4444; margin-top: 6px;">Article 14 breach</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">DR sync failure during compromise</span>
@@ -673,7 +678,7 @@ function generateRansomwareOutbreakResponse() {
         <h4 style="font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0 0 10px 0;">
           Ransomware Threat Outage Graph
         </h4>
-        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
+        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
           <svg width="100%" height="280" viewBox="0 0 450 280">
             <line x1="225" y1="230" x2="225" y2="140" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)" stroke-dasharray="4"/>
             <line x1="225" y1="140" x2="225" y2="50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)"/>
@@ -716,12 +721,12 @@ function generateRansomwareOutbreakResponse() {
 function generateOracleFailureResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Outage Scope</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">Database Cluster</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Oracle primary instance failure</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Recovery Timeline</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">18.0 Hours</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">⚠️ Exceeds RTO limit (8h)</span>
@@ -733,7 +738,7 @@ function generateOracleFailureResponse() {
         <h4 style="font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0 0 10px 0;">
           Oracle Database Outage Graph
         </h4>
-        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
+        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
           <svg width="100%" height="280" viewBox="0 0 450 280">
             <line x1="225" y1="230" x2="225" y2="140" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)" stroke-dasharray="4"/>
             <line x1="225" y1="140" x2="225" y2="50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)"/>
@@ -769,12 +774,12 @@ function generateOracleFailureResponse() {
 function generateThirdPartyAPIResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Affected Area</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">Retail Banking</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Visa/Mastercard integration issue</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0;">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">4.5 Hours</div>
         <span style="font-size: 0.6rem; color: #f59e0b; font-weight:700;">⚠️ Minor SLA breach (4.0h target)</span>
@@ -786,7 +791,7 @@ function generateThirdPartyAPIResponse() {
         <h4 style="font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0 0 10px 0;">
           3rd Party API Outage Graph
         </h4>
-        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
+        <div style="flex: 1; min-height: 280px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 6px; border: 1px dashed var(--border-color); position: relative; overflow: hidden;">
           <svg width="100%" height="280" viewBox="0 0 450 280">
             <line x1="225" y1="230" x2="225" y2="140" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)" stroke-dasharray="4"/>
             <line x1="225" y1="140" x2="225" y2="50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-danger)"/>

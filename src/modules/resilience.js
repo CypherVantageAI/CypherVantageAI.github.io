@@ -269,7 +269,7 @@ function renderServiceDetailPane() {
       { name: 'name', label: 'Service Name', type: 'text', required: true },
       { name: 'description', label: 'Description', type: 'textarea', required: true },
       { name: 'criticality', label: 'DORA Criticality Tier', type: 'select', required: true, options: [
-        { value: 'Critical', label: 'Critical (IBS / DORA Art. 5)' },
+        { value: 'Critical', label: 'Critical (IBS / DORA Article 5)' },
         { value: 'High', label: 'High' },
         { value: 'Medium', label: 'Medium' },
         { value: 'Low', label: 'Low' }

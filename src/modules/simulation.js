@@ -269,7 +269,7 @@ export function renderSimulationTab(container) {
             <div style="flex: 1.5; min-width: 280px; background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px;">
               <span style="font-size: 0.58rem; color: #ef4444; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;">DORA Compliance Exposure</span>
               <p style="font-size: 0.65rem; color: var(--text-secondary); line-height: 1.35; margin: 0;">
-                🚨 <b>${simResults.regulatoryBreach}</b>. Violated articles: DORA Chapter II (ICT Risk), DORA Art. 11 (Business Continuity), and Art. 26 (Resilience testing).
+                🚨 <b>${simResults.regulatoryBreach}</b>. Violated articles: DORA Chapter II (ICT Risk), DORA Article 11 (Business Continuity), and Art. 26 (Resilience testing).
               </p>
             </div>
           </div>
@@ -754,7 +754,7 @@ Scenario Triggered: ${scenario.name}
 
 2. COMPLIANCE & GOVERNANCE BREACH EVALUATION
 --------------------------------------------------------------------------------
-* Regulatory Fines Risk:     ${sim.rtoCheck === 'SLA Breach' ? 'HIGH EXPOSURE (DORA Art. 50 fines up to 2% global turnover)' : 'LOW / MANAGED'}
+* Regulatory Fines Risk:     ${sim.rtoCheck === 'SLA Breach' ? 'HIGH EXPOSURE (DORA Article 50 fines up to 2% global turnover)' : 'LOW / MANAGED'}
 * DORA Article 11 Violation: ${sim.rtoCheck === 'SLA Breach' ? 'NON-COMPLIANT - Failover time exceeds RTO' : 'COMPLIANT - Failover within window'}
 * Recovery Confidence Index: ${sim.recoveryConfidence}% (${sim.recoveryConfidence >= 80 ? 'High' : (sim.recoveryConfidence >= 50 ? 'Moderate' : 'Unacceptable Risk')})
 
@@ -833,7 +833,7 @@ Timestamp: ${timestamp} UTC
 Recipients: European Banking Authority (EBA) / Financial Conduct Authority (FCA) / PRA
 Entity: Cypher Vantage Core Platform (DORA Major ICT Service Provider)
 
-1. MANDATORY INCIDENT CLASSIFICATION (DORA Art. 18)
+1. MANDATORY INCIDENT CLASSIFICATION (DORA Article 18)
 --------------------------------------------------------------------------------
 * Trigger Event:           ${scenario.name}
 * Incident Category:       ${scenario.threatCategory} Disruption
@@ -850,7 +850,7 @@ Entity: Cypher Vantage Core Platform (DORA Major ICT Service Provider)
 
 3. REGULATORY ENFORCEMENT & SUPERVISORY SUMMARY
 --------------------------------------------------------------------------------
-* Statutory Fines Exposure: ${sim.rtoCheck === 'SLA Breach' ? 'HIGH RISK (Daily penalty under DORA Art. 50)' : 'NEGLIGIBLE'}
+* Statutory Fines Exposure: ${sim.rtoCheck === 'SLA Breach' ? 'HIGH RISK (Daily penalty under DORA Article 50)' : 'NEGLIGIBLE'}
 * Supervisory Action Plan: Submit 24-hour formal incident report update to FCA / EBA Joint Committee.
 `;
   }

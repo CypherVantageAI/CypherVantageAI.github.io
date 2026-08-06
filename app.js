@@ -3620,7 +3620,7 @@ window.resetResilienceDrill = function() {
     const reportId = `DRILL-${Date.now().toString().slice(-6)}`;
     const newReport = {
       id: reportId,
-      title: `DORA Art. 11 Simulation Report: ${threatName} at ${locationName}`,
+      title: `DORA Article 11 Simulation Report: ${threatName} at ${locationName}`,
       timestamp: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`,
       location: locationName,
       threat: threatName,
@@ -4116,7 +4116,7 @@ window.openDoraIncidentReport = function(source) {
       
       rep = {
         id: `DRILL-${Date.now().toString().slice(-6)}`,
-        title: `Active DORA Art. 11 Simulation: ${threatNames[active.threat]} at ${locationNames[active.location]}`,
+        title: `Active DORA Article 11 Simulation: ${threatNames[active.threat]} at ${locationNames[active.location]}`,
         timestamp: `${formatDate(new Date())} ${new Date().toTimeString().slice(0, 5)}`,
         location: locationNames[active.location],
         threat: threatNames[active.threat],
