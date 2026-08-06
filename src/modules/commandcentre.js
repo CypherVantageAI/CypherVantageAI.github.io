@@ -199,16 +199,16 @@ function processCustomQuery(query) {
 function renderCustomQueryResponse(data) {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The raw unstructured query text parsed and modeled by the AI Operational Resilience engine.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Custom Query Matches</span>
         <div style="font-size: 0.85rem; font-weight: 700; color: var(--color-cyan); margin-top: 4px; word-break: break-all;">"${data.rawQuery}"</div>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The projected Mean Time To Recover (MTTR) calculated by the simulation engine compared against the predefined target Recovery Time Objective (RTO).')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">${data.recoveryTime}</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">${data.alertText}</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'Current status indicating whether immediate reporting to national competent authorities (NCAs) is required.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Compliance Status</span>
         <div style="font-size: 1.1rem; font-weight: 800; color: #f59e0b; margin-top: 6px;">Audit Triggered</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">${data.doraArticles}</span>
@@ -317,17 +317,17 @@ function renderQueryResponse(target, queryId) {
 function generateAWSOutageResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The exact number and names of internal or external facing business services directly impacted by the outage.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Affected Services</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">2 Services</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Digital Banking & Wholesale Clearing</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The projected Mean Time To Recover (MTTR) calculated by the simulation engine compared against the predefined target Recovery Time Objective (RTO).')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">14.5 Hours</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">⚠️ Exceeds RTO Limit (4h)</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'Identifies which specific DORA or GDPR articles are violated as a result of the simulated service disruption.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Regulatory Exposure</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">High</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">DORA Articles 11 & 24 triggered</span>
@@ -437,17 +437,17 @@ function generateAWSOutageResponse() {
 function generateSupplierFailureResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The exact number and names of internal or external facing business services directly impacted by the outage.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Affected Services</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">1 Service</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Identity Directory CIS</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The projected Mean Time To Recover (MTTR) calculated by the simulation engine compared against the predefined target Recovery Time Objective (RTO).')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">6.0 Hours</div>
         <span style="font-size: 0.6rem; color: #f59e0b; font-weight:700;">⚠️ SLA Target Exceeded (4h)</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'Identifies which specific DORA or GDPR articles are violated as a result of the simulated service disruption.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Regulatory Exposure</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #eab308; margin-top: 4px;">Medium</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">DORA Articles 28 & 30 triggered</span>
@@ -656,7 +656,7 @@ function generateLackingTestingResponse() {
 function generateRansomwareOutbreakResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The lateral movement extent of the malware across active directory systems and critical infrastructure boundaries.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Infection Scope</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">Critical</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Direct Active Directory compromise</span>
@@ -666,7 +666,7 @@ function generateRansomwareOutbreakResponse() {
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">22.0 Hours</div>
         <span style="font-size: 0.6rem; color: #ef4444; font-weight:700;">⚠️ Massive compliance breach risk</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'Specific regulatory clauses breached due to failure to meet operational resilience obligations.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">DORA Violation</span>
         <div style="font-size: 1.1rem; font-weight: 800; color: #ef4444; margin-top: 6px;">Article 14 breach</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">DR sync failure during compromise</span>
@@ -721,7 +721,7 @@ function generateRansomwareOutbreakResponse() {
 function generateOracleFailureResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The specific database, server, or cloud cluster identified as the root cause failure node.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Outage Scope</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">Database Cluster</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Oracle primary instance failure</span>
@@ -774,12 +774,12 @@ function generateOracleFailureResponse() {
 function generateThirdPartyAPIResponse() {
   return `
     <div style="display: flex; gap: 15px; flex-wrap: wrap; width: 100%;">
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The business domain or critical financial segment disrupted by the third-party dependency failure.')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Affected Area</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444; margin-top: 4px;">Retail Banking</div>
         <span style="font-size: 0.6rem; color: var(--text-secondary);">Visa/Mastercard integration issue</span>
       </div>
-      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'This metric indicates the simulated outcome of the selected disruption scenario on critical components, calculating overall service degradation and statutory exposure.')">
+      <div class="dashboard-card" style="flex: 1; min-width: 160px; padding: 12px; margin:0; cursor:pointer;" onclick="window.showModal('Metric Insight', 'The projected Mean Time To Recover (MTTR) calculated by the simulation engine compared against the predefined target Recovery Time Objective (RTO).')">
         <span style="font-size: 0.58rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Simulated Recovery</span>
         <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">4.5 Hours</div>
         <span style="font-size: 0.6rem; color: #f59e0b; font-weight:700;">⚠️ Minor SLA breach (4.0h target)</span>
