@@ -390,9 +390,12 @@ body.dark-mode {
   color: var(--text-muted);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-top: 12px;
-  margin-bottom: 6px;
-  padding-left: 8px;
+  margin: 15px 0 5px 20px;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  padding-right: 15px;
 }
 
 .nav-section:first-child {
@@ -411,8 +414,23 @@ body.dark-mode {
   padding: 5px 10px;
   border-radius: var(--border-radius-md);
   margin-bottom: 1px;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   transition: all var(--transition-speed);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent nav item text from overflowing sidebar at larger font sizes */
+.nav-item > span:not(.badge) {
+  min-width: 0;
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.2;
 }
 
 /* Primary Main Navigation Sections */
@@ -476,7 +494,20 @@ body.light-mode .nav-item.active {
   gap: 6px;
   padding: 5px 8px;
   border-radius: var(--border-radius-sm);
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Prevent nav-sub-item text from overflowing sidebar */
+.nav-sub-item > span:not(.badge) {
+  min-width: 0;
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.2;
 }
 
 .nav-sub-sub-list {
@@ -604,6 +635,11 @@ body.light-mode .btn-reset-db:hover {
 
 .content-pane.active {
   display: block;
+}
+
+/* Command Centre needs flex layout when active */
+#view-manager-command-centre.active {
+  display: flex;
 }
 
 @keyframes fadeIn {

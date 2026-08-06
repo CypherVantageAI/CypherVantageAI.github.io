@@ -5,14 +5,15 @@
 import { getState, saveState } from './db.js';
 
 // Import module renderers dynamically to trigger view refreshes
-import { renderExecutiveDashboard } from '../modules/dashboard.js';
-import { renderResilienceModule } from '../modules/resilience.js';
-import { renderDoraModule } from '../modules/dora.js';
-import { renderIctRiskModule } from '../modules/ictrisk.js';
-import { renderThirdPartyModule } from '../modules/thirdparty.js';
-import { renderReportsModule } from '../modules/reports.js';
-import { renderAiGovernanceModule } from '../modules/aigovernance.js';
-import { renderAnalystModule } from '../modules/analyst.js';
+import { renderExecutiveDashboard } from '../modules/dashboard.js?v=2.0.1';
+import { renderResilienceModule } from '../modules/resilience.js?v=2.0.1';
+import { renderDoraModule } from '../modules/dora.js?v=2.0.1';
+import { renderIctRiskModule } from '../modules/ictrisk.js?v=2.0.1';
+import { renderThirdPartyModule } from '../modules/thirdparty.js?v=2.0.1';
+import { renderReportsModule } from '../modules/reports.js?v=2.0.1';
+import { renderAiGovernanceModule } from '../modules/aigovernance.js?v=2.0.1';
+import { renderAnalystModule } from '../modules/analyst.js?v=2.0.1';
+import { renderCommandCentre } from '../modules/commandcentre.js?v=2.0.1';
 
 
 export function switchTab(tabId) {
@@ -76,6 +77,9 @@ export function switchTab(tabId) {
   switch (tabId) {
     case 'manager-dashboard':
       renderExecutiveDashboard();
+      break;
+    case 'manager-command-centre':
+      renderCommandCentre();
       break;
     case 'manager-resilience':
       renderResilienceModule();

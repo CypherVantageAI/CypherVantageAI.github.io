@@ -4502,14 +4502,14 @@ window.renderServiceNavigator = function() {
       }
     };
     item.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <span style="font-weight: 600; font-size: 0.74rem; color: var(--text-primary);">${sys.name}</span>
-        <div style="display: flex; gap: 4px; align-items: center;">
-          <span style="font-size: 0.55rem; font-weight: 700; color: #fff; background: ${badgeColor}; padding: 1px 4px; border-radius: 3px;">${typeLabel}</span>
-          <span style="font-size: 0.55rem; font-weight: 700; color: ${statusTextColor}; background: ${statusBadgeColor}; padding: 1px 4px; border-radius: 3px;">${sys.status}</span>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; width: 100%; gap: 8px;">
+        <span style="font-weight: 600; font-size: 0.74rem; color: var(--text-primary); flex: 1; min-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: normal; line-height: 1.2;">${sys.name}</span>
+        <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap; justify-content: flex-end; flex-shrink: 0;">
+          <span style="font-size: 0.62rem; font-weight: 700; color: #fff; background: ${badgeColor}; padding: 4px 8px; border-radius: 4px; line-height: 1.2; white-space: nowrap; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">${typeLabel}</span>
+          <span style="font-size: 0.62rem; font-weight: 700; color: ${statusTextColor}; background: ${statusBadgeColor}; padding: 4px 8px; border-radius: 4px; white-space: nowrap; line-height: 1.2; text-align: center; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);">${sys.status}</span>
         </div>
       </div>
-      <div style="font-size: 0.64rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
+      <div style="font-size: 0.64rem; color: var(--text-secondary); white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 6px; line-height: 1.3;">
         ${sys.description || 'No description available'}
       </div>
     `;

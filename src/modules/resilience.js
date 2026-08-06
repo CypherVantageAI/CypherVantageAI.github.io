@@ -1575,9 +1575,9 @@ function renderReadinessTab(container) {
               <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="3" />
               <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--color-cyan)" stroke-dasharray="${confidence}, 100" stroke-width="3" />
             </svg>
-            <div style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-              <span style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">${confidence}%</span>
-              <span style="font-size: 0.55rem; text-transform: uppercase; color: var(--text-muted); font-weight:700; letter-spacing:0.05em;">Ready Index</span>
+            <div style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 80px; text-align: center;">
+              <span style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); line-height: 1;">${confidence}%</span>
+              <span style="font-size: 0.5rem; text-transform: uppercase; color: var(--text-muted); font-weight:700; letter-spacing:0.03em; word-wrap: break-word; overflow-wrap: break-word; text-align: center; max-width: 70px; line-height: 1.2;">Ready Index</span>
             </div>
           </div>
         </div>

@@ -152,6 +152,19 @@ export function renderThirdPartyModule() {
   document.getElementById('tab-tpr-sla').onclick = () => switchTab('sla');
   document.getElementById('tab-tpr-exit').onclick = () => switchTab('exit');
 
+  // Update sub-tab button styling to match activeThirdPartyTab
+  const tabs = ['directory', 'concentration', 'sla', 'exit'];
+  tabs.forEach(tab => {
+    const btn = document.getElementById(`tab-tpr-${tab}`);
+    if (btn) {
+      if (tab === activeThirdPartyTab) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+  });
+
   // Load active tab
   renderActiveTabContent();
 }

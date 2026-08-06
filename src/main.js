@@ -3,7 +3,7 @@
 // ==========================================================================
 
 import { loadState, getState, saveState } from './core/db.js';
-import { switchTab, setPersona } from './core/router.js';
+import { switchTab, setPersona } from './core/router.js?v=2.0.1';
 
 // Import app.js legacy operations module to bind its functions to window
 import '../app.js';
@@ -191,7 +191,7 @@ function initFontSize(state) {
       document.head.appendChild(customSheet);
     }
     customSheet.innerHTML = `
-      body, .nav-item, .nav-sub-item, td, th, h1, h2, h3, h4, p, span, button, input, select, textarea, .badge, .node-content, .obligation-text, .evidence-snippet, .term-line-info, .term-line-success, .term-line-warning, .tab-switcher button, .view-header h2, .view-header p, .dashboard-card h3, .dashboard-card h4 {
+      body, td, th, h1, h2, h3, h4, p, button, input, select, textarea, .badge, .node-content, .obligation-text, .evidence-snippet, .term-line-info, .term-line-success, .term-line-warning, .tab-switcher button, .view-header h2, .view-header p, .dashboard-card h3, .dashboard-card h4 {
         font-size: calc(1em * ${scale}) !important;
       }
       #btn-viewer-incident-report, button[onclick="window.downloadMockDoc()"], button[onclick="window.print()"] {
