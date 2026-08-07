@@ -116,10 +116,12 @@ function initTheme(state) {
   function applyTheme(isLight) {
     if (isLight) {
       document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
       if (icon) icon.innerText = '🌙';
       btn.setAttribute('title', 'Switch to Dark Theme');
     } else {
       document.body.classList.remove('light-mode');
+      document.body.classList.add('dark-mode');
       if (icon) icon.innerText = '☀️';
       btn.setAttribute('title', 'Switch to Light Theme');
     }
@@ -127,7 +129,7 @@ function initTheme(state) {
 
   // Load initial theme from cookie, falling back to state
   const cookieTheme = getCookie('theme');
-  const initialTheme = cookieTheme ? cookieTheme : (state.theme || 'dark');
+  const initialTheme = cookieTheme ? cookieTheme : (state.theme || 'light');
   applyTheme(initialTheme === 'light');
   if (state.theme !== initialTheme) {
     state.theme = initialTheme;
@@ -169,9 +171,24 @@ function initFontSize(state) {
     return scales[level] || 1.0;
   }
 
-  // Load level from cookie, then state, else default to 2
+  // Load level from cookie, then state, else default to screen resolution
   const cookieLevel = getCookie('fontSizeLevel');
-  let level = cookieLevel ? parseInt(cookieLevel, 10) : (state.fontSizeLevel || 2);
+  let level;
+  if (cookieLevel) {
+    level = parseInt(cookieLevel, 10);
+  } else if (state.fontSizeLevel) {
+    level = state.fontSizeLevel;
+  } else {
+    if (window.innerWidth >= 2560) {
+      level = 4;
+    } else if (window.innerWidth >= 1920) {
+      level = 3;
+    } else if (window.innerWidth >= 1366) {
+      level = 2;
+    } else {
+      level = 1;
+    }
+  }
   if (isNaN(level) || level < 1 || level > 4) {
     level = 2;
   }
