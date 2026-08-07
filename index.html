@@ -200,7 +200,24 @@
   </style>
 </head>
 <body class="light-mode">
-
+  <script>
+    (function() {
+      var match = document.cookie.match(new RegExp('(^| )theme=([^;]+)'));
+      var theme = match ? match[2] : null;
+      if (!theme) {
+        try {
+          var stateStr = localStorage.getItem('cypher_vantage_dora_state_v17');
+          if (stateStr) {
+            var state = JSON.parse(stateStr);
+            theme = state.theme;
+          }
+        } catch(e) {}
+      }
+      if (theme === 'dark') {
+        document.body.className = 'dark-mode';
+      }
+    })();
+  </script>
   <!-- Top Navigation Header -->
   <header class="app-header">
     <div class="header-brand">
