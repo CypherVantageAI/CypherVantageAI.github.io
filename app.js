@@ -5024,10 +5024,10 @@ window.selectNavigatorService = function(serviceName, element) {
         const isDispatched = !!relatedAction;
         dispatchButtons = `
           <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; width: 100%;">
-            <button class="btn btn-secondary btn-sm" onclick="alertCSuite('${serviceName.replace(/'/g, "\\'")}', '${v.id}')" style="flex: 1; min-width: 130px; font-size: 0.65rem; padding: 4px 8px; background: rgba(6, 182, 212, 0.05); border-color: var(--color-cyan); color: var(--color-cyan);">
+            <button class="btn btn-secondary btn-sm" onclick="alertCSuite('${serviceName.replace(/['"\\]/g, '\\$&')}', '${v.id}')" style="flex: 1; min-width: 130px; font-size: 0.65rem; padding: 4px 8px; background: rgba(6, 182, 212, 0.05); border-color: var(--color-cyan); color: var(--color-cyan);">
               🚀 Alert Internal C-Suite
             </button>
-            <button id="btn-dispatch-${v.id}" class="btn btn-primary btn-sm" onclick="dispatchSupplierRemediation('${serviceName.replace(/'/g, "\\'")}', '${v.id}', '${v.title.replace(/'/g, "\\'")}', '${supplierId}')" style="flex: 1.3; min-width: 160px; font-size: 0.65rem; padding: 4px 8px; background: ${isDispatched ? 'rgba(255,255,255,0.05)' : '#f97316'}; border-color: ${isDispatched ? 'rgba(255,255,255,0.05)' : '#f97316'}; color: ${isDispatched ? 'var(--text-secondary)' : '#ffffff'};" ${isDispatched ? 'disabled' : ''}>
+            <button id="btn-dispatch-${v.id}" class="btn btn-primary btn-sm" onclick="dispatchSupplierRemediation('${serviceName.replace(/['"\\]/g, '\\$&')}', '${v.id}', '${v.title.replace(/['"\\]/g, '\\$&')}', '${supplierId}')" style="flex: 1.3; min-width: 160px; font-size: 0.65rem; padding: 4px 8px; background: ${isDispatched ? 'rgba(255,255,255,0.05)' : '#f97316'}; border-color: ${isDispatched ? 'rgba(255,255,255,0.05)' : '#f97316'}; color: ${isDispatched ? 'var(--text-secondary)' : '#ffffff'};" ${isDispatched ? 'disabled' : ''}>
               ${isDispatched ? '✉️ Request Dispatched' : `✉️ Alert Supplier (${supplierName})`}
             </button>
           </div>
