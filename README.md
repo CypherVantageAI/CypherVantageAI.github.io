@@ -70,14 +70,9 @@ graph TD
 
 ---
 
-## 📧 Enterprise Support & Security
-For licensing, partnerships, or security inquiries, contact our assurance team at **support@cyphervantage.ai**.
+# 🤖 The EAIOS Foundation
 
-<p align="center">
-  © 2026 Cypher Vantage. All rights reserved.
-</p>
-
----
+*Cypher Vantage is the flagship platform powered by the **Enterprise AI Operating System (EAIOS)**. While Cypher Vantage provides the user interface, digital twins, and DORA compliance mapping, EAIOS is the foundational, autonomous architecture that governs the AI Employees operating behind the scenes.*
 
 ## Enterprise AI Operating System (EAIOS)
 
@@ -121,3 +116,12 @@ The skipped tests are infrastructure-dependent PostgreSQL concurrency tests and 
 - Orchestration does not create authority.
 - Enterprise Memory does not create authority.
 - EAIES remains the execution-authority boundary.
+
+---
+
+## 📧 Enterprise Support & Security
+For licensing, partnerships, or security inquiries, contact our assurance team at [support@cyphervantage.ai](mailto:support@cyphervantage.ai).
+
+<p align="center">
+  © 2026 Cypher Vantage. All rights reserved.
+</p>
