@@ -79,34 +79,45 @@ For licensing, partnerships, or security inquiries, contact our assurance team a
 
 ---
 
-## 🚀 Enterprise AI Operating System (EAIOS)
+## Enterprise AI Operating System (EAIOS)
 
-EAIOS is an architecture-led, governed operating model for enterprises where humans and AI Employees work together under explicit authority, accountability, governance, memory, orchestration, and security boundaries.
+EAIOS is an architecture-led enterprise operating model for humans and AI Employees operating under explicit governance and authority boundaries.
 
-### What Has Been Achieved
+The architecture focuses on:
+- Human accountability
+- AI Employee governance
+- Workforce organisation
+- EAIES execution authority
+- Orchestration
+- Enterprise Memory
+- AI Service Contracts
+- Enterprise Work Items
+- Security and adversarial validation
 
-- **Enterprise AI Workforce model**
-- **AI Employee identity and lifecycle**
-- **Human accountability**
-- **EAIES as execution authority boundary**
-- **AI orchestration**
-- **Enterprise Memory**
-- **AI Service Contracts**
-- **Enterprise Work Item**
-- **Security / adversarial validation**
+## Current architectural checkpoint
 
-### Current Checkpoint
+### EAIOS v0.4
 
-**EAIOS v0.4**
+Enterprise Work Item implementation completed.
 
-Enterprise Work Item implementation completed. Enterprise Work Item established as a governed domain object, with execution authority remaining exclusively within EAIES.
+The Enterprise Work Item is a governed domain object representing enterprise work and workflow state.
+It does NOT become an execution-authority mechanism.
+Execution authority remains exclusively within EAIES.
 
-**Validation Status:**
+## Validation status
+
 - 103 passed
 - 0 failed
 - 10 skipped
+- 7 Work Item security tests passed
 
-7 Work Item security tests passed.
+The skipped tests are infrastructure-dependent PostgreSQL concurrency tests and have not been counted as passed.
 
-*Note: Skipped tests remain infrastructure-dependent (PostgreSQL) and are not represented as passed.*
+## Architectural principles
 
+- Work does not create authority.
+- Workforce membership does not create authority.
+- Human approval does not create execution authority.
+- Orchestration does not create authority.
+- Enterprise Memory does not create authority.
+- EAIES remains the execution-authority boundary.
