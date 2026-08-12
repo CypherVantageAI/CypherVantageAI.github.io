@@ -76,3 +76,37 @@ For licensing, partnerships, or security inquiries, contact our assurance team a
 <p align="center">
   © 2026 Cypher Vantage. All rights reserved.
 </p>
+
+---
+
+## 🚀 Enterprise AI Operating System (EAIOS)
+
+EAIOS is an architecture-led, governed operating model for enterprises where humans and AI Employees work together under explicit authority, accountability, governance, memory, orchestration, and security boundaries.
+
+### What Has Been Achieved
+
+- **Enterprise AI Workforce model**
+- **AI Employee identity and lifecycle**
+- **Human accountability**
+- **EAIES as execution authority boundary**
+- **AI orchestration**
+- **Enterprise Memory**
+- **AI Service Contracts**
+- **Enterprise Work Item**
+- **Security / adversarial validation**
+
+### Current Checkpoint
+
+**EAIOS v0.4**
+
+Enterprise Work Item implementation completed. Enterprise Work Item established as a governed domain object, with execution authority remaining exclusively within EAIES.
+
+**Validation Status:**
+- 103 passed
+- 0 failed
+- 10 skipped
+
+7 Work Item security tests passed.
+
+*Note: Skipped tests remain infrastructure-dependent (PostgreSQL) and are not represented as passed.*
+
