@@ -91,20 +91,37 @@ The architecture focuses on:
 
 ## Current architectural checkpoint
 
-### EAIOS v0.4
+## EAIOS v0.5 — Governed Capability Registry & Orchestration
 
-Enterprise Work Item implementation completed.
+EAIOS now separates:
 
-The Enterprise Work Item is a governed domain object representing enterprise work and workflow state.
-It does NOT become an execution-authority mechanism.
-Execution authority remains exclusively within EAIES.
+Capability Definition
+from
+Execution Authority
+
+**Capability Registry:**
+defines capabilities and their requirements.
+
+**Orchestrator:**
+coordinates enterprise work.
+
+**EAIES:**
+determines whether a capability may actually execute.
+
+**AI Employees:**
+perform the authorised execution.
+
+- Work Item established in v0.4
+- Capability Registry established in v0.5
+- EAIES remains the authority boundary
+- architecture is validated incrementally
 
 ## Validation status
 
-- 103 passed
+- 123 passed
 - 0 failed
 - 10 skipped
-- 7 Work Item security tests passed
+- 20 Capability Registry security tests passed.
 
 The skipped tests are infrastructure-dependent PostgreSQL concurrency tests and have not been counted as passed.
 
