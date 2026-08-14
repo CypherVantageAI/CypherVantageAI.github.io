@@ -91,7 +91,21 @@ The architecture focuses on:
 
 ## Current architectural checkpoint
 
-## EAIOS v0.5 — Governed Capability Registry & Orchestration
+## EAIOS v0.6 — Governed Multi-Agent Delegation
+
+EAIOS v0.6 implements Governed Multi-Agent Delegation, enabling AI Employees to decompose work and coordinate through a secure Delegation Lineage.
+
+Core to this update is **Non-Transitive Authority**: an AI Employee cannot transfer its own execution privileges to another AI Employee through delegation.
+
+Key principles delivered in v0.6:
+- **Independent Execution Evaluation**: EAIES Enforcement independently evaluates each AI Employee's authority to perform a delegated task.
+- **Controlled Initiation**: Strict rate limits and active-child constraints prevent unconstrained workload generation.
+- **Bounded Recursion**: Explicit depth limits prevent unbounded recursive delegation cycles.
+- **Auditability**: Enterprise Memory retains immutable evidence of all delegation commands.
+
+---
+
+### Previous checkpoint: EAIOS v0.5
 
 EAIOS now separates:
 
