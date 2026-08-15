@@ -91,7 +91,23 @@ The architecture focuses on:
 
 ## Current architectural checkpoint
 
-## EAIOS v0.6 — Governed Multi-Agent Delegation
+## EAIOS v0.7 — Governed Delegation Admission Controls
+
+EAIOS v0.7 introduces governed delegation admission controls, strengthening the resilience and security of multi-agent orchestration.
+
+The architecture enforces:
+- **Governed Admission**: Delegation requests now have explicit request identity/idempotency semantics, protecting against duplicate requests.
+- **Distributed Consistency**: Delegation initiation controls operate consistently across distributed orchestrator instances.
+- **Concurrent Fan-Out Protection**: Active-child admission is protected against concurrent fan-out races.
+- **Structural Separation**: Structural admission controls remain separate from execution authorization.
+- **Non-Transitive Authority**: Delegation does not implicitly transfer authority from one AI Employee to another.
+- **Execution Boundary**: EAIES remains the sole execution-authorization boundary.
+
+The architecture preserves human accountability and governed execution.
+
+---
+
+### Previous checkpoint: EAIOS v0.6
 
 EAIOS v0.6 implements Governed Multi-Agent Delegation, enabling AI Employees to decompose work and coordinate through a secure Delegation Lineage.
 
