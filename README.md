@@ -91,7 +91,21 @@ The architecture focuses on:
 
 ## Current architectural checkpoint
 
-## EAIOS v0.7 — Governed Delegation Admission Controls
+## EAIOS v0.8 — End-to-End Multi-Agent Traceability and Provenance
+
+EAIOS v0.8 introduces end-to-end multi-agent workflow traceability, establishing immutable provenance across the entire delegation lifecycle without conflating coordination with execution authority.
+
+The architecture enforces:
+- **Correlation Identity**: A global, immutable provenance identifier tracks work from the root initiation through all subsequent child delegations.
+- **Workflow-Level Accountability**: Complex multi-agent execution chains are fully visible and auditable under a single root identity.
+- **Immutable Provenance Propagation**: The correlation identity is rigorously propagated from parent to child Work Items and into Enterprise Memory, preventing unrelated workflows from silently merging.
+- **Traceability vs. Authority**: Correlation identity is explicitly non-authoritative provenance metadata. It is NOT an execution permission, NOT a capability, and NOT an authorization token.
+- **EAIES Sovereignty**: The core invariant is upheld: "Coordination may propagate work; authority must never propagate implicitly." EAIES remains the sole execution-authorization boundary.
+- **Governance**: Enterprise Memory operates as an immutable forensic ledger, securely anchoring the correlation identity across distributed orchestration pipelines.
+
+---
+
+### Previous checkpoint: EAIOS v0.7
 
 EAIOS v0.7 introduces governed delegation admission controls, strengthening the resilience and security of multi-agent orchestration.
 
