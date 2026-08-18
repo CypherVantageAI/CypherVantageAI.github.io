@@ -91,6 +91,26 @@ The architecture focuses on:
 
 ## Current architectural checkpoint
 
+## EAIOS v0.9 — Distributed Workflow Resilience and Orchestrator Recovery
+
+EAIOS v0.9 establishes structural resilience for distributed AI workflows, ensuring that critical enterprise operations can recover deterministically from process failures, network interruptions, and orchestrator crashes.
+
+### Architecture Highlights
+- **Distributed State Recovery**: Introduces persistent execution leases, heartbeat monitoring, and stale-lease detection to safely reassign abandoned tasks.
+- **Resilience Semantics**: Enforces bounded execution attempts, retry budget management, and optimistic concurrency protection to prevent runaway execution or duplicate work assignments.
+- **Deadline Enforcement**: Establishes absolute workflow deadlines and distributed cancellation propagation.
+- **Governance Escalation**: Facilitates human escalation for ambiguous or high-risk execution scenarios, while preserving end-to-end correlation and provenance.
+- **At-Least-Once Semantics**: Systematically achieves at-least-once execution semantics without conflating resilience mechanisms with authorization.
+
+### EAIES Sovereignty
+The core architectural invariant remains absolute: **"Coordination may propagate work; authority must never propagate implicitly."**
+
+EAIOS v0.9 rigorously separates coordination and recovery metadata (such as execution attempts, lease ownership, and worker identity) from execution authorization. These resilience primitives never manufacture authority. EAIES remains the **sole execution-authorization boundary**, explicitly re-evaluating every retry attempt.
+
+---
+
+### Previous checkpoint: EAIOS v0.8
+
 ## EAIOS v0.8 — End-to-End Multi-Agent Traceability and Provenance
 
 EAIOS v0.8 introduces end-to-end multi-agent workflow traceability, establishing immutable provenance across the entire delegation lifecycle without conflating coordination with execution authority.
