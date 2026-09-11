@@ -14,6 +14,7 @@ import { renderReportsModule } from '../modules/reports.js?v=2.0.1';
 import { renderAiGovernanceModule } from '../modules/aigovernance.js?v=2.0.1';
 import { renderAnalystModule } from '../modules/analyst.js?v=2.0.1';
 import { renderCommandCentre } from '../modules/commandcentre.js?v=2.0.1';
+import { renderEaiosModule } from '../eaios/eaios-view.js';
 
 
 export function switchTab(tabId) {
@@ -95,6 +96,9 @@ export function switchTab(tabId) {
       break;
     case 'manager-reports':
       renderReportsModule();
+      break;
+    case 'manager-eaios':
+      renderEaiosModule();
       break;
 
     // Advanced legacy modules retained inside the shell

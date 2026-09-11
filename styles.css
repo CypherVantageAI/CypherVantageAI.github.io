@@ -3553,4 +3553,41 @@ body.light-mode .btn-secondary.active {
   box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2) !important;
 }
 
+/* ==========================================================================
+   EAIOS Governed Orchestration Architectural Styles
+   ========================================================================== */
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.eaios-view-wrapper {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.eaios-dag-node {
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.eaios-dag-node:hover {
+  filter: brightness(1.15);
+}
+
+body.light-mode .eaios-hero {
+  background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
+  border-color: rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-mode .eaios-view-wrapper {
+  color: #1e293b !important;
+}
+
 
