@@ -393,3 +393,207 @@ export const ARCHITECTURAL_INVARIANTS = [
     rule: "The root correlation_id assigned at event admission is immutably propagated across work items, instances, nodes, and audit logs."
   }
 ];
+
+
+export const TRACE_STEPS = [
+  {
+    id: "step_01_event",
+    stepNum: "01",
+    name: "Event Admitted",
+    shortName: "Event Ingest",
+    category: "admission",
+    nodeId: null,
+    entity: "Event Ingestion Gateway",
+    summary: "Business regulatory event admitted, schema validated, and immutable root correlation ID assigned.",
+    scope: "gateway_admit",
+    details: "Event payload validated against statutory reporting schema. Assigned correlation_id=CORR-2026-000741. Zero execution authority assigned."
+  },
+  {
+    id: "step_02_workitem",
+    stepNum: "02",
+    name: "Work Item Created",
+    shortName: "Work Item",
+    category: "work_item",
+    nodeId: null,
+    entity: "Enterprise Work Item Service",
+    summary: "Canonical Enterprise Work Item wi-2026-9b4d8c72 initialized with state CREATED and idempotency key.",
+    scope: "workitem_create",
+    details: "Durable Work Item wi-2026-9b4d8c72 committed. Fingerprint verified against replay cache. Ready for DAG dispatch."
+  },
+  {
+    id: "step_03_node1",
+    stepNum: "03",
+    name: "Regulatory Intelligence",
+    shortName: "Reg Intel",
+    category: "ai_employee",
+    nodeId: "node_1_regulatory_intelligence",
+    entity: "Regulatory Intelligence Agent",
+    summary: "emp-reg-intel-01 parses legal obligations, affected entities, and statutory deadlines under EAIES read scope.",
+    scope: "regulatory_read",
+    details: "Executed capability regulatory.intelligence.analyze on worker-01 (attempt 1). Result: High-risk statutory compliance notice."
+  },
+  {
+    id: "step_04_parallel",
+    stepNum: "04",
+    name: "Parallel Frontier Dispatch",
+    shortName: "Parallel Frontier",
+    category: "orchestration",
+    nodeId: null,
+    entity: "Orchestrator ThreadPoolExecutor",
+    summary: "Reconstructs DAG frontier; dispatches Risk Analysis and Control & Evidence concurrently across worker threads.",
+    scope: "frontier_dispatch",
+    details: "Dispatched node_2_risk_analysis to worker-02 and node_3_control_evidence to worker-03 concurrently in ThreadPoolExecutor."
+  },
+  {
+    id: "step_05_fanin",
+    stepNum: "05",
+    name: "Deterministic Fan-In Barrier",
+    shortName: "Fan-In Barrier",
+    category: "coordination_primitive",
+    nodeId: "node_4_fan_in",
+    entity: "Coordination Barrier",
+    summary: "Reconciles parallel branch completions. Halts execution frontier until all dependency branches succeed.",
+    scope: "barrier_join",
+    details: "Synchronisation barrier evaluates inbound dependencies. Branch 1 (Risk Analysis) completes first; barrier waits for Branch 2."
+  },
+  {
+    id: "step_06_node5",
+    stepNum: "06",
+    name: "Operational Resilience",
+    shortName: "Resilience Synth",
+    category: "ai_employee",
+    nodeId: "node_5_operational_resilience",
+    entity: "Operational Resilience Agent",
+    summary: "Synthesizes joined branch evidence into proposed remediation plan. AI confidence: 0.95 (High).",
+    scope: "resilience_synthesize",
+    details: "Executed capability resilience.impact.synthesize on worker-04 (attempt 1). Proposed remediation formulated. Authority check required."
+  },
+  {
+    id: "step_07_governance",
+    stepNum: "07",
+    name: "Governance Evaluation",
+    shortName: "Governance Eval",
+    category: "governance_boundary",
+    nodeId: "node_6_governance_check",
+    entity: "EAIES Policy Engine",
+    summary: "Policy evaluates proposal: AI confidence (0.95) does not authorize side effects. Flags mandatory human sign-off.",
+    scope: "governance_policy",
+    details: "EAIES Policy Rule GOV-009: Remediation action alters production compliance state. High AI confidence cannot substitute human mandate."
+  },
+  {
+    id: "step_08_human",
+    stepNum: "08",
+    name: "Human Approval Gate",
+    shortName: "Human Approval",
+    category: "human_boundary",
+    nodeId: "node_6_governance_check",
+    entity: "Human Governance (ADR-009)",
+    summary: "Workflow halted in durable PAUSED state. Creates HumanApprovalRequest awaiting authorized executive signature.",
+    scope: "human_approval",
+    details: "Execution frontier halted. Non-busy state preserved. Downstream node_7_approved_action blocked until signature committed."
+  },
+  {
+    id: "step_09_action",
+    stepNum: "09",
+    name: "Approved Action Execution",
+    shortName: "Action Exec",
+    category: "action_executor",
+    nodeId: "node_7_approved_action",
+    entity: "Action Executor Agent",
+    summary: "Executes final remediation under attempt-scoped authorization token. EAIES validates human sign-off certificate.",
+    scope: "action_execute",
+    details: "Human signature verified. Attempt-scoped capability token issued. Executed regulatory.action.execute on worker-05."
+  },
+  {
+    id: "step_10_completed",
+    stepNum: "10",
+    name: "Workflow Completed",
+    shortName: "Completed",
+    category: "completion",
+    nodeId: null,
+    entity: "Enterprise Memory Ledger",
+    summary: "Workflow instance reached terminal COMPLETED state. Immutable audit record committed with correlation_id.",
+    scope: "ledger_commit",
+    details: "All 7 DAG nodes resolved. Zero orphaned leases. Audit log immutably anchored under CORR-2026-000741."
+  }
+];
+
+export const NODE_AUTHORITY_CHECKS = {
+  "node_1_regulatory_intelligence": {
+    callerPrincipal: "OrchestratorRuntime (System Dispatch)",
+    targetEmployee: "emp-reg-intel-01",
+    requestedCapability: "regulatory.intelligence.analyze",
+    authorityScope: "regulatory_read",
+    decision: "ALLOWED",
+    decisionColor: "#10b981",
+    policyRule: "POL-REG-01: Read-only regulatory intelligence parsing authorized for active workforce member.",
+    attemptScopedToken: "tok_attempt_1_reg_intel_9b4d8c72",
+    rationale: "AI Employee is ACTIVE. Capability registered in CapabilityRegistry with SLA 5000ms. Caller is system orchestrator."
+  },
+  "node_2_risk_analysis": {
+    callerPrincipal: "OrchestratorRuntime (Parallel Worker 02)",
+    targetEmployee: "emp-risk-analyst-01",
+    requestedCapability: "risk.domain.assess",
+    authorityScope: "risk_assess",
+    decision: "ALLOWED",
+    decisionColor: "#10b981",
+    policyRule: "POL-RISK-01: Risk domain assessment permitted within thread-pool boundary.",
+    attemptScopedToken: "tok_attempt_1_risk_analyst_2c4e1a88",
+    rationale: "AI Employee identity emp-risk-analyst-01 matches capability binding. Attempt lease valid for 30,000ms."
+  },
+  "node_3_control_evidence": {
+    callerPrincipal: "OrchestratorRuntime (Parallel Worker 03)",
+    targetEmployee: "emp-control-evidence-01",
+    requestedCapability: "control.evidence.evaluate",
+    authorityScope: "control_evaluate",
+    decision: "ALLOWED",
+    decisionColor: "#10b981",
+    policyRule: "POL-CTRL-01: Evidence gathering permitted. No state mutation or side effects permitted.",
+    attemptScopedToken: "tok_attempt_1_control_eval_7d3f4b11",
+    rationale: "Sovereign scope control_evaluate verified. AI Employee status verified as ACTIVE."
+  },
+  "node_4_fan_in": {
+    callerPrincipal: "WorkflowEngine (DAG Frontier Evaluator)",
+    targetEmployee: "N/A (Coordination Barrier)",
+    requestedCapability: "barrier.join.deterministic",
+    authorityScope: "orchestrator_internal",
+    decision: "ALLOWED",
+    decisionColor: "#10b981",
+    policyRule: "BARRIER-01: Coordination primitive requires all incoming DAG dependency nodes in COMPLETED state.",
+    attemptScopedToken: "tok_barrier_join_internal",
+    rationale: "Evaluated in-memory DAG state vector: node_2_risk_analysis=COMPLETED, node_3_control_evidence=COMPLETED."
+  },
+  "node_5_operational_resilience": {
+    callerPrincipal: "OrchestratorRuntime (Worker 04)",
+    targetEmployee: "emp-op-resilience-01",
+    requestedCapability: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    decision: "ALLOWED",
+    decisionColor: "#10b981",
+    policyRule: "POL-RES-01: Synthesis permitted. Side-effecting execution authority strictly denied.",
+    attemptScopedToken: "tok_attempt_1_op_resilience_6e5a2c90",
+    rationale: "Agent output confidence is 0.95. EAIES enforces: High confidence != Execution authority. Flagged for governance."
+  },
+  "node_6_governance_check": {
+    callerPrincipal: "HumanApprovalService (ADR-009)",
+    targetEmployee: "N/A (Human Governance Gate)",
+    requestedCapability: "governance.approval.evaluate",
+    authorityScope: "governance_checkpoint",
+    decision: "ALLOWED",
+    decisionColor: "#f59e0b",
+    policyRule: "POL-GOV-01: Statutory action requires affirmative human authorization. Autonomous execution denied.",
+    attemptScopedToken: "tok_gov_gate_halt_frontier",
+    rationale: "Durable HumanApprovalRequest created. Node entered PAUSED state. Workflow execution frontier halted."
+  },
+  "node_7_approved_action": {
+    callerPrincipal: "OrchestratorRuntime (Post-Approval Dispatch)",
+    targetEmployee: "emp-action-executor-01",
+    requestedCapability: "regulatory.action.execute",
+    authorityScope: "action_execute",
+    decision: "ALLOWED",
+    decisionColor: "#10b981",
+    policyRule: "POL-ACT-01: Side-effecting action execution authorized exclusively upon verified human cryptographic signature.",
+    attemptScopedToken: "tok_signed_human_sig_exec_883a",
+    rationale: "Cryptographic human approval signature verified. Approval status: APPROVED. Execution permitted."
+  }
+};

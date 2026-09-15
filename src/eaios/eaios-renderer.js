@@ -48,6 +48,10 @@ export class EaiosRenderer {
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
+          <filter id="glow-select" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
 
           <!-- Marker arrows -->
           <marker id="arrow-default" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -209,9 +213,17 @@ export class EaiosRenderer {
       borderColor = "#f59e0b";
       badgeColor = "#f59e0b";
       glowFilter = 'filter="url(#glow-amber)"';
+    } else if (curStatus === 'CRASHED') {
+      borderColor = "#ec4899";
+      badgeColor = "#ec4899";
+      glowFilter = 'filter="url(#glow-amber)"';
     }
 
-    const selectedOutline = isSelected ? `stroke="#38bdf8" stroke-width="3"` : `stroke="${borderColor}" stroke-width="1.8"`;
+    if (isSelected) {
+      glowFilter = 'filter="url(#glow-select)"';
+    }
+
+    const selectedOutline = isSelected ? `stroke="#38bdf8" stroke-width="3.2"` : `stroke="${borderColor}" stroke-width="1.8"`;
 
     let categoryPill = "AI EMPLOYEE";
     let pillBg = "rgba(6, 182, 212, 0.15)";
@@ -229,6 +241,22 @@ export class EaiosRenderer {
       categoryPill = "ACTION EXECUTOR";
       pillBg = "rgba(16, 185, 129, 0.15)";
       pillText = "#34d399";
+    }
+
+    // Dynamic auxiliary tag for fan-in barrier waiting or worker state
+    let auxTag = '';
+    if (node.id === 'node_4_fan_in' && state.waitingForText) {
+      auxTag = `
+        <rect x="${x + 6}" y="${y + h - 18}" width="${w - 12}" height="14" rx="3" fill="rgba(245, 158, 11, 0.2)" stroke="#f59e0b" stroke-width="0.8" />
+        <text x="${x + w / 2}" y="${y + h - 8}" fill="#fbbf24" font-size="7.5" font-weight="700" text-anchor="middle">${state.waitingForText}</text>
+      `;
+    } else if (state.workerBadge) {
+      const isStale = state.workerBadge.includes('STALE');
+      const bColor = isStale ? '#ef4444' : '#a855f7';
+      auxTag = `
+        <rect x="${x + 6}" y="${y + h - 18}" width="${w - 12}" height="14" rx="3" fill="${bColor}20" stroke="${bColor}" stroke-width="0.8" />
+        <text x="${x + w / 2}" y="${y + h - 8}" fill="${bColor}" font-size="7.5" font-weight="700" text-anchor="middle">${state.workerBadge}</text>
+      `;
     }
 
     return `
@@ -250,14 +278,16 @@ export class EaiosRenderer {
         <text x="${x + 10}" y="${y + 44}" fill="#f8fafc" font-size="11" font-weight="700">${node.name}</text>
 
         <!-- Subtitle / Actor Identity -->
-        <text x="${x + 10}" y="${y + 60}" fill="#94a3b8" font-size="9.5">
+        <text x="${x + 10}" y="${y + 59}" fill="#94a3b8" font-size="9">
           ${node.employeeId ? node.employeeId : (node.category === 'governance_boundary' ? 'Human Principal (ADR-009)' : 'Deterministic Join')}
         </text>
 
-        <!-- Capability / Scope footprint -->
-        <text x="${x + 10}" y="${y + 76}" fill="#64748b" font-size="8.5" font-family="monospace">
-          ${node.authorityScope}
-        </text>
+        <!-- Capability / Scope footprint (or auxTag if present) -->
+        ${auxTag ? auxTag : `
+          <text x="${x + 10}" y="${y + 74}" fill="#64748b" font-size="8" font-family="monospace">
+            ${node.authorityScope}
+          </text>
+        `}
       </g>
     `;
   }

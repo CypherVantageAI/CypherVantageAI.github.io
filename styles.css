@@ -10,13 +10,13 @@
   --bg-card-hover: rgba(30, 36, 61, 0.85);
   --border-color: rgba(255, 255, 255, 0.08);
   --border-color-focus: #8b5cf6;
-  
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --color-text: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
-  
+
   /* Brand Gradients & Colors */
   --color-violet: #8b5cf6;
   --color-violet-hover: #7c3aed;
@@ -24,7 +24,7 @@
   --color-cyan-hover: #0891b2;
   --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
   --gradient-accent-color: #8b5cf6;
-  
+
   /* Status Colors */
   --color-success: #10b981;
   --color-warning: #fbbf24;
@@ -34,7 +34,7 @@
   /* Font Families */
   --font-headings: 'Figtree', sans-serif;
   --font-body: 'Figtree', sans-serif;
-  
+
   /* Sizing & Transitions */
   --sidebar-width: 290px;
   --header-height: 75px;
@@ -2341,11 +2341,11 @@ textarea:focus-visible {
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
     background-color: var(--bg-secondary);
   }
-  
+
   .app-sidebar.active {
     transform: translateX(0);
   }
-  
+
   /* Make sure main content takes full screen when sidebar is fixed */
   .content-workspace {
     padding: 16px !important;
@@ -2363,19 +2363,19 @@ textarea:focus-visible {
   .app-header {
     padding: 0 12px;
   }
-  
+
   .header-controls {
     gap: 8px;
   }
-  
+
   .persona-toggle-container {
     display: none; /* Hide toggle label and persona buttons to fit brand text */
   }
-  
+
   .brand-text h1 {
     font-size: 16px;
   }
-  
+
   .brand-text span {
     font-size: 8px;
   }
@@ -3151,7 +3151,7 @@ body.light-mode {
   --text-primary: #1e293b;
   --text-secondary: #475569;
   --text-muted: #64748b;
-  
+
   background-color: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -3714,3 +3714,82 @@ body.light-mode .eaios-btn-adversarial:hover {
 }
 
 
+
+/* ==========================================================================
+   EAIOS Live Execution Trace (Phase 4 Showcase)
+   ========================================================================== */
+
+.eaios-trace-step:hover {
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  background: rgba(15, 23, 42, 0.9) !important;
+  transform: translateY(-1px);
+}
+
+.eaios-audit-item:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Light mode support for Live Trace & Inspector */
+body.light-mode #eaios-trace-container {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode .eaios-trace-step {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode .eaios-trace-step:hover {
+  background: #f1f5f9 !important;
+  border-color: #0284c7 !important;
+}
+
+body.light-mode .eaios-trace-step div[style*="color: #f8fafc"] {
+  color: #0f172a !important;
+}
+
+body.light-mode #eaios-trace-corr-id {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: #0284c7 !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+}
+
+body.light-mode #eaios-inspector-content > div {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode #eaios-inspector-content h3 {
+  color: #0f172a !important;
+}
+
+body.light-mode #eaios-inspector-content div[style*="color: #e2e8f0"],
+body.light-mode #eaios-inspector-content div[style*="color: #cbd5e1"] {
+  color: #334155 !important;
+}
+
+body.light-mode .eaios-audit-item {
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.light-mode .eaios-audit-item span[style*="color: #f8fafc"] {
+  color: #0f172a !important;
+}
+
+body.light-mode .eaios-audit-item div[style*="color: #94a3b8"] {
+  color: #475569 !important;
+}
+
+body.light-mode .eaios-audit-item:hover {
+  background: #f8fafc !important;
+}
+
+body.light-mode #eaios-corr-modal > div {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode #eaios-corr-modal h3 {
+  color: #0f172a !important;
+}
