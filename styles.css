@@ -3581,13 +3581,136 @@ body.light-mode .btn-secondary.active {
 }
 
 body.light-mode .eaios-hero {
-  background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
-  border-color: rgba(59, 130, 246, 0.2) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+  background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
+  border-color: rgba(6, 182, 212, 0.4) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
 }
 
 body.light-mode .eaios-view-wrapper {
   color: #1e293b !important;
+}
+
+/* Light mode panels & cards */
+body.light-mode .eaios-view-wrapper div[style*="background: rgba(22, 26, 43"],
+body.light-mode .eaios-view-wrapper div[style*="background:rgba(22, 26, 43"] {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .eaios-view-wrapper div[style*="background: rgba(15, 23, 42"],
+body.light-mode .eaios-view-wrapper div[style*="background:rgba(15, 23, 42"] {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-mode .eaios-view-wrapper div[style*="background: rgba(10, 11, 16"],
+body.light-mode .eaios-view-wrapper div[style*="background:rgba(10, 11, 16"] {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Light mode typography */
+body.light-mode .eaios-view-wrapper div[style*="color: #f8fafc"],
+body.light-mode .eaios-view-wrapper span[style*="color: #f8fafc"],
+body.light-mode .eaios-view-wrapper h1[style*="color: #f8fafc"],
+body.light-mode .eaios-view-wrapper h3[style*="color: #f8fafc"] {
+  color: #0f172a !important;
+}
+
+body.light-mode .eaios-view-wrapper div[style*="color: #cbd5e1"],
+body.light-mode .eaios-view-wrapper span[style*="color: #cbd5e1"],
+body.light-mode .eaios-view-wrapper div[style*="color: #94a3b8"],
+body.light-mode .eaios-view-wrapper p[style*="color: #94a3b8"] {
+  color: #475569 !important;
+}
+
+body.light-mode .eaios-view-wrapper code {
+  background: #f1f5f9 !important;
+  color: #0284c7 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Light mode audit log & consoles */
+body.light-mode #eaios-audit-log {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+body.light-mode #eaios-audit-log div {
+  border-bottom-color: #f1f5f9 !important;
+}
+
+body.light-mode #eaios-audit-log div[style*="color: #94a3b8"] {
+  color: #475569 !important;
+}
+
+body.light-mode #eaios-audit-log span[style*="color: #cbd5e1"] {
+  color: #334155 !important;
+}
+
+/* Light mode DAG SVG container & elements */
+body.light-mode #eaios-dag-container {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.light-mode #eaios-dag-container svg rect[fill="#0d111d"] {
+  fill: #ffffff !important;
+}
+
+body.light-mode #eaios-dag-container svg text[fill="#f8fafc"] {
+  fill: #0f172a !important;
+}
+
+body.light-mode #eaios-dag-container svg text[fill="#94a3b8"] {
+  fill: #475569 !important;
+}
+
+body.light-mode #eaios-dag-container svg text[fill="#64748b"] {
+  fill: #64748b !important;
+}
+
+body.light-mode #eaios-dag-container svg line[stroke="#ffffff"] {
+  stroke: #cbd5e1 !important;
+}
+
+body.light-mode #eaios-dag-container svg path[d*="M 0 1 L 10 5 L 0 9 z"][fill="rgba(255, 255, 255, 0.25)"] {
+  fill: #94a3b8 !important;
+}
+
+/* Light mode buttons */
+body.light-mode #eaios-btn-reset {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode #eaios-btn-reset:hover {
+  background: #e2e8f0 !important;
+}
+
+body.light-mode #eaios-btn-crash {
+  background: rgba(139, 92, 246, 0.08) !important;
+  border-color: rgba(139, 92, 246, 0.35) !important;
+  color: #7c3aed !important;
+}
+
+body.light-mode #eaios-btn-idempotency {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #059669 !important;
+}
+
+body.light-mode .eaios-btn-adversarial {
+  background: rgba(239, 68, 68, 0.06) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #dc2626 !important;
+}
+
+body.light-mode .eaios-btn-adversarial:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
 }
 
 
