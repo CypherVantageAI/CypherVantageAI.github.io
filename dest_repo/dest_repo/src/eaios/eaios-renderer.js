@@ -1,7 +1,8 @@
 // ==========================================================================
 // EAIOS Architecture Showcase - Interactive SVG DAG & Component Renderer
-// Baseline: Stage 12.5 (Frozen)
 // ==========================================================================
+
+import { EAIOS_NODES } from './eaios-data.js';
 
 export class EaiosRenderer {
   constructor(containerElement, options = {}) {
@@ -9,14 +10,14 @@ export class EaiosRenderer {
     this.options = options;
   }
 
-  render(nodes = [], nodeStates = {}, selectedNodeId = null) {
+  render(nodeStates = {}, selectedNodeId = null) {
     if (!this.container) return;
 
-    const width = 1280;
-    const height = 380;
+    const width = 1420;
+    const height = 400;
 
     let svgHtml = `
-      <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto; min-width: 860px; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto; min-width: 980px; display: block;" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="grad-ai" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.25"/>
@@ -34,10 +35,6 @@ export class EaiosRenderer {
             <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
             <stop offset="100%" stop-color="#059669" stop-opacity="0.25"/>
           </linearGradient>
-          <linearGradient id="grad-comp" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ec4899" stop-opacity="0.25"/>
-            <stop offset="100%" stop-color="#be185d" stop-opacity="0.25"/>
-          </linearGradient>
 
           <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
@@ -48,10 +45,6 @@ export class EaiosRenderer {
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
           <filter id="glow-violet" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-          <filter id="glow-pink" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
@@ -73,25 +66,22 @@ export class EaiosRenderer {
           <marker id="arrow-failed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444"/>
           </marker>
-          <marker id="arrow-comp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 1 L 10 5 L 0 9 z" fill="#ec4899"/>
-          </marker>
         </defs>
 
         <!-- Subtle coordinate grid -->
-        <g opacity="0.05">
+        <g opacity="0.06">
           <line x1="0" y1="90" x2="${width}" y2="90" stroke="#ffffff" stroke-dasharray="4,4"/>
           <line x1="0" y1="190" x2="${width}" y2="190" stroke="#ffffff" stroke-dasharray="4,4"/>
           <line x1="0" y1="290" x2="${width}" y2="290" stroke="#ffffff" stroke-dasharray="4,4"/>
         </g>
 
         <!-- Dynamic Edge Connections -->
-        ${this._renderEdges(nodes, nodeStates)}
+        ${this._renderEdges(nodeStates)}
 
         <!-- Node Elements Group -->
         <g id="dag-nodes-group">
-          ${nodes.map(node => {
-            const state = nodeStates[node.id] || { status: 'PENDING', attempt: 0 };
+          ${EAIOS_NODES.map(node => {
+            const state = nodeStates[node.id] || { status: node.status || 'PENDING', attempt: 0 };
             const isSelected = selectedNodeId === node.id;
             return this._renderNode(node, state, isSelected);
           }).join('')}
@@ -102,79 +92,76 @@ export class EaiosRenderer {
     this.container.innerHTML = svgHtml;
 
     // Attach click listeners to all node groups
-    nodes.forEach(node => {
+    EAIOS_NODES.forEach(node => {
       const el = this.container.querySelector(`#dag-node-${node.id}`);
       if (el) {
         el.style.cursor = 'pointer';
         el.onclick = () => {
           if (typeof this.options.onNodeSelect === 'function') {
-            this.options.onNodeSelect(node);
+            const state = nodeStates[node.id] || { status: 'PENDING', attempt: 0 };
+            this.options.onNodeSelect({ ...node, ...state });
           }
         };
       }
     });
   }
 
-  _renderEdges(nodes, nodeStates) {
-    let pathsHtml = '<g id="dag-edges-group">';
+  _renderEdges(nodeStates) {
+    const edges = [
+      { from: "node_1_regulatory_intelligence", to: "node_2_risk_analysis" },
+      { from: "node_1_regulatory_intelligence", to: "node_3_control_evidence" },
+      { from: "node_2_risk_analysis", to: "node_4_fan_in" },
+      { from: "node_3_control_evidence", to: "node_4_fan_in" },
+      { from: "node_4_fan_in", to: "node_5_operational_resilience" },
+      { from: "node_5_operational_resilience", to: "node_6_governance_check" },
+      { from: "node_6_governance_check", to: "node_7_approved_action" }
+    ];
 
     const nodeMap = {};
-    nodes.forEach(n => { nodeMap[n.id] = n; });
+    EAIOS_NODES.forEach(n => { nodeMap[n.id] = n; });
 
-    for (const dst of nodes) {
-      if (!dst.dependencies || dst.dependencies.length === 0) continue;
+    let pathsHtml = '<g id="dag-edges-group">';
 
-      for (const srcId of dst.dependencies) {
-        const src = nodeMap[srcId];
-        if (!src) continue;
+    for (const edge of edges) {
+      const src = nodeMap[edge.from];
+      const dst = nodeMap[edge.to];
+      const srcState = nodeStates[edge.from] || {};
+      const dstState = nodeStates[edge.to] || {};
 
-        const srcState = nodeStates[src.id] || { status: 'PENDING' };
-        const dstState = nodeStates[dst.id] || { status: 'PENDING' };
+      let stroke = "rgba(255, 255, 255, 0.18)";
+      let strokeWidth = 1.8;
+      let marker = "url(#arrow-default)";
+      let strokeDash = "none";
 
-        let stroke = "rgba(255, 255, 255, 0.15)";
-        let marker = "url(#arrow-default)";
-        let strokeDash = "none";
-        let strokeWidth = 1.6;
-
-        if (dst.isCompensation) {
-          if (dstState.status === 'EXECUTING' || dstState.status === 'COMPLETED') {
-            stroke = "#ec4899";
-            marker = "url(#arrow-comp)";
-            strokeWidth = 2.2;
-          } else {
-            stroke = "rgba(236, 72, 153, 0.4)";
-            strokeDash = "4,4";
-            marker = "url(#arrow-comp)";
-          }
-        } else if (srcState.status === 'COMPLETED' && dstState.status === 'COMPLETED') {
-          stroke = "#10b981";
-          marker = "url(#arrow-success)";
-          strokeWidth = 2.0;
-        } else if (srcState.status === 'COMPLETED' && (dstState.status === 'READY' || dstState.status === 'EXECUTING' || dstState.status === 'PAUSED')) {
-          stroke = "#06b6d4";
-          marker = "url(#arrow-active)";
-          strokeDash = "4,3";
-          strokeWidth = 2.0;
-        } else if (dstState.status === 'SKIPPED') {
-          stroke = "rgba(148, 163, 184, 0.25)";
-          strokeDash = "2,4";
-          strokeWidth = 1.0;
-        } else if (dstState.status === 'FAILED' || dstState.status === 'REJECTED') {
-          stroke = "#ef4444";
-          marker = "url(#arrow-failed)";
-          strokeWidth = 2.0;
-        }
-
-        // Bezier curve layout
-        const x1 = src.x + 95;
-        const y1 = src.y;
-        const x2 = dst.x - 95;
-        const y2 = dst.y;
-        const mx = (x1 + x2) / 2;
-
-        const d = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
-        pathsHtml += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-dasharray="${strokeDash}" marker-end="${marker}" />`;
+      if (srcState.status === 'COMPLETED' && dstState.status === 'COMPLETED') {
+        stroke = "#10b981";
+        marker = "url(#arrow-success)";
+        strokeWidth = 2.2;
+      } else if (srcState.status === 'COMPLETED' && (dstState.status === 'READY' || dstState.status === 'EXECUTING' || dstState.status === 'RUNNING')) {
+        stroke = "#06b6d4";
+        marker = "url(#arrow-active)";
+        strokeWidth = 2.5;
+        strokeDash = "6,4";
+      } else if (srcState.status === 'COMPLETED' && dstState.status === 'PAUSED') {
+        stroke = "#f59e0b";
+        marker = "url(#arrow-active)";
+        strokeWidth = 2.5;
+        strokeDash = "5,5";
+      } else if (dstState.status === 'FAILED' || dstState.status === 'REJECTED') {
+        stroke = "#ef4444";
+        marker = "url(#arrow-failed)";
+        strokeWidth = 2.0;
       }
+
+      // Bezier curve layout
+      const x1 = src.x + 95;
+      const y1 = src.y;
+      const x2 = dst.x - 95;
+      const y2 = dst.y;
+      const mx = (x1 + x2) / 2;
+
+      const d = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      pathsHtml += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-dasharray="${strokeDash}" marker-end="${marker}" />`;
     }
 
     pathsHtml += '</g>';
@@ -204,9 +191,6 @@ export class EaiosRenderer {
     } else if (node.category === 'action_executor') {
       bgFill = "url(#grad-action)";
       borderColor = "rgba(16, 185, 129, 0.4)";
-    } else if (node.category === 'compensation_primitive') {
-      bgFill = "url(#grad-comp)";
-      borderColor = "rgba(236, 72, 153, 0.45)";
     }
 
     const curStatus = state.status || 'PENDING';
@@ -225,18 +209,14 @@ export class EaiosRenderer {
     } else if (curStatus === 'FAILED' || curStatus === 'REJECTED') {
       borderColor = "#ef4444";
       badgeColor = "#ef4444";
-    } else if (curStatus === 'PAUSED' || curStatus === 'PAUSED_PENDING_INPUT') {
+    } else if (curStatus === 'PAUSED') {
       borderColor = "#f59e0b";
       badgeColor = "#f59e0b";
       glowFilter = 'filter="url(#glow-amber)"';
-    } else if (curStatus === 'COMPENSATED') {
+    } else if (curStatus === 'CRASHED') {
       borderColor = "#ec4899";
       badgeColor = "#ec4899";
-      glowFilter = 'filter="url(#glow-pink)"';
-    } else if (curStatus === 'SKIPPED') {
-      borderColor = "rgba(148, 163, 184, 0.25)";
-      badgeColor = "#64748b";
-      bgFill = "rgba(15, 23, 42, 0.4)";
+      glowFilter = 'filter="url(#glow-amber)"';
     }
 
     if (isSelected) {
@@ -250,7 +230,7 @@ export class EaiosRenderer {
     let pillText = "#38bdf8";
 
     if (node.category === 'coordination_primitive') {
-      categoryPill = "COORDINATION";
+      categoryPill = "FAN-IN BARRIER";
       pillBg = "rgba(245, 158, 11, 0.15)";
       pillText = "#fbbf24";
     } else if (node.category === 'governance_boundary') {
@@ -261,15 +241,16 @@ export class EaiosRenderer {
       categoryPill = "ACTION EXECUTOR";
       pillBg = "rgba(16, 185, 129, 0.15)";
       pillText = "#34d399";
-    } else if (node.category === 'compensation_primitive') {
-      categoryPill = "COMPENSATION";
-      pillBg = "rgba(236, 72, 153, 0.2)";
-      pillText = "#f472b6";
     }
 
-    // Dynamic auxiliary tag for worker badge or compensation state
+    // Dynamic auxiliary tag for fan-in barrier waiting or worker state
     let auxTag = '';
-    if (state.workerBadge) {
+    if (node.id === 'node_4_fan_in' && state.waitingForText) {
+      auxTag = `
+        <rect x="${x + 6}" y="${y + h - 18}" width="${w - 12}" height="14" rx="3" fill="rgba(245, 158, 11, 0.2)" stroke="#f59e0b" stroke-width="0.8" />
+        <text x="${x + w / 2}" y="${y + h - 8}" fill="#fbbf24" font-size="7.5" font-weight="700" text-anchor="middle">${state.waitingForText}</text>
+      `;
+    } else if (state.workerBadge) {
       const isStale = state.workerBadge.includes('STALE');
       const bColor = isStale ? '#ef4444' : '#a855f7';
       auxTag = `
@@ -290,15 +271,15 @@ export class EaiosRenderer {
         <text x="${x + 12}" y="${y + 19}" fill="${pillText}" font-size="7.5" font-weight="700" letter-spacing="0.5">${categoryPill}</text>
 
         <!-- Status Badge -->
-        <rect x="${x + w - 62}" y="${y + 8}" width="54" height="15" rx="3" fill="rgba(0,0,0,0.5)" stroke="${badgeColor}" stroke-width="1" />
-        <text x="${x + w - 35}" y="${y + 19}" fill="${badgeColor}" font-size="7.5" font-weight="700" text-anchor="middle">${curStatus.replace('_PENDING_INPUT', '')}</text>
+        <rect x="${x + w - 58}" y="${y + 8}" width="50" height="15" rx="3" fill="rgba(0,0,0,0.5)" stroke="${badgeColor}" stroke-width="1" />
+        <text x="${x + w - 33}" y="${y + 19}" fill="${badgeColor}" font-size="8" font-weight="700" text-anchor="middle">${curStatus}</text>
 
         <!-- Node Title -->
-        <text x="${x + 10}" y="${y + 44}" fill="#f8fafc" font-size="10.5" font-weight="700">${node.name}</text>
+        <text x="${x + 10}" y="${y + 44}" fill="#f8fafc" font-size="11" font-weight="700">${node.name}</text>
 
         <!-- Subtitle / Actor Identity -->
-        <text x="${x + 10}" y="${y + 59}" fill="#94a3b8" font-size="8.5">
-          ${node.employeeId ? node.employeeId : (node.category === 'governance_boundary' ? 'Four-Eyes Principal (ADR-032)' : 'Stateless Barrier')}
+        <text x="${x + 10}" y="${y + 59}" fill="#94a3b8" font-size="9">
+          ${node.employeeId ? node.employeeId : (node.category === 'governance_boundary' ? 'Human Principal (ADR-009)' : 'Deterministic Join')}
         </text>
 
         <!-- Capability / Scope footprint (or auxTag if present) -->
