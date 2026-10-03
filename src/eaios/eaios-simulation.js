@@ -404,7 +404,7 @@ export class EaiosSimulationManager {
       // Fresh EAIES Authorization (ADR-032 Invariant)
       this.nodeStates["node_3_disbursement_exec"].status = "EXECUTING";
       this.nodeStates["node_3_disbursement_exec"].workerBadge = "worker-04 [ACTIVE]";
-      this._addAudit("FRESH_EAIES_AUTH", "EAIES evaluates fresh attempt-scoped token for post-approval disbursement -> AUTHORIZATION GRANTED", "EAIES_PROXY", "SUCCESS", { nodeId: "node_3_disbursement_exec", adrRef: "ADR-001" });
+      this._addAudit("FRESH_EAIES_AUTH", "EAIES evaluates fresh capability request for post-approval disbursement -> AUTHORIZATION GRANTED", "EAIES_PROXY", "SUCCESS", { nodeId: "node_3_disbursement_exec", adrRef: "ADR-001" });
       this._render();
       await this._sleep(900);
 
