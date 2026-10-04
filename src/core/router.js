@@ -13,8 +13,8 @@ import { renderThirdPartyModule } from '../modules/thirdparty.js?v=2.0.1';
 import { renderReportsModule } from '../modules/reports.js?v=2.0.1';
 import { renderAiGovernanceModule } from '../modules/aigovernance.js?v=2.0.1';
 import { renderAnalystModule } from '../modules/analyst.js?v=2.0.1';
-import { renderCommandCentre } from '../modules/commandcentre.js?v=2.0.1';
-import { renderEaiosModule } from '../eaios/eaios-view.js';
+import { renderCommandCentre } from '../modules/commandcentre.js?v=2.2.0';
+import { renderEaiosModule } from '../eaios/eaios-view.js?v=2.2.0';
 
 
 export function switchTab(tabId) {

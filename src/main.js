@@ -3,7 +3,7 @@
 // ==========================================================================
 
 import { loadState, getState, saveState } from './core/db.js';
-import { switchTab, setPersona } from './core/router.js?v=2.0.1';
+import { switchTab, setPersona } from './core/router.js?v=2.2.0';
 
 // Import app.js legacy operations module to bind its functions to window
 import '../app.js';

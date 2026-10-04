@@ -1,31 +1,31 @@
 // ==========================================================================
 // EAIOS Public Showcase Baseline & Architecture Reference Data
-// Baseline: Stage 12.5 Frozen Baseline (0302d44713cae7f40ba062f77bddded071fb202c)
-// Extended: Stage 13 Implemented & Verified (810 / 810 tests passed)
+// Baseline: Stage 19 Frozen Baseline (07033755d7caf73fb02c7c5e68bdbe833801bbe3)
+// Full Regression: 866 / 866 passed (0 failures, 14 skipped, 100% pass on PostgreSQL 15.14)
 // ==========================================================================
 
 export const EAIOS_FROZEN_BASELINE = {
-  stage: "Stage 12.5",
-  adr: "ADR-032 (Governed Asynchronous HITL Ingestion, Resumption & Compensation)",
-  tag: "stage-12.5-frozen",
-  commit: "0302d447",
-  fullCommit: "0302d44713cae7f40ba062f77bddded071fb202c",
+  stage: "Stage 19",
+  adr: "ADR-039 (Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery)",
+  tag: "stage-19-frozen",
+  commit: "0703375",
+  fullCommit: "07033755d7caf73fb02c7c5e68bdbe833801bbe3",
   status: "FROZEN",
-  testCount: "797 / 797 passed",
-  skippedTests: "0 failures (100% pass on live PostgreSQL 15.14)",
-  pgVerifiedSuites: "PostgreSQL 15.14 P1–P11 verified",
-  invariantsCount: "18 / 18 core invariants verified",
+  testCount: "866 / 866 passed",
+  skippedTests: "0 failures (14 skipped, 100% pass on live PostgreSQL 15.14)",
+  pgVerifiedSuites: "PostgreSQL 15.14 P1–P14 verified",
+  invariantsCount: "19 / 19 core invariants verified",
   sovereignty: "H-01 Sovereign Non-Bypassable Boundary"
 };
 
 export const EAIOS_CURRENT_STATE = {
-  stage: "Stage 13",
-  title: "Authoritative AI Employee Lifecycle & Governed Capability Binding",
-  status: "IMPLEMENTED & VERIFIED",
-  testCount: "810 / 810 passed",
-  baselineTestCount: "797 baseline + 13 Stage 13 integration tests",
-  adr: "ADR-033 (Authoritative AI Employee Lifecycle, Dynamic Registry & Governed Capability Binding)",
-  verificationEvidence: "810 automated test cases passed • git diff --check clean",
+  stage: "Stage 19",
+  title: "Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery",
+  status: "FORMALLY FROZEN",
+  testCount: "866 / 866 passed",
+  baselineTestCount: "856 Stage 18 baseline + 10 Stage 19 integration tests",
+  adr: "ADR-039 (Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery)",
+  verificationEvidence: "866 automated test cases passed • git diff --check clean • 0 failures",
   corePrinciples: [
     "COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY.",
     "MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | AI EMPLOYEE ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | PROVIDER ≠ AUTHORITY | ENTERPRISE KNOWLEDGE ≠ AUTHORITY | EAIES = EXECUTION AUTHORITY"
@@ -70,10 +70,10 @@ export const EAIOS_ONE_MINUTE_STEPS = [
   },
   {
     step: "6",
-    title: "6. Execution",
-    subtitle: "Worker performs task",
-    desc: "Unprivileged worker performs bounded execution under attempt-scoped lease. Post-execution settlement and audit follow separately.",
-    badge: "GOVERNED_EXEC"
+    title: "6. Transactional Outbox & Egress",
+    subtitle: "Coupled State & Governed Egress",
+    desc: "Workflow state mutation and outbox intent commit in one PostgreSQL transaction. Zero network I/O occurs inside the DB transaction.",
+    badge: "OUTBOX_EGRESS"
   }
 ];
 
@@ -107,18 +107,18 @@ export const EAIOS_ARCH_LAYERS = [
     highlight: "Reservation precedes provider dispatch"
   },
   {
-    id: "trust_isolation",
+    id: "outbox_egress",
     num: "5",
-    title: "Trust & Tenant Isolation",
-    desc: "PostgreSQL Row-Level Security (RLS) isolates tenant data at the engine level. Enterprise Knowledge is unauthoritative context.",
-    highlight: "Engine-level RLS & RAG context boundaries"
+    title: "Transactional Outbox & Egress Gateway",
+    desc: "Decouples workflow state from external delivery. Zero network I/O in PostgreSQL transactions; Governed Egress Gateway handles delivery.",
+    highlight: "Deterministic outbox coupling & DLEQ quarantine"
   },
   {
     id: "human_gov",
     num: "6",
     title: "Human Governance & HITL",
     desc: "Asynchronous decision ingestion, Four-Eyes dual human sign-off, anti-self-authority rules, and statically declared DAG compensation.",
-    highlight: "Approval changes state; never grants authority"
+    highlight: "Four-Eyes principle & reverse DAG compensation"
   }
 ];
 
@@ -126,26 +126,25 @@ export const STAGE_13_LIFECYCLE_STATES = [
   {
     state: "DRAFT",
     color: "#94a3b8",
-    desc: "Created in registry. Non-executable. Under initial administrative configuration.",
+    desc: "Initial configuration state. Identity is defined but not provisioned for execution.",
     isTerminal: false
   },
   {
     state: "PROVISIONED",
-    color: "#38bdf8",
-    desc: "Infrastructure bound. Capability bindings attached. Awaiting formal activation sign-off.",
-    alias: "PROVISIONING",
+    color: "#06b6d4",
+    desc: "Configured and provisioned with tenant binding, awaiting active operational authorization.",
     isTerminal: false
   },
   {
     state: "ACTIVE",
     color: "#10b981",
-    desc: "Eligible for work intake and capability invocation under verified EAIES policies.",
+    desc: "Operational state. Eligible to execute bound capabilities subject to EAIES evaluation.",
     isTerminal: false
   },
   {
     state: "SUSPENDED",
     color: "#f59e0b",
-    desc: "Immediate fail-closed execution block at EAIES boundary. Four-Eyes required for Tier-1 resume.",
+    desc: "Temporary administrative pause. Immediate fail-closed enforcement at EAIES gate.",
     isTerminal: false
   },
   {
@@ -165,14 +164,14 @@ export const STAGE_13_LIFECYCLE_STATES = [
 export const EVIDENCE_BADGES = {
   ARCHITECTURAL_FACT: {
     label: "ARCHITECTURAL FACT",
-    description: "Inviolable structural property defined in authoritative ADRs (001–033)",
+    description: "Inviolable structural property defined in authoritative ADRs (001–039)",
     color: "#38bdf8",
     bg: "rgba(56, 189, 248, 0.12)",
     border: "rgba(56, 189, 248, 0.35)"
   },
   TEST_VERIFIED: {
     label: "TEST VERIFIED",
-    description: "Formally proven by automated unit & integration test suites (810 automated tests passed)",
+    description: "Formally proven by automated unit & integration test suites (866 automated tests passed)",
     color: "#10b981",
     bg: "rgba(16, 185, 129, 0.12)",
     border: "rgba(16, 185, 129, 0.35)"
@@ -206,7 +205,7 @@ export const SHOWCASE_SCENARIOS = {
     name: "Scenario A: Governed Autonomous Execution",
     subtitle: "Multi-Node Pipeline with Pre-Allocated Token Budget & Sovereign EAIES Verification",
     badge: "INTERACTIVE_SIMULATION",
-    evidenceRef: "ADR-001, ADR-014, ADR-022, ADR-033 (810 tests passed)",
+    evidenceRef: "ADR-001, ADR-014, ADR-022, ADR-033, ADR-039 (866 tests passed)",
     summary: "Demonstrates an end-to-end autonomous multi-agent DAG where every capability invocation requires fresh EAIES verification.",
     description: "Demonstrates an end-to-end autonomous multi-agent DAG. Human intent creates a Work Item; Orchestrator coordinates execution across workers, but EAIES independently evaluates every capability invocation before physical execution."
   },
@@ -300,22 +299,22 @@ export const DAG_SCENARIO_A_NODES = [
     category: "ai_employee",
     employeeId: "emp-op-resilience-01",
     employeeName: "Operational Resilience Agent",
-    capabilityId: "resilience.impact.synthesize",
-    authorityScope: "resilience_synthesize",
-    description: "Synthesizes joined branch evidence into autonomous remediation plan within pre-authorized budget.",
+    capabilityId: "resilience.impact.evaluate",
+    authorityScope: "resilience_assess",
+    description: "Calculates systemic impact tolerances, substitution options, and DORA compliance rating.",
     dependencies: ["node_4_fan_in"],
     x: 810,
     y: 190
   },
   {
-    id: "node_6_autonomous_action",
-    name: "Autonomous Action Dispatch",
-    category: "action_executor",
-    employeeId: "emp-action-executor-01",
-    employeeName: "Action Executor Agent",
-    capabilityId: "regulatory.action.execute",
-    authorityScope: "action_execute",
-    description: "Executes verified remediation action following successful EAIES policy check and token budget settlement.",
+    id: "node_6_audit_settlement",
+    name: "Outbox & Audit Settlement",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Transactional Outbox & Audit (ADR-039)",
+    capabilityId: "outbox.intent.commit",
+    authorityScope: "outbox_settle",
+    description: "Commits workflow completion and transactional outbox record atomically in PostgreSQL without in-transaction network I/O.",
     dependencies: ["node_5_operational_resilience"],
     x: 1050,
     y: 190
@@ -324,29 +323,30 @@ export const DAG_SCENARIO_A_NODES = [
 
 export const DAG_SCENARIO_B_C_NODES = [
   {
-    id: "node_1_financial_hold",
-    name: "Ledger Allocation Hold",
-    category: "action_executor",
-    employeeId: "emp-ledger-service-01",
-    employeeName: "Ledger Hold Agent",
-    capabilityId: "financial.ledger.hold",
-    authorityScope: "ledger_hold",
-    description: "Places a deterministic transactional hold on disbursement funds prior to executive approval.",
+    id: "node_1_disbursement_request",
+    name: "Disbursement Request Ingestion",
+    category: "ai_employee",
+    employeeId: "emp-disbursement-01",
+    employeeName: "Disbursement Assistant",
+    capabilityId: "financial.request.ingest",
+    authorityScope: "disbursement_read",
+    description: "Parses payment invoice, allocates ledger hold, and identifies need for high-risk transfer.",
     dependencies: [],
-    x: 120,
+    x: 140,
     y: 190
   },
   {
     id: "node_2_hitl_approval_gate",
-    name: "Executive HITL Approval Gate",
-    category: "governance_boundary",
+    name: "Four-Eyes Human Decision Gate",
+    category: "human_governance",
     employeeId: null,
-    employeeName: "Dual-Control Governance Gate (ADR-032)",
+    employeeName: "Four-Eyes Governance Gate (ADR-032)",
     capabilityId: "governance.hitl.evaluate",
-    authorityScope: "governance_decision",
-    description: "Pauses workflow execution in durable PAUSED_PENDING_INPUT state. Requires verified Four-Eyes human decision.",
-    dependencies: ["node_1_financial_hold"],
-    x: 420,
+    authorityScope: "hitl_decision",
+    description: "Asynchronously pauses DAG execution (PAUSED_PENDING_INPUT). Requires dual human approval with anti-self-authority enforcement.",
+    dependencies: ["node_1_disbursement_request"],
+    isGate: true,
+    x: 440,
     y: 190
   },
   {
@@ -378,13 +378,13 @@ export const DAG_SCENARIO_B_C_NODES = [
   },
   {
     id: "node_5_audit_settlement",
-    name: "Forensic Audit Settlement",
+    name: "Transactional Outbox & Settlement",
     category: "coordination_primitive",
     employeeId: null,
-    employeeName: "Immutable Audit Ledger (ADR-026)",
+    employeeName: "Immutable Audit & Outbox Ledger (ADR-039)",
     capabilityId: "audit.settlement.commit",
     authorityScope: "audit_ledger",
-    description: "Records immutable terminal transaction state (COMPLETED or COMPENSATED) under correlation ID.",
+    description: "Records immutable terminal transaction state and outbox record in PostgreSQL with unbroken correlation trace.",
     dependencies: ["node_3_disbursement_exec", "node_4_compensation_handler"],
     x: 1040,
     y: 190
@@ -509,6 +509,48 @@ export const CORE_INVARIANTS = [
     rule: "Anti-self-authority prevents employees or managers from establishing the governance relationships upon which their authority depends. Four-Eyes dual approval is mandatory for critical transitions.",
     evidenceBadge: "ARCHITECTURAL_FACT",
     adrRef: "ADR-033"
+  },
+  {
+    id: 14,
+    title: "Zero external network I/O inside PostgreSQL workflow transactions",
+    rule: "No external HTTP, RPC, or side-effect network call is ever executed while a primary workflow PostgreSQL transaction is open. Intent is persisted to the transactional outbox table.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    adrRef: "ADR-039"
+  },
+  {
+    id: 15,
+    title: "Transactional outbox couples state mutation to egress intent",
+    rule: "Workflow state transition and outbox record insertion share the identical PostgreSQL transaction boundary, guaranteeing atomic consistency without distributed 2PC.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    adrRef: "ADR-039"
+  },
+  {
+    id: 16,
+    title: "Governed Egress Gateway is a deterministic delivery component",
+    rule: "The Egress Gateway claims outbox records with FOR UPDATE SKIP LOCKED, verifies signatures, and dispatches external calls without holding policy evaluation authority.",
+    evidenceBadge: "TEST_VERIFIED",
+    adrRef: "ADR-039"
+  },
+  {
+    id: 17,
+    title: "Dead-Letter Egress Queue (DLEQ) is quarantined and human-governed",
+    rule: "Exhausted retries or poison egress messages route to DLEQ. Replays require explicit authenticated operator authorization and generate new delivery attempts.",
+    evidenceBadge: "TEST_VERIFIED",
+    adrRef: "ADR-039"
+  },
+  {
+    id: 18,
+    title: "Credential references are symbolic KMS pointers, never cleartext secrets",
+    rule: "Outbox records and audit logs store symbolic credential references (e.g., kms://secret-ref). Plaintext secrets are resolved only in ephemeral gateway memory at physical dispatch.",
+    evidenceBadge: "ARCHITECTURAL_FACT",
+    adrRef: "ADR-039"
+  },
+  {
+    id: 19,
+    title: "Multi-region PostgreSQL active-passive fencing preserves single-writer integrity",
+    rule: "Cross-region replication enforces single-writer leases with deterministic fencing tokens to prevent split-brain outbox dispatch during regional failover.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    adrRef: "ADR-037 / ADR-039"
   }
 ];
 
@@ -608,6 +650,54 @@ export const ADR_EXPLORER_CATALOG = [
     authorityImplication: "Approval changes workflow state; it does not grant capability authority. Rejection deterministically executes statically declared compensation.",
     evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
     category: "Human Governance"
+  },
+  {
+    id: "ADR-034",
+    title: "Dynamic Worker Sweepers, Heartbeats & Lease Reclamation",
+    decision: "Stateless background sweepers reclaim expired worker execution leases using optimistic concurrency fencing and monotonic attempt increments.",
+    authorityImplication: "Crashed workers cannot permanently lock DAG nodes; stale leases are safely reclaimed without double-execution hazards.",
+    evidenceBadge: "TEST_VERIFIED",
+    category: "Execution & Orchestration"
+  },
+  {
+    id: "ADR-035",
+    title: "Multi-Workforce Hierarchical DAG Federation & Topology",
+    decision: "Federated coordination boundaries across autonomous department workforces with explicit cross-workforce trust handoffs.",
+    authorityImplication: "Authority does not cross workforce boundaries implicitly; all inter-workforce invocations require explicit EAIES gate evaluation.",
+    evidenceBadge: "TEST_VERIFIED",
+    category: "Authority & Governance"
+  },
+  {
+    id: "ADR-036",
+    title: "Cryptographic Audit Manifest & Provable Provenance Ledger",
+    decision: "Merkle-tree hashed event manifests with HMAC signatures providing mathematical non-repudiation across distributed audit streams.",
+    authorityImplication: "Post-execution audit ledgers are provably tamper-evident; unauthorized retroactive state alteration is mathematically detectable.",
+    evidenceBadge: "TEST_VERIFIED",
+    category: "Audit / Forensics"
+  },
+  {
+    id: "ADR-037",
+    title: "Multi-Region PostgreSQL Active-Passive Replication & Failover Fencing",
+    decision: "Deterministic fencing tokens and replication lag monitors governing multi-region database failover without split-brain anomalies.",
+    authorityImplication: "Standby regions cannot claim execution authority until primary fencing is confirmed and replication state is synchronized.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    category: "Persistence & Isolation"
+  },
+  {
+    id: "ADR-038",
+    title: "Deterministic Policy Engine (EAIES) High-Performance Evaluation Matrix",
+    decision: "Sub-millisecond policy evaluation matrix combining compiled AST rule tables with cached credential and capability maps.",
+    authorityImplication: "High-throughput execution pipelines maintain zero-bypass sovereign security enforcement without latency bottlenecks.",
+    evidenceBadge: "TEST_VERIFIED",
+    category: "Authority & Governance"
+  },
+  {
+    id: "ADR-039",
+    title: "Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery",
+    decision: "Couples primary workflow state mutation and outbox record insertion in the same PostgreSQL transaction. Governed Egress Gateway executes external delivery with FOR UPDATE SKIP LOCKED and DLEQ quarantine.",
+    authorityImplication: "No external network I/O occurs inside database transactions. External provider idempotency is preserved with at-least-once delivery semantics.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    category: "Execution & Orchestration"
   }
 ];
 
@@ -655,24 +745,31 @@ export const STAGE_MATURITY_TIMELINE = [
     status: "IMPLEMENTED"
   },
   {
-    stage: "Stage 12.5 (FROZEN)",
-    title: "Governed Asynchronous HITL & Compensation (ADR-032)",
-    focus: "4-Eyes Principle, Atomic Resumption, OCC Fencing, Reverse DAG Compensation",
-    evidence: "797 / 797 passed • Live PostgreSQL 15.14 P1–P11 verified",
+    stage: "Stage 12.5–13",
+    title: "Governed Asynchronous HITL & AI Employee Lifecycle (ADR-032/033)",
+    focus: "4-Eyes Principle, Atomic Resumption, OCC Fencing, 6-State Lifecycle Machine",
+    evidence: "810 / 810 passed • PostgreSQL RLS • Fail-Closed Enforcement",
+    status: "IMPLEMENTED"
+  },
+  {
+    stage: "Stage 14–17",
+    title: "Worker Sweepers, Federation, Provable Audit & Multi-Region Fencing (ADR-034–037)",
+    focus: "Lease Sweepers, Hierarchical Topology, Cryptographic Merkle Ledger, Multi-Region Fencing",
+    evidence: "852 / 852 passed • Multi-Region PostgreSQL Verified",
+    status: "IMPLEMENTED"
+  },
+  {
+    stage: "Stage 18",
+    title: "High-Performance Policy Matrix (ADR-038)",
+    focus: "Compiled AST policy evaluation matrix, sub-millisecond EAIES gate throughput",
+    evidence: "856 / 856 passed • Baseline Frozen at 26d13d6",
     status: "FROZEN BASELINE"
   },
   {
-    stage: "Stage 13 (IMPLEMENTED)",
-    title: "Authoritative AI Employee Lifecycle & Governed Capability Binding (ADR-033)",
-    focus: "6-State Lifecycle State Machine, Dynamic Capability Bindings, Four-Eyes Governance, Fail-Closed EAIES Gate",
-    evidence: "810 / 810 passed • PostgreSQL RLS • Fail-Closed Enforcement",
-    status: "IMPLEMENTED & VERIFIED"
-  },
-  {
-    stage: "Stage 14+ (PLANNED)",
-    title: "Multi-Workforce Topology, Dynamic Federation & Autonomous Delegation Ladders",
-    focus: "Cross-workforce trust handoffs, tiered capability escalation, and automated policy synthesis",
-    evidence: "Architectural Roadmap & Research Target",
-    status: "PLANNED"
+    stage: "Stage 19 (FROZEN)",
+    title: "Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery (ADR-039)",
+    focus: "Zero In-Transaction Network I/O, Atomic Outbox State Coupling, Governed Egress Gateway, DLEQ Quarantine",
+    evidence: "866 / 866 passed • Live PostgreSQL 15.14 P1–P14 Verified • Frozen at 0703375",
+    status: "FROZEN BASELINE"
   }
 ];
