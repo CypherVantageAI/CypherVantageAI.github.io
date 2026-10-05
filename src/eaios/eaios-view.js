@@ -5,8 +5,8 @@
  * Invariant: "COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY."
  * "MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | AI EMPLOYEE ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | PROVIDER ≠ AUTHORITY | ENTERPRISE KNOWLEDGE ≠ AUTHORITY | EAIES = EXECUTION AUTHORITY"
  *
- * Baseline: Stage 19 Formally Frozen (07033755d7caf73fb02c7c5e68bdbe833801bbe3)
- * Full Regression: 866 / 866 passed (0 failures, 14 skipped)
+ * Baseline: Stage 22 Formally Frozen (c975f00906aa88d4e372379fb0b1c8a37ff9e348)
+ * Full Regression: 895 / 895 passed (0 failures, 15 skipped)
  */
 
 import {
@@ -119,43 +119,47 @@ window.submitEaiosDecision = function(decision) {
 
 window.switchEaiosTenant = function(tenantId) {
   if (!simManager) return;
-  const btnRlsFin = document.getElementById('eaios-btn-rls-fin');
-  const btnRlsRet = document.getElementById('eaios-btn-rls-ret');
+  const btnRlsGwm = document.getElementById('eaios-btn-rls-gwm');
+  const btnRlsIib = document.getElementById('eaios-btn-rls-iib');
   const rlsOutput = document.getElementById('eaios-rls-output');
 
-  if (tenantId === 'ACME-FINANCE') {
-    if (btnRlsFin) {
-      btnRlsFin.style.background = 'rgba(56, 189, 248, 0.2)';
-      btnRlsFin.style.color = '#38bdf8';
-      btnRlsFin.style.borderColor = '#38bdf8';
+  if (tenantId === 'GLOBAL-WEALTH-MANAGEMENT') {
+    if (btnRlsGwm) {
+      btnRlsGwm.style.background = 'rgba(56, 189, 248, 0.2)';
+      btnRlsGwm.style.color = '#38bdf8';
+      btnRlsGwm.style.borderColor = '#38bdf8';
     }
-    if (btnRlsRet) {
-      btnRlsRet.style.background = '#0f172a';
-      btnRlsRet.style.color = '#cbd5e1';
-      btnRlsRet.style.borderColor = 'rgba(255,255,255,0.15)';
+    if (btnRlsIib) {
+      btnRlsIib.style.background = '#0f172a';
+      btnRlsIib.style.color = '#cbd5e1';
+      btnRlsIib.style.borderColor = 'rgba(255,255,255,0.15)';
     }
   } else {
-    if (btnRlsRet) {
-      btnRlsRet.style.background = 'rgba(167, 139, 250, 0.2)';
-      btnRlsRet.style.color = '#c084fc';
-      btnRlsRet.style.borderColor = '#a78bfa';
+    if (btnRlsIib) {
+      btnRlsIib.style.background = 'rgba(167, 139, 250, 0.2)';
+      btnRlsIib.style.color = '#c084fc';
+      btnRlsIib.style.borderColor = '#a78bfa';
     }
-    if (btnRlsFin) {
-      btnRlsFin.style.background = '#0f172a';
-      btnRlsFin.style.color = '#cbd5e1';
-      btnRlsFin.style.borderColor = 'rgba(255,255,255,0.15)';
+    if (btnRlsGwm) {
+      btnRlsGwm.style.background = '#0f172a';
+      btnRlsGwm.style.color = '#cbd5e1';
+      btnRlsGwm.style.borderColor = 'rgba(255,255,255,0.15)';
     }
   }
 
   const res = simManager.simulateRlsQuery(tenantId);
   if (rlsOutput) {
-    const color = tenantId === 'ACME-FINANCE' ? '#38bdf8' : '#a78bfa';
+    const color = tenantId === 'GLOBAL-WEALTH-MANAGEMENT' ? '#38bdf8' : '#a78bfa';
     rlsOutput.innerHTML = `
       <div style="color: #64748b;">// Executed: SET LOCAL app.current_tenant_id = '${tenantId}'</div>
       <div style="color: ${color}; font-weight: 700;">active_tenant_id = '${tenantId}'</div>
       <div style="color: #10b981; margin-top: 4px;">✓ ${res ? res.title : 'No records'} (1 row)</div>
       <div style="color: #94a3b8; font-size: 9.5px; margin-top: 2px;">${res ? res.content : ''}</div>
     `;
+  }
+  const nodes = simManager.getCurrentNodes();
+  if (nodes && nodes[0]) {
+    updateInspector(nodes[0]);
   }
 };
 
@@ -336,7 +340,10 @@ function generateEaiosHtml() {
         transition: all 0.2s ease;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
+        min-height: 38px;
+        touch-action: manipulation;
       }
       .eaios-scen-btn:hover {
         background: rgba(30, 41, 59, 0.9);
@@ -364,9 +371,12 @@ function generateEaiosHtml() {
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
+        min-height: 40px;
         transition: all 0.2s ease;
         box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+        touch-action: manipulation;
       }
       .eaios-btn-primary:hover {
         background: linear-gradient(135deg, #059669, #047857);
@@ -395,7 +405,12 @@ function generateEaiosHtml() {
         font-weight: 600;
         font-size: 13px;
         cursor: pointer;
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         transition: all 0.2s ease;
+        touch-action: manipulation;
       }
       .eaios-btn-secondary:hover {
         background: rgba(148, 163, 184, 0.22);
@@ -434,6 +449,7 @@ function generateEaiosHtml() {
       .eaios-sim-action-btn {
         transition: all 0.15s ease;
         cursor: pointer;
+        touch-action: manipulation;
       }
       .eaios-sim-action-btn:hover {
         filter: brightness(1.2);
@@ -459,6 +475,108 @@ function generateEaiosHtml() {
       .eaios-flow-step:hover {
         border-color: rgba(56, 189, 248, 0.35);
       }
+
+      /* Responsive Layout Classes */
+      .eaios-grid-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .eaios-grid-subsystems {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .eaios-grid-dag {
+        display: grid;
+        grid-template-columns: 1.8fr 1.2fr;
+        gap: 20px;
+      }
+      .eaios-grid-authority {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 24px;
+        align-items: center;
+      }
+      .eaios-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .eaios-hero-badges {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+      }
+      .eaios-scen-tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* Mobile & Tablet Optimizations */
+      @media (max-width: 992px) {
+        .eaios-view-wrapper {
+          padding: 14px;
+        }
+        .eaios-section-card {
+          padding: 16px;
+          margin-bottom: 16px;
+        }
+        .eaios-hero-card {
+          padding: 20px 18px;
+        }
+        .eaios-grid-2col,
+        .eaios-grid-subsystems,
+        .eaios-grid-dag,
+        .eaios-grid-authority {
+          grid-template-columns: 1fr !important;
+          gap: 16px !important;
+        }
+        .eaios-hero-header {
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+        .eaios-hero-badges {
+          align-items: flex-start !important;
+          margin-top: 10px;
+        }
+        .eaios-scen-tabs {
+          width: 100%;
+        }
+        .eaios-scen-btn {
+          flex: 1 1 calc(50% - 6px);
+          font-size: 11.5px;
+          padding: 8px 10px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .eaios-view-wrapper {
+          padding: 8px;
+        }
+        .eaios-hero-card h1 {
+          font-size: 22px !important;
+        }
+        .eaios-scen-btn {
+          flex: 1 1 100%;
+        }
+        .eaios-dag-scroll-hint {
+          display: block !important;
+        }
+        #eaios-dag-container {
+          min-height: 280px;
+          -webkit-overflow-scrolling: touch;
+        }
+        .eaios-equation-box {
+          font-size: 10.5px;
+          padding: 10px 12px;
+        }
+      }
     </style>
 
     <div class="eaios-view-wrapper">
@@ -467,8 +585,8 @@ function generateEaiosHtml() {
       <!-- 1. HERO HEADER: REFERENCE ARCHITECTURE OVERVIEW & STATUS           -->
       <!-- ================================================================= -->
       <div class="eaios-hero-card eaios-info-card">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
-          <div style="flex: 1; min-width: 320px;">
+        <div class="eaios-hero-header">
+          <div style="flex: 1; min-width: 280px;">
             <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 12px; border-radius: 9999px; margin-bottom: 12px;">
               <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
               <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em;">ENTERPRISE REFERENCE ARCHITECTURE</span>
@@ -477,21 +595,21 @@ function generateEaiosHtml() {
               EAIOS Enterprise AI Operating System
             </h1>
             <div style="font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 8px;">
-              Deterministic governance, execution, transactional outbox & egress control for enterprise AI.
+              Deterministic governance, workflow sagas, transactional outbox/inbox & egress control for enterprise AI.
             </div>
             <p style="font-size: 13.5px; color: #cbd5e1; margin: 0; line-height: 1.6; max-width: 900px;">
-              EAIOS allows AI Employees, models and orchestrators to coordinate complex enterprise workflows while deterministic infrastructure retains authority over capability execution, transactional outbox egress, tenancy, lifecycle and human governance.
+              EAIOS allows AI Employees, models and orchestrators to coordinate complex enterprise workflows while deterministic infrastructure retains authority over capability execution, transactional outbox/inbox delivery, distributed saga compensation, tenancy, lifecycle and human governance.
             </p>
           </div>
 
           <!-- Architectural Verification Status Indicators -->
-          <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+          <div class="eaios-hero-badges">
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 19 Formally Frozen Baseline">
-                ✓ Stage 19 — Frozen Baseline
+              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 22 Formally Frozen Baseline">
+                ✓ Stage 22 — Frozen Baseline
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Full Automated Test Suite">
-                866 / 866 passed
+                895 / 895 passed
               </span>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
@@ -499,7 +617,10 @@ function generateEaiosHtml() {
                 PostgreSQL 15.14 + RLS
               </span>
               <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Transactional Outbox (ADR-039)
+                Workflow Sagas (ADR-042)
+              </span>
+              <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+                Outbox & Inbox (ADR-039/040)
               </span>
               <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Zero In-DB Network I/O
@@ -514,7 +635,7 @@ function generateEaiosHtml() {
         <!-- Secondary Historical Reference -->
         <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: #94a3b8;">
           <div>
-            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 19 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery (ADR-039).
+            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 22 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Governed Workflow Sagas, Distributed Business Compensation & Backward Recovery (ADR-042).
           </div>
           <div style="font-family: monospace; font-size: 11px; color: #64748b;">
             H-01 SOVEREIGN • NON-BYPASSABLE EXECUTION BOUNDARY
@@ -599,7 +720,7 @@ function generateEaiosHtml() {
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: center;">
+        <div class="eaios-grid-authority">
           <!-- Visual Hierarchy Tree -->
           <div style="background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 18px; font-family: monospace; font-size: 11.5px; line-height: 1.5;">
             <div style="text-align: center;">
@@ -631,12 +752,12 @@ function generateEaiosHtml() {
               </div>
             </div>
             <div style="text-align: center; color: #38bdf8; font-size: 10px; margin: 2px 0;">
-              │ authorizes capability invocation
+              │ authorizes capability invocation & saga compensation
             </div>
             <div style="text-align: center; color: #38bdf8;">▼</div>
             <div style="text-align: center;">
               <div style="display: inline-block; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 5px 14px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">
-                Transactional Outbox & Egress Gateway (ADR-039)
+                Transactional Outbox, Inbox & Saga Gateway (ADR-039–042)
               </div>
             </div>
           </div>
@@ -653,15 +774,15 @@ function generateEaiosHtml() {
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">ORCHESTRATOR</span>
-              <span style="color: #94a3b8;">evaluates DAG dependencies</span>
+              <span style="color: #94a3b8;">evaluates DAG dependencies & Sagas</span>
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">HUMAN APPROVAL</span>
               <span style="color: #94a3b8;">changes workflow state (never bypasses EAIES)</span>
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">EGRESS GATEWAY</span>
-              <span style="color: #94a3b8;">delivers external side effects via outbox</span>
+              <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">EGRESS / INBOX</span>
+              <span style="color: #94a3b8;">handles external side-effects & deduplication</span>
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">WORKER</span>
@@ -675,40 +796,40 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 5. STAGE 19: TRANSACTIONAL OUTBOX & GOVERNED EGRESS GATEWAY       -->
+      <!-- 5. STAGE 22: GOVERNED SAGAS, INBOX & OUTBOX PIPELINES            -->
       <!-- ================================================================= -->
       <div class="eaios-section-card eaios-info-card" style="border-left: 4px solid #10b981;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase;">
-              <span>★</span> STAGE 19 FROZEN ARCHITECTURE (ADR-039)
+              <span>★</span> STAGE 22 FROZEN ARCHITECTURE (ADR-040–042)
             </div>
             <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 2px 0 0 0;">
-              Transactional Outbox, Governed Egress Gateway & Side-Effect Delivery
+              Governed Workflow Sagas, Transactional Inbox & External Integrations
             </h2>
           </div>
           <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-            STAGE 19 FROZEN • 866 / 866 TESTS
+            STAGE 22 FROZEN • 895 / 895 TESTS
           </span>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Zero In-DB Network I/O</div>
+            <div style="font-size: 13px; font-weight: 800; color: #ec4899; margin-bottom: 4px;">Governed Workflow Sagas (ADR-042)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Primary workflow PostgreSQL transactions never make external network calls. State mutation and outbox record insertion commit in the identical local ACID transaction.
+              Deterministic reverse dependency compensation for distributed pipelines. Compensation is capability execution under EAIES gate, never authority rollback.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Governed Egress Gateway</div>
+            <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Transactional Inbox & Integrations (ADR-040/041)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Claims outbox intents using <code>FOR UPDATE SKIP LOCKED</code>, resolves symbolic KMS credentials ephemerally, and enforces provider rate limits and HMAC signatures.
+              Idempotent webhook ingestion with HMAC authentication, replay attack immunity, and zero-in-transaction network dependency for external callbacks.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #f87171; margin-bottom: 4px;">DLEQ Quarantine & Human Replay</div>
+            <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Transactional Outbox & Egress (ADR-039)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Exhausted retries or poison egress deliveries route to Dead-Letter Egress Queue (DLEQ). Replays mandate authenticated human sign-off with audit continuity.
+              Atomic local database commits paired with asynchronous governed egress gateway delivery, bounded retries, and DLEQ human quarantine.
             </div>
           </div>
         </div>
@@ -748,7 +869,7 @@ function generateEaiosHtml() {
       <!-- ================================================================= -->
       <!-- 7. CORE GOVERNANCE SUBSYSTEMS: RLS, COST, HITL & OUTBOX           -->
       <!-- ================================================================= -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+      <div class="eaios-grid-subsystems">
 
         <!-- SUBSYSTEM 1: POSTGRESQL & ENGINE-LEVEL RLS (ADR-030) -->
         <div class="eaios-section-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
@@ -763,18 +884,18 @@ function generateEaiosHtml() {
               PostgreSQL provides the durable transactional substrate for state consistency and OCC. PostgreSQL RLS enforces tenant isolation using transaction-scoped tenant context (<code>SET LOCAL app.current_tenant_id</code>). RLS is not the policy authority.
             </p>
 
-            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-              <button id="eaios-btn-rls-fin" onclick="window.switchEaiosTenant('ACME-FINANCE')" class="eaios-sim-action-btn" style="flex: 1; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
-                Tenant: ACME-FINANCE
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+              <button id="eaios-btn-rls-gwm" onclick="window.switchEaiosTenant('GLOBAL-WEALTH-MANAGEMENT')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+                Tenant: GLOBAL-WEALTH-MANAGEMENT
               </button>
-              <button id="eaios-btn-rls-ret" onclick="window.switchEaiosTenant('ACME-RETAIL')" class="eaios-sim-action-btn" style="flex: 1; background: #0f172a; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
-                Tenant: ACME-RETAIL
+              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: #0f172a; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+                Tenant: INSTITUTIONAL-INVESTMENT-BANKING
               </button>
             </div>
 
             <div id="eaios-rls-output" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; font-family: monospace; font-size: 10.5px; min-height: 70px; color: #cbd5e1;">
               <div style="color: #64748b;">// Active session tenant:</div>
-              <div style="color: #38bdf8; font-weight: 700;">app.current_tenant_id = 'ACME-FINANCE'</div>
+              <div style="color: #38bdf8; font-weight: 700;">app.current_tenant_id = 'GLOBAL-WEALTH-MANAGEMENT'</div>
               <div style="color: #10b981; margin-top: 4px;">✓ Returned: "Q3 Statutory Solvency & Capital Reserves" (1 row)</div>
             </div>
           </div>
@@ -805,11 +926,11 @@ function generateEaiosHtml() {
               <div id="eaios-budget-bar" style="width: 71.5%; height: 100%; background: #10b981; transition: width 0.3s;"></div>
             </div>
 
-            <div style="display: flex; gap: 8px;">
-              <button id="eaios-btn-deny-budget" onclick="window.simulateEaiosBudget()" class="eaios-sim-action-btn" style="flex: 1; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button id="eaios-btn-deny-budget" onclick="window.simulateEaiosBudget()" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
                 ⚡ Test Spend Deny (8.5k Tokens)
               </button>
-              <button id="eaios-btn-provider-timeout" onclick="window.simulateEaiosTimeout()" class="eaios-sim-action-btn" style="flex: 1; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+              <button id="eaios-btn-provider-timeout" onclick="window.simulateEaiosTimeout()" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
                 ⚡ Simulate Timeout (Unknown)
               </button>
             </div>
@@ -874,7 +995,7 @@ function generateEaiosHtml() {
 
         <!-- Controls Action Row -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-          <div style="display: flex; gap: 10px;">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button id="eaios-btn-run" onclick="window.runEaiosScenario()" class="eaios-btn-primary" aria-label="Run selected simulation scenario">
               ▶ Run Selected Scenario
             </button>
@@ -882,7 +1003,7 @@ function generateEaiosHtml() {
               Reset
             </button>
           </div>
-          <div style="display: flex; gap: 10px; font-size: 11px; color: #94a3b8; align-items: center;">
+          <div style="display: flex; gap: 10px; font-size: 11px; color: #94a3b8; align-items: center; flex-wrap: wrap;">
             <span>Correlation ID: <code style="color: #38bdf8;">CORR-2026-000741</code></span>
             <span>•</span>
             <span>Outbox Coupling: <strong style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</strong></span>
@@ -931,10 +1052,10 @@ function generateEaiosHtml() {
         </div>
 
         <!-- DAG TOPOLOGY & LIVE INSPECTOR -->
-        <div style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 20px;">
+        <div class="eaios-grid-dag">
           <!-- DAG TOPOLOGY VIEWER -->
           <div style="display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
               <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Governed DAG Execution Frontier</div>
               <div class="eaios-info-card" style="display: flex; gap: 6px; font-size: 10px; align-items: center; flex-wrap: wrap;">
                 <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #64748b;"></span> PENDING</span>
@@ -946,8 +1067,11 @@ function generateEaiosHtml() {
               </div>
             </div>
 
-            <div id="eaios-dag-container" style="flex: 1; min-height: 380px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow-x: auto; position: relative;">
+            <div id="eaios-dag-container" style="flex: 1; min-height: 380px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow-x: auto; position: relative; -webkit-overflow-scrolling: touch;">
               <!-- SVG DAG rendered dynamically by EaiosRenderer -->
+            </div>
+            <div class="eaios-dag-scroll-hint" style="display: none; font-size: 10px; color: #38bdf8; text-align: right; margin-top: 4px;">
+              ⇄ Swipe horizontally to pan DAG
             </div>
           </div>
 
@@ -969,8 +1093,8 @@ function generateEaiosHtml() {
 
         <!-- AUDIT EVENT STREAM -->
         <div style="margin-top: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039)</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-042)</div>
             <span style="font-size: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
               Causal Root: CORR-2026-000741
             </span>
@@ -1010,19 +1134,19 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 10. 19 CORE ARCHITECTURAL INVARIANTS                              -->
+      <!-- 10. 22 CORE ARCHITECTURAL INVARIANTS                              -->
       <!-- ================================================================= -->
       <div class="eaios-section-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 10px;">
           <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
-            19 Core Architectural Invariants
+            22 Core Architectural Invariants
           </h2>
           <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
-            Formal Verification Layer (866 Tests Passed)
+            Formal Verification Layer (895 Tests Passed)
           </span>
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Core governance guarantees verified across EAIOS architecture through Stage 19. Click any card to inspect full invariant proof.
+          Core governance guarantees verified across EAIOS architecture through Stage 22. Click any card to inspect full invariant proof.
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
@@ -1047,7 +1171,7 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 11. ADR & ARCHITECTURE EXPLORER (19 CANONICAL ADRS)               -->
+      <!-- 11. ADR & ARCHITECTURE EXPLORER (CANONICAL ADRS)                  -->
       <!-- ================================================================= -->
       <div class="eaios-section-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 10px;">
@@ -1055,11 +1179,11 @@ function generateEaiosHtml() {
             Architectural Decision Record (ADR) Explorer
           </h2>
           <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
-            Canonical ADRs (ADR-001 to ADR-039)
+            Canonical ADRs (ADR-001 to ADR-042)
           </span>
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Formal decisions governing execution authority, multi-tenant isolation, lifecycle, and transactional outbox egress. Click any card to inspect full decision details.
+          Formal decisions governing execution authority, multi-tenant isolation, lifecycle, transactional outbox/inbox, and governed workflow sagas. Click any card to inspect full decision details.
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
@@ -1086,14 +1210,14 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 12. ARCHITECTURAL EVOLUTION (STAGES 1 TO 19 FROZEN)              -->
+      <!-- 12. ARCHITECTURAL EVOLUTION (STAGES 1 TO 22 FROZEN)              -->
       <!-- ================================================================= -->
       <div class="eaios-section-card eaios-info-card">
         <div style="font-size: 18px; font-weight: 800; color: #f8fafc; margin-bottom: 4px;">
           EAIOS Architectural Evolution
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Progression of formal verification across execution kernel, resilience, tenancy, HITL governance, and Stage 19 Transactional Outbox.
+          Progression of formal verification across execution kernel, resilience, tenancy, HITL governance, Transactional Outbox, Inbound Integrations, and Stage 22 Governed Workflow Sagas.
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -1231,6 +1355,7 @@ function updateInspector(node) {
 
   const status = node.status || 'PENDING';
   const color = statusColors[status] || '#94a3b8';
+  const activeTenant = simManager?.tenantContext?.activeTenantId || 'GLOBAL-WEALTH-MANAGEMENT';
 
   container.innerHTML = `
     <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 14px;">
@@ -1258,7 +1383,7 @@ function updateInspector(node) {
         <div><span style="color: #64748b;">Target Identity:</span> <code style="color: #a78bfa;">${node.employeeId || 'N/A (System)'}</code></div>
         <div><span style="color: #64748b;">Capability ID:</span> <code style="color: #38bdf8;">${node.capabilityId || 'N/A'}</code></div>
         <div><span style="color: #64748b;">Required Scope:</span> <code style="color: #34d399;">${node.authorityScope || 'orchestrator_internal'}</code></div>
-        <div><span style="color: #64748b;">Tenant Binding:</span> <code style="color: #fbbf24;">ACME-FINANCE (Engine RLS)</code></div>
+        <div><span style="color: #64748b;">Tenant Binding:</span> <code style="color: #fbbf24;">${activeTenant} (Engine RLS)</code></div>
       </div>
     </div>
 
@@ -1272,3 +1397,4 @@ function updateInspector(node) {
     </div>
   `;
 }
+

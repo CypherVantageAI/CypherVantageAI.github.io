@@ -1,31 +1,31 @@
 // ==========================================================================
 // EAIOS Public Showcase Baseline & Architecture Reference Data
-// Baseline: Stage 19 Frozen Baseline (07033755d7caf73fb02c7c5e68bdbe833801bbe3)
-// Full Regression: 866 / 866 passed (0 failures, 14 skipped, 100% pass on PostgreSQL 15.14)
+// Baseline: Stage 22 Frozen Baseline (c975f00906aa88d4e372379fb0b1c8a37ff9e348)
+// Full Regression: 895 / 895 passed (0 failures, 15 skipped, 100% pass on PostgreSQL 15.14)
 // ==========================================================================
 
 export const EAIOS_FROZEN_BASELINE = {
-  stage: "Stage 19",
-  adr: "ADR-039 (Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery)",
-  tag: "stage-19-frozen",
-  commit: "0703375",
-  fullCommit: "07033755d7caf73fb02c7c5e68bdbe833801bbe3",
+  stage: "Stage 22",
+  adr: "ADR-042 (Governed Workflow Sagas, Distributed Business Compensation & Backward Execution Recovery)",
+  tag: "stage-22-frozen",
+  commit: "c975f00",
+  fullCommit: "c975f00906aa88d4e372379fb0b1c8a37ff9e348",
   status: "FROZEN",
-  testCount: "866 / 866 passed",
-  skippedTests: "0 failures (14 skipped, 100% pass on live PostgreSQL 15.14)",
-  pgVerifiedSuites: "PostgreSQL 15.14 P1–P14 verified",
-  invariantsCount: "19 / 19 core invariants verified",
+  testCount: "895 / 895 passed",
+  skippedTests: "0 failures (15 skipped, 100% pass on live PostgreSQL 15.14)",
+  pgVerifiedSuites: "PostgreSQL 15.14 P1–P15 verified",
+  invariantsCount: "22 / 22 core invariants verified",
   sovereignty: "H-01 Sovereign Non-Bypassable Boundary"
 };
 
 export const EAIOS_CURRENT_STATE = {
-  stage: "Stage 19",
-  title: "Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery",
+  stage: "Stage 22",
+  title: "Governed Workflow Sagas, Distributed Business Compensation & Backward Recovery",
   status: "FORMALLY FROZEN",
-  testCount: "866 / 866 passed",
-  baselineTestCount: "856 Stage 18 baseline + 10 Stage 19 integration tests",
-  adr: "ADR-039 (Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery)",
-  verificationEvidence: "866 automated test cases passed • git diff --check clean • 0 failures",
+  testCount: "895 / 895 passed",
+  baselineTestCount: "866 Stage 19 baseline + 29 Stage 20–22 integration tests",
+  adr: "ADR-040, ADR-041, ADR-042",
+  verificationEvidence: "895 automated test cases passed • git diff --check clean • 0 failures",
   corePrinciples: [
     "COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY.",
     "MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | AI EMPLOYEE ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | PROVIDER ≠ AUTHORITY | ENTERPRISE KNOWLEDGE ≠ AUTHORITY | EAIES = EXECUTION AUTHORITY"
@@ -70,10 +70,10 @@ export const EAIOS_ONE_MINUTE_STEPS = [
   },
   {
     step: "6",
-    title: "6. Transactional Outbox & Egress",
-    subtitle: "Coupled State & Governed Egress",
-    desc: "Workflow state mutation and outbox intent commit in one PostgreSQL transaction. Zero network I/O occurs inside the DB transaction.",
-    badge: "OUTBOX_EGRESS"
+    title: "6. Transactional Outbox & Saga Recovery",
+    subtitle: "Coupled State, Egress & Compensation",
+    desc: "Workflow mutations, outbox intents and saga compensation steps commit atomically in PostgreSQL with zero in-DB network I/O.",
+    badge: "OUTBOX_SAGA"
   }
 ];
 
@@ -95,8 +95,8 @@ export const EAIOS_ARCH_LAYERS = [
   {
     id: "orchestration",
     num: "3",
-    title: "Orchestration & Workflow",
-    desc: "DAGs, stateless frontier reconstruction, worker execution leases, and automatic retries coordinate work without holding authority.",
+    title: "Orchestration & Workflow Sagas",
+    desc: "DAGs, stateless frontier reconstruction, worker execution leases, and governed backward saga compensation coordinate work without holding authority.",
     highlight: "Coordination domain with zero execution rights"
   },
   {
@@ -107,11 +107,11 @@ export const EAIOS_ARCH_LAYERS = [
     highlight: "Reservation precedes provider dispatch"
   },
   {
-    id: "outbox_egress",
+    id: "outbox_inbox",
     num: "5",
-    title: "Transactional Outbox & Egress Gateway",
-    desc: "Decouples workflow state from external delivery. Zero network I/O in PostgreSQL transactions; Governed Egress Gateway handles delivery.",
-    highlight: "Deterministic outbox coupling & DLEQ quarantine"
+    title: "Transactional Outbox, Inbox & Integrations",
+    desc: "Decouples workflow state from external delivery. Transactional inbox deduplication, cryptographic integration keys, and outbox egress.",
+    highlight: "Deterministic outbox/inbox coupling & DLEQ quarantine"
   },
   {
     id: "human_gov",
@@ -164,14 +164,14 @@ export const STAGE_13_LIFECYCLE_STATES = [
 export const EVIDENCE_BADGES = {
   ARCHITECTURAL_FACT: {
     label: "ARCHITECTURAL FACT",
-    description: "Inviolable structural property defined in authoritative ADRs (001–039)",
+    description: "Inviolable structural property defined in authoritative ADRs (001–042)",
     color: "#38bdf8",
     bg: "rgba(56, 189, 248, 0.12)",
     border: "rgba(56, 189, 248, 0.35)"
   },
   TEST_VERIFIED: {
     label: "TEST VERIFIED",
-    description: "Formally proven by automated unit & integration test suites (866 automated tests passed)",
+    description: "Formally proven by automated unit & integration test suites (895 automated tests passed)",
     color: "#10b981",
     bg: "rgba(16, 185, 129, 0.12)",
     border: "rgba(16, 185, 129, 0.35)"
@@ -205,7 +205,7 @@ export const SHOWCASE_SCENARIOS = {
     name: "Scenario A: Governed Autonomous Execution",
     subtitle: "Multi-Node Pipeline with Pre-Allocated Token Budget & Sovereign EAIES Verification",
     badge: "INTERACTIVE_SIMULATION",
-    evidenceRef: "ADR-001, ADR-014, ADR-022, ADR-033, ADR-039 (866 tests passed)",
+    evidenceRef: "ADR-001, ADR-014, ADR-022, ADR-033, ADR-039 (895 tests passed)",
     summary: "Demonstrates an end-to-end autonomous multi-agent DAG where every capability invocation requires fresh EAIES verification.",
     description: "Demonstrates an end-to-end autonomous multi-agent DAG. Human intent creates a Work Item; Orchestrator coordinates execution across workers, but EAIES independently evaluates every capability invocation before physical execution."
   },
@@ -220,11 +220,11 @@ export const SHOWCASE_SCENARIOS = {
   },
   SCENARIO_C: {
     id: "scenario_c",
-    name: "Scenario C: Rejection & Governed DAG Compensation",
-    subtitle: "Downstream Pruning & Statically Declared Reverse Topological Compensation",
+    name: "Scenario C: Rejection & Governed Saga Compensation",
+    subtitle: "Downstream Pruning & Statically Declared Reverse Topological Saga Compensation",
     badge: "INTERACTIVE_SIMULATION",
-    evidenceRef: "ADR-032 (PostgreSQL Verification P5, P6, P7)",
-    summary: "Demonstrates human rejection triggering downstream node pruning and statically declared reverse compensation.",
+    evidenceRef: "ADR-032, ADR-042 (PostgreSQL Verification P5, P6, P7, P15)",
+    summary: "Demonstrates human rejection triggering downstream node pruning and statically declared reverse saga compensation.",
     description: "Demonstrates human rejection of a paused workflow. Downstream unexecuted nodes are pruned (SKIPPED). Statically declared compensation handlers execute in reverse topological order under fresh EAIES authorization to release holds."
   },
   SCENARIO_D: {
@@ -391,21 +391,90 @@ export const DAG_SCENARIO_B_C_NODES = [
   }
 ];
 
+export const DAG_SCENARIO_D_NODES = [
+  {
+    id: "node_1_rag_retrieval",
+    name: "Enterprise Knowledge Retrieval (RAG)",
+    category: "ai_employee",
+    employeeId: "emp-knowledge-01",
+    employeeName: "Knowledge Retrieval Agent",
+    capabilityId: "knowledge.vector.search",
+    authorityScope: "knowledge_read",
+    description: "Queries multi-tenant vector index for regulatory policies and statutory compliance mandates.",
+    dependencies: [],
+    x: 100,
+    y: 190
+  },
+  {
+    id: "node_2_untrusted_context",
+    name: "Untrusted Context Demarcation",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Data Trust Boundary (ADR-031)",
+    capabilityId: "data.boundary.demarcate",
+    authorityScope: "orchestrator_internal",
+    description: "Demarcates retrieved knowledge chunks as UNTRUSTED_DATA. Isolates hostile instructions from execution credentials.",
+    dependencies: ["node_1_rag_retrieval"],
+    x: 350,
+    y: 190
+  },
+  {
+    id: "node_3_model_synthesis",
+    name: "Model Synthesis Proposal",
+    category: "ai_employee",
+    employeeId: "emp-synthesis-01",
+    employeeName: "LLM Reasoning Worker",
+    capabilityId: "model.inference.propose",
+    authorityScope: "model_propose",
+    description: "Generates action proposal based on retrieved context. Model is influenced by injected prompt but lacks authority.",
+    dependencies: ["node_2_untrusted_context"],
+    x: 600,
+    y: 190
+  },
+  {
+    id: "node_4_eaies_gate",
+    name: "EAIES Sovereign Gate Interception",
+    category: "human_governance",
+    employeeId: null,
+    employeeName: "EAIES Policy Enforcement Engine",
+    capabilityId: "eaies.sovereign.evaluate",
+    authorityScope: "eaies_enforce",
+    description: "Evaluates capability execution attempt against strict policy rules. Intercepts prompt injection and issues 403 Forbidden.",
+    dependencies: ["node_3_model_synthesis"],
+    isGate: true,
+    x: 850,
+    y: 190
+  },
+  {
+    id: "node_5_audit_forensics",
+    name: "Forensic Audit Settlement",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Forensic Audit Ledger (ADR-026)",
+    capabilityId: "audit.settlement.commit",
+    authorityScope: "audit_ledger",
+    description: "Records security violation and intercepted attack in tamper-evident forensic event stream under immutable correlation ID.",
+    dependencies: ["node_4_eaies_gate"],
+    x: 1100,
+    y: 190
+  }
+];
+
 export const TENANT_RLS_RECORDS = [
   {
-    id: "doc_fin_001",
-    tenantId: "ACME-FINANCE",
-    title: "Q3 Statutory Solvency & Capital Reserves",
+    id: "doc_gwm_001",
+    tenantId: "GLOBAL-WEALTH-MANAGEMENT",
+    title: "Q3 Statutory Solvency & High-Net-Worth Capital Reserves",
     classification: "HIGHLY_CONFIDENTIAL",
-    content: "Capital adequacy ratio: 18.4%. Total Tier 1 liquid reserves: $450,000,000.",
+    content: "Capital adequacy ratio: 18.4%. Total Tier 1 liquid reserves: $450,000,000 across private client portfolios.",
     rlsPolicy: "tenant_isolation_policy: WHERE tenant_id = current_setting('app.current_tenant_id')"
   },
   {
-    id: "doc_ret_001",
-    tenantId: "ACME-RETAIL",
-    title: "Supplier Procurement Agreements - EMEA",
+    id: "doc_iib_001",
+    tenantId: "INSTITUTIONAL-INVESTMENT-BANKING",
+    title: "Syndicated Credit & Cross-Border Sovereign Exposure",
     classification: "RESTRICTED",
-    content: "Master logistics contract with DHL Global Forwarding. SLA target: 99.4% on-time delivery.",
+    content: "Tier 1 capital buffer: €820,000,000. Master credit facility with EMEA Central Clearing House. SLA target: 99.99%.",
     rlsPolicy: "tenant_isolation_policy: WHERE tenant_id = current_setting('app.current_tenant_id')"
   }
 ];
@@ -551,6 +620,27 @@ export const CORE_INVARIANTS = [
     rule: "Cross-region replication enforces single-writer leases with deterministic fencing tokens to prevent split-brain outbox dispatch during regional failover.",
     evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
     adrRef: "ADR-037 / ADR-039"
+  },
+  {
+    id: 20,
+    title: "Transactional Inbox deduplication guarantees exactly-once processing intent",
+    rule: "Inbound webhook messages are deduplicated at the PostgreSQL boundary via the transactional inbox ledger before triggering workflow execution or outbox side-effects.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    adrRef: "ADR-040"
+  },
+  {
+    id: 21,
+    title: "Enterprise Integration Registry isolates cryptographic keys with lifecycle governance",
+    rule: "Third-party endpoints, webhooks, and API integrations are managed via a dedicated registry with versioned cryptographic key rotation and zero plain-text storage.",
+    evidenceBadge: "TEST_VERIFIED",
+    adrRef: "ADR-041"
+  },
+  {
+    id: 22,
+    title: "Governed Workflow Sagas execute business compensation under sovereign EAIES authority",
+    rule: "Distributed saga compensation is executed as forward governed business capabilities in reverse topological order, never as privileged or unmonitored rollbacks.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    adrRef: "ADR-042"
   }
 ];
 
@@ -698,6 +788,30 @@ export const ADR_EXPLORER_CATALOG = [
     authorityImplication: "No external network I/O occurs inside database transactions. External provider idempotency is preserved with at-least-once delivery semantics.",
     evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
     category: "Execution & Orchestration"
+  },
+  {
+    id: "ADR-040",
+    title: "Transactional Inbox, Inbound Webhook Delivery & Event Deduplication",
+    decision: "Durable PostgreSQL Transactional Inbox ledger recording incoming webhooks and domain events with deterministic idempotency keys and state transition coupling.",
+    authorityImplication: "Inbound events cannot trigger duplicate workflow processing or bypass tenant isolation boundaries.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    category: "Execution & Orchestration"
+  },
+  {
+    id: "ADR-041",
+    title: "Enterprise Integration Registry, Webhook Verification & Key Lifecycle",
+    decision: "Authoritative registry for third-party endpoints and API integrations with cryptographic key lifecycle, secret rotation, and payload signing.",
+    authorityImplication: "Integrations are strongly bound to tenant contexts and cannot forge delivery provenance or bypass authentication.",
+    evidenceBadge: "TEST_VERIFIED",
+    category: "Authority & Governance"
+  },
+  {
+    id: "ADR-042",
+    title: "Governed Workflow Sagas, Distributed Business Compensation & Backward Recovery",
+    decision: "Executes distributed business compensation as governed forward capabilities in reverse topological order, orchestrating multi-service rollback under sovereign EAIES verification.",
+    authorityImplication: "Compensation steps are treated as distinct business capabilities requiring valid EAIES authorization, preventing unmonitored side-effects during failure recovery.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    category: "Execution & Orchestration"
   }
 ];
 
@@ -763,13 +877,27 @@ export const STAGE_MATURITY_TIMELINE = [
     title: "High-Performance Policy Matrix (ADR-038)",
     focus: "Compiled AST policy evaluation matrix, sub-millisecond EAIES gate throughput",
     evidence: "856 / 856 passed • Baseline Frozen at 26d13d6",
-    status: "FROZEN BASELINE"
+    status: "IMPLEMENTED"
   },
   {
-    stage: "Stage 19 (FROZEN)",
-    title: "Transactional Outbox, Governed Egress Gateway & External Side-Effect Delivery (ADR-039)",
-    focus: "Zero In-Transaction Network I/O, Atomic Outbox State Coupling, Governed Egress Gateway, DLEQ Quarantine",
-    evidence: "866 / 866 passed • Live PostgreSQL 15.14 P1–P14 Verified • Frozen at 0703375",
+    stage: "Stage 19",
+    title: "Transactional Outbox & Governed Egress Gateway (ADR-039)",
+    focus: "Zero In-Transaction Network I/O, Atomic Outbox Coupling, Governed Egress Gateway, DLEQ Quarantine",
+    evidence: "866 / 866 passed • Live PostgreSQL 15.14 P1–P14 Verified",
+    status: "IMPLEMENTED"
+  },
+  {
+    stage: "Stage 20–21",
+    title: "Transactional Inbox & Integration Registry (ADR-040/041)",
+    focus: "Inbound Webhook Deduplication, Exactly-Once Processing, Integration Key Lifecycle & Rotation",
+    evidence: "882 / 882 passed • PostgreSQL Verified",
+    status: "IMPLEMENTED"
+  },
+  {
+    stage: "Stage 22 (FROZEN)",
+    title: "Governed Workflow Sagas & Distributed Compensation (ADR-042)",
+    focus: "Distributed Saga Compensation, Backward Execution Recovery, Reverse Topological Rollback under EAIES",
+    evidence: "895 / 895 passed • Live PostgreSQL 15.14 P1–P15 Verified • Frozen at c975f00",
     status: "FROZEN BASELINE"
   }
 ];
