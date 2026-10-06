@@ -5,8 +5,8 @@
  * Invariant: "COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY."
  * "MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | AI EMPLOYEE ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | PROVIDER ≠ AUTHORITY | ENTERPRISE KNOWLEDGE ≠ AUTHORITY | EAIES = EXECUTION AUTHORITY"
  *
- * Baseline: Stage 22 Formally Frozen (c975f00906aa88d4e372379fb0b1c8a37ff9e348)
- * Full Regression: 895 / 895 passed (0 failures, 15 skipped)
+ * Baseline: Stage 26 Formally Frozen Baseline (af431e1ef5165e31bfa4f5c5598be5956192e51a)
+ * Full Regression: 965 / 965 passed (0 failures, 15 skipped)
  */
 
 import {
@@ -276,7 +276,7 @@ export function renderEaiosModule() {
     initializeComponents();
     isInitialized = true;
   } else {
-    // Refresh SVG & state sync on subsequent tab activations
+    // Refresh DAG & state sync on subsequent tab activations
     if (simManager && renderer) {
       renderer.render(simManager.getCurrentNodes(), simManager.nodeStates, simManager.selectedNodeId);
     }
@@ -565,12 +565,9 @@ function generateEaiosHtml() {
         .eaios-scen-btn {
           flex: 1 1 100%;
         }
-        .eaios-dag-scroll-hint {
-          display: block !important;
-        }
         #eaios-dag-container {
-          min-height: 280px;
-          -webkit-overflow-scrolling: touch;
+          min-height: auto;
+          overflow-x: visible;
         }
         .eaios-equation-box {
           font-size: 10.5px;
@@ -595,21 +592,21 @@ function generateEaiosHtml() {
               EAIOS Enterprise AI Operating System
             </h1>
             <div style="font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 8px;">
-              Deterministic governance, workflow sagas, transactional outbox/inbox & egress control for enterprise AI.
+              Deterministic governance, foundation model registry, workflow sagas & provider fallback management for enterprise AI.
             </div>
             <p style="font-size: 13.5px; color: #cbd5e1; margin: 0; line-height: 1.6; max-width: 900px;">
-              EAIOS allows AI Employees, models and orchestrators to coordinate complex enterprise workflows while deterministic infrastructure retains authority over capability execution, transactional outbox/inbox delivery, distributed saga compensation, tenancy, lifecycle and human governance.
+              EAIOS allows AI Employees, models and orchestrators to coordinate complex enterprise workflows while deterministic infrastructure retains authority over capability execution, model registration, residency scopes, transactional outbox/inbox delivery, distributed saga compensation, tenancy, lifecycle and human governance.
             </p>
           </div>
 
           <!-- Architectural Verification Status Indicators -->
           <div class="eaios-hero-badges">
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 22 Formally Frozen Baseline">
-                ✓ Stage 22 — Frozen Baseline
+              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 26 Formally Frozen Baseline">
+                ✓ Stage 26 — Frozen Baseline
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Full Automated Test Suite">
-                895 / 895 passed
+                965 / 965 passed
               </span>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
@@ -617,13 +614,13 @@ function generateEaiosHtml() {
                 PostgreSQL 15.14 + RLS
               </span>
               <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Workflow Sagas (ADR-042)
+                Model Registry (ADR-046)
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Outbox & Inbox (ADR-039/040)
+                Dynamic Fallback & Resiliency
               </span>
               <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Zero In-DB Network I/O
+                Four-Eyes Ed25519
               </span>
               <span style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Fail-Closed EAIES Gate
@@ -635,7 +632,7 @@ function generateEaiosHtml() {
         <!-- Secondary Historical Reference -->
         <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: #94a3b8;">
           <div>
-            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 22 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Governed Workflow Sagas, Distributed Business Compensation & Backward Recovery (ADR-042).
+            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 26 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Governed Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback (ADR-046).
           </div>
           <div style="font-family: monospace; font-size: 11px; color: #64748b;">
             H-01 SOVEREIGN • NON-BYPASSABLE EXECUTION BOUNDARY
@@ -661,7 +658,7 @@ function generateEaiosHtml() {
             COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY.
           </div>
           <div style="font-size: 12.5px; color: #cbd5e1; margin-top: 6px; line-height: 1.5;">
-            <strong>H-01 SOVEREIGN THESIS:</strong> AI coordinates work; Deterministic infrastructure retains execution authority. EAIOS is a deterministic governance and execution architecture for enterprise AI. AI Employees and models coordinate work, but they never become the authority to execute capabilities, consume resources, cross tenant boundaries, or approve their own authority. EAIES remains the final execution authority.
+            <strong>H-01 SOVEREIGN THESIS:</strong> AI coordinates work; Deterministic infrastructure retains execution authority. EAIOS is a deterministic governance and execution architecture for enterprise AI. AI Employees, foundation models, and orchestrators coordinate work, but they never become the authority to execute capabilities, consume resources, cross tenant boundaries, promote models, or approve their own authority. EAIES remains the final execution authority.
           </div>
         </div>
 
@@ -686,7 +683,7 @@ function generateEaiosHtml() {
             EAIOS in One Minute — The Six-Level Execution Model
           </h2>
           <div style="font-size: 12.5px; color: #94a3b8;">
-            Every enterprise transaction traverses a six-level deterministic execution model. Eligibility is verified before execution authorization.
+            Every enterprise transaction traverses a six-level deterministic execution model. Eligibility and model risk clearance are verified before execution authorization.
           </div>
         </div>
 
@@ -716,7 +713,7 @@ function generateEaiosHtml() {
             Where Does Authority Live?
           </h2>
           <div style="font-size: 12.5px; color: #94a3b8;">
-            Human administrators govern configuration; lifecycle determines eligibility; EAIES independently authorizes execution.
+            Human administrators govern configuration and Four-Eyes model promotion; lifecycle determines eligibility; EAIES independently authorizes execution.
           </div>
         </div>
 
@@ -725,11 +722,11 @@ function generateEaiosHtml() {
           <div style="background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 18px; font-family: monospace; font-size: 11.5px; line-height: 1.5;">
             <div style="text-align: center;">
               <div style="display: inline-block; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 5px 14px; border-radius: 6px; font-weight: 700;">
-                Human Governance (Manages Lifecycle & Policy)
+                Human Governance (Lifecycle, Ed25519 Attestations & Policy)
               </div>
             </div>
             <div style="text-align: center; color: #64748b; font-size: 10px; margin: 2px 0;">
-              │ manages identity & capability bindings
+              │ manages identity, model registry & capability bindings
             </div>
             <div style="text-align: center; color: #64748b;">▼</div>
             <div style="display: flex; justify-content: space-around; gap: 8px; margin: 4px 0;">
@@ -738,12 +735,12 @@ function generateEaiosHtml() {
                 <div style="color: #94a3b8; font-size: 9.5px;">Lifecycle Eligibility</div>
               </div>
               <div style="flex: 1; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 6px 8px; text-align: center;">
-                <div style="color: #38bdf8; font-weight: 700; font-size: 10.5px;">Capability Binding</div>
-                <div style="color: #94a3b8; font-size: 9.5px;">Capability Eligibility</div>
+                <div style="color: #38bdf8; font-weight: 700; font-size: 10.5px;">Model & Capability Binding</div>
+                <div style="color: #94a3b8; font-size: 9.5px;">Risk & Residency Eligibility</div>
               </div>
             </div>
             <div style="text-align: center; color: #34d399; font-size: 10px; margin: 2px 0;">
-              │ eligibility inputs
+              │ eligibility & risk inputs
             </div>
             <div style="text-align: center; color: #34d399;">▼</div>
             <div style="text-align: center; margin: 4px 0;">
@@ -752,12 +749,12 @@ function generateEaiosHtml() {
               </div>
             </div>
             <div style="text-align: center; color: #38bdf8; font-size: 10px; margin: 2px 0;">
-              │ authorizes capability invocation & saga compensation
+              │ authorizes capability invocation, fallback & compensation
             </div>
             <div style="text-align: center; color: #38bdf8;">▼</div>
             <div style="text-align: center;">
               <div style="display: inline-block; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 5px 14px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">
-                Transactional Outbox, Inbox & Saga Gateway (ADR-039–042)
+                Dynamic Fallback, Outbox & Saga Gateway (ADR-039–046)
               </div>
             </div>
           </div>
@@ -766,7 +763,7 @@ function generateEaiosHtml() {
           <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">MODEL</span>
-              <span style="color: #94a3b8;">proposes outputs (probabilistic)</span>
+              <span style="color: #94a3b8;">unprivileged cognitive compute target</span>
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">AI EMPLOYEE</span>
@@ -778,11 +775,11 @@ function generateEaiosHtml() {
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">HUMAN APPROVAL</span>
-              <span style="color: #94a3b8;">changes workflow state (never bypasses EAIES)</span>
+              <span style="color: #94a3b8;">changes workflow state & signs Ed25519 attestations</span>
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">EGRESS / INBOX</span>
-              <span style="color: #94a3b8;">handles external side-effects & deduplication</span>
+              <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">FALLBACK / EGRESS</span>
+              <span style="color: #94a3b8;">executes substitution under per-attempt EAIES lease</span>
             </div>
             <div style="background: rgba(10, 11, 16, 0.7); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
               <span style="font-family: monospace; font-weight: 800; color: #cbd5e1;">WORKER</span>
@@ -796,40 +793,40 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 5. STAGE 22: GOVERNED SAGAS, INBOX & OUTBOX PIPELINES            -->
+      <!-- 5. STAGE 26: FOUNDATION MODEL REGISTRY & DYNAMIC FALLBACK PIPELINES -->
       <!-- ================================================================= -->
       <div class="eaios-section-card eaios-info-card" style="border-left: 4px solid #10b981;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase;">
-              <span>★</span> STAGE 22 FROZEN ARCHITECTURE (ADR-040–042)
+              <span>★</span> STAGE 26 FROZEN ARCHITECTURE (ADR-043–046)
             </div>
             <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 2px 0 0 0;">
-              Governed Workflow Sagas, Transactional Inbox & External Integrations
+              Governed Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback
             </h2>
           </div>
           <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-            STAGE 22 FROZEN • 895 / 895 TESTS
+            STAGE 26 FROZEN • 965 / 965 TESTS
           </span>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #ec4899; margin-bottom: 4px;">Governed Workflow Sagas (ADR-042)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Model Registry & Risk Tiering (ADR-046)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Deterministic reverse dependency compensation for distributed pipelines. Compensation is capability execution under EAIES gate, never authority rollback.
+              Authoritative model definition catalog with risk tiers (Minimal, Limited, High, Critical), residency constraints (EU, US, UK, On-Premise), and Ed25519 Four-Eyes cryptographic attestation.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Transactional Inbox & Integrations (ADR-040/041)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Dynamic Fallback & Substitution (ADR-046)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Idempotent webhook ingestion with HMAC authentication, replay attack immunity, and zero-in-transaction network dependency for external callbacks.
+              Deterministic 7-stage candidate resolution with per-attempt UUID tracking, fresh EAIES gate evaluation, budget pre-reservation, and fail-closed UNKNOWN halting on non-idempotent tasks.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Transactional Outbox & Egress (ADR-039)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #ec4899; margin-bottom: 4px;">Incident Quarantine & Timers (ADR-043/045)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Atomic local database commits paired with asynchronous governed egress gateway delivery, bounded retries, and DLEQ human quarantine.
+              Durable timers in PostgreSQL, systemic incident blast-radius quarantine, and backward DAG saga compensation executed under sovereign EAIES authority.
             </div>
           </div>
         </div>
@@ -844,7 +841,7 @@ function generateEaiosHtml() {
             The Six Major Architectural Layers
           </h2>
           <div style="font-size: 12.5px; color: #94a3b8;">
-            A structured mental model of the EAIOS governance and execution architecture.
+            A structured mental model of the EAIOS governance and execution architecture up to Stage 26.
           </div>
         </div>
 
@@ -910,7 +907,7 @@ function generateEaiosHtml() {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <h3 style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">Resource & Cost Governance</h3>
               <span style="font-size: 9.5px; font-weight: 800; color: #34d399; background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                ADR-022 • TEST VERIFIED
+                ADR-022 / ADR-046 • TEST VERIFIED
               </span>
             </div>
             <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin: 0 0 10px 0;">
@@ -953,7 +950,7 @@ function generateEaiosHtml() {
               Explore the Architecture — Interactive Scenarios
             </h2>
             <div style="font-size: 12px; color: #94a3b8;">
-              Test how EAIOS executes autonomous pipelines, enforces Four-Eyes gates, executes reverse DAG compensation, and commits transactional outbox records.
+              Test how EAIOS executes autonomous pipelines, enforces Four-Eyes gates, executes reverse DAG compensation, and manages dynamic provider fallback.
             </div>
           </div>
           <div role="tablist" aria-label="EAIOS Architectural Scenarios" style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1067,11 +1064,8 @@ function generateEaiosHtml() {
               </div>
             </div>
 
-            <div id="eaios-dag-container" style="flex: 1; min-height: 380px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow-x: auto; position: relative; -webkit-overflow-scrolling: touch;">
-              <!-- SVG DAG rendered dynamically by EaiosRenderer -->
-            </div>
-            <div class="eaios-dag-scroll-hint" style="display: none; font-size: 10px; color: #38bdf8; text-align: right; margin-top: 4px;">
-              ⇄ Swipe horizontally to pan DAG
+            <div id="eaios-dag-container" style="flex: 1; min-height: 380px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; position: relative;">
+              <!-- SVG / Mobile DOM DAG rendered dynamically by EaiosRenderer -->
             </div>
           </div>
 
@@ -1094,7 +1088,7 @@ function generateEaiosHtml() {
         <!-- AUDIT EVENT STREAM -->
         <div style="margin-top: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-042)</div>
+            <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-046)</div>
             <span style="font-size: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
               Causal Root: CORR-2026-000741
             </span>
@@ -1134,19 +1128,19 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 10. 22 CORE ARCHITECTURAL INVARIANTS                              -->
+      <!-- 10. 26 CORE ARCHITECTURAL INVARIANTS                              -->
       <!-- ================================================================= -->
       <div class="eaios-section-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 10px;">
           <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
-            22 Core Architectural Invariants
+            26 Core Architectural Invariants
           </h2>
           <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
-            Formal Verification Layer (895 Tests Passed)
+            Formal Verification Layer (965 Tests Passed)
           </span>
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Core governance guarantees verified across EAIOS architecture through Stage 22. Click any card to inspect full invariant proof.
+          Core governance guarantees verified across EAIOS architecture through Stage 26. Click any card to inspect full invariant proof.
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
@@ -1179,11 +1173,11 @@ function generateEaiosHtml() {
             Architectural Decision Record (ADR) Explorer
           </h2>
           <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
-            Canonical ADRs (ADR-001 to ADR-042)
+            Canonical ADRs (ADR-001 to ADR-046)
           </span>
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Formal decisions governing execution authority, multi-tenant isolation, lifecycle, transactional outbox/inbox, and governed workflow sagas. Click any card to inspect full decision details.
+          Formal decisions governing execution authority, multi-tenant isolation, lifecycle, transactional outbox/inbox, model registries, and provider fallback. Click any card to inspect full decision details.
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
@@ -1210,14 +1204,14 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 12. ARCHITECTURAL EVOLUTION (STAGES 1 TO 22 FROZEN)              -->
+      <!-- 12. ARCHITECTURAL EVOLUTION (STAGES 1 TO 26 FROZEN)              -->
       <!-- ================================================================= -->
       <div class="eaios-section-card eaios-info-card">
         <div style="font-size: 18px; font-weight: 800; color: #f8fafc; margin-bottom: 4px;">
           EAIOS Architectural Evolution
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Progression of formal verification across execution kernel, resilience, tenancy, HITL governance, Transactional Outbox, Inbound Integrations, and Stage 22 Governed Workflow Sagas.
+          Progression of formal verification across execution kernel, resilience, tenancy, HITL governance, Transactional Outbox, Inbound Integrations, Sagas, Dynamic Policy Lifecycle, and Stage 26 Governed Model Registry & Fallback.
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -1319,6 +1313,13 @@ function initializeComponents() {
     }
   });
 
+  // Handle window resize for dynamic responsive layout rerendering
+  window.addEventListener('resize', () => {
+    if (simManager && renderer) {
+      renderer.render(simManager.getCurrentNodes(), simManager.nodeStates, simManager.selectedNodeId);
+    }
+  });
+
   // Initial render
   simManager.reset();
   const initialNodes = simManager.getCurrentNodes();
@@ -1376,7 +1377,7 @@ function updateInspector(node) {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
         <div style="font-size: 10.5px; text-transform: uppercase; color: #38bdf8; font-weight: 800;">EAIES Sovereign Gate Check</div>
         <span style="font-size: 9.5px; font-weight: 800; padding: 2px 6px; border-radius: 3px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); cursor: default;">
-          POLICY VALIDATED
+          POLICY & RESIDENCY VALIDATED
         </span>
       </div>
       <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11px;">
@@ -1384,6 +1385,7 @@ function updateInspector(node) {
         <div><span style="color: #64748b;">Capability ID:</span> <code style="color: #38bdf8;">${node.capabilityId || 'N/A'}</code></div>
         <div><span style="color: #64748b;">Required Scope:</span> <code style="color: #34d399;">${node.authorityScope || 'orchestrator_internal'}</code></div>
         <div><span style="color: #64748b;">Tenant Binding:</span> <code style="color: #fbbf24;">${activeTenant} (Engine RLS)</code></div>
+        <div><span style="color: #64748b;">Model Risk Tier:</span> <code style="color: #38bdf8;">MINIMAL / LIMITED (ADR-046)</code></div>
       </div>
     </div>
 
@@ -1397,4 +1399,3 @@ function updateInspector(node) {
     </div>
   `;
 }
-

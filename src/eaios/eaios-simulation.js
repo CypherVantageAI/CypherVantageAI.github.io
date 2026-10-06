@@ -64,13 +64,13 @@ export class EaiosSimulationManager {
     this.isRunning = false;
     this.correlationId = "CORR-2026-000741";
     this.workItemId = "wi-2026-9b4d8c72";
-    this.instanceId = "inst-stage22-dag01";
+    this.instanceId = "inst-stage26-dag01";
     this.selectedNodeId = null;
     this.selectedAuditEventId = null;
 
     this.workflowInstance = {
       status: "CREATED",
-      definitionVersion: "22.0.0",
+      definitionVersion: "26.0.0",
       version: 1,
       workItemStatus: "CREATED"
     };
@@ -105,7 +105,7 @@ export class EaiosSimulationManager {
     };
 
     this.auditEvents = [];
-    this._addAudit("SYSTEM_RESET", `Topology initialized for ${this.activeScenario.toUpperCase()} under Stage 22 baseline`, "SYSTEM", "SUCCESS");
+    this._addAudit("SYSTEM_RESET", `Topology initialized for ${this.activeScenario.toUpperCase()} under Stage 26 baseline`, "SYSTEM", "SUCCESS");
 
     this._hideApprovalBanner();
     this._render();

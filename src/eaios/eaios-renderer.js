@@ -1,6 +1,6 @@
 // ==========================================================================
-// EAIOS Architecture Showcase - Interactive SVG DAG & Component Renderer
-// Baseline: Stage 12.5 (Frozen)
+// EAIOS Architecture Showcase - Interactive SVG & Responsive Mobile DAG Renderer
+// Baseline: Stage 26 (Frozen)
 // ==========================================================================
 
 export class EaiosRenderer {
@@ -12,11 +12,22 @@ export class EaiosRenderer {
   render(nodes = [], nodeStates = {}, selectedNodeId = null) {
     if (!this.container) return;
 
+    // Determine if mobile view (e.g. screen width <= 768px or container is narrow)
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      this._renderMobileStack(nodes, nodeStates, selectedNodeId);
+    } else {
+      this._renderDesktopSvg(nodes, nodeStates, selectedNodeId);
+    }
+  }
+
+  _renderDesktopSvg(nodes = [], nodeStates = {}, selectedNodeId = null) {
     const width = 1280;
     const height = 380;
 
     let svgHtml = `
-      <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto; min-width: 860px; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="grad-ai" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.25"/>
@@ -115,6 +126,111 @@ export class EaiosRenderer {
     });
   }
 
+  _renderMobileStack(nodes = [], nodeStates = {}, selectedNodeId = null) {
+    const statusColors = {
+      PENDING: '#94a3b8',
+      READY: '#06b6d4',
+      EXECUTING: '#8b5cf6',
+      RUNNING: '#8b5cf6',
+      PAUSED_PENDING_INPUT: '#f59e0b',
+      PAUSED: '#f59e0b',
+      COMPLETED: '#10b981',
+      FAILED: '#ef4444',
+      REJECTED: '#ef4444',
+      COMPENSATED: '#ec4899',
+      SKIPPED: '#64748b'
+    };
+
+    let cardsHtml = `
+      <div class="eaios-mobile-dag-stack" style="display: flex; flex-direction: column; gap: 10px; padding: 10px;">
+        <div style="font-size: 11px; color: #38bdf8; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+          <span>📱 Mobile Flow View (Sequential Execution Frontier)</span>
+          <span style="font-size: 10px; color: #94a3b8;">${nodes.length} Nodes</span>
+        </div>
+    `;
+
+    nodes.forEach((node, index) => {
+      const state = nodeStates[node.id] || { status: 'PENDING', attempt: 0 };
+      const curStatus = state.status || 'PENDING';
+      const isSelected = selectedNodeId === node.id;
+      const color = statusColors[curStatus] || '#94a3b8';
+
+      let categoryPill = "AI EMPLOYEE";
+      let pillBg = "rgba(6, 182, 212, 0.15)";
+      let pillText = "#38bdf8";
+
+      if (node.category === 'coordination_primitive') {
+        categoryPill = "COORDINATION";
+        pillBg = "rgba(245, 158, 11, 0.15)";
+        pillText = "#fbbf24";
+      } else if (node.category === 'governance_boundary' || node.category === 'human_governance') {
+        categoryPill = "HUMAN GOVERNANCE";
+        pillBg = "rgba(239, 68, 68, 0.2)";
+        pillText = "#f87171";
+      } else if (node.category === 'action_executor') {
+        categoryPill = "ACTION EXECUTOR";
+        pillBg = "rgba(16, 185, 129, 0.15)";
+        pillText = "#34d399";
+      } else if (node.category === 'compensation_primitive') {
+        categoryPill = "COMPENSATION";
+        pillBg = "rgba(236, 72, 153, 0.2)";
+        pillText = "#f472b6";
+      }
+
+      const activeBorder = isSelected ? 'border: 2px solid #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);' : `border: 1px solid ${color}40;`;
+
+      cardsHtml += `
+        <div class="eaios-mobile-node-card" id="dag-node-${node.id}" style="background: rgba(15, 23, 42, 0.9); border-radius: 8px; padding: 12px 14px; ${activeBorder} cursor: pointer; transition: all 0.2s ease;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 10px; font-weight: 800; color: #64748b; font-family: monospace;">#${index + 1}</span>
+              <span style="font-size: 9px; font-weight: 800; background: ${pillBg}; color: ${pillText}; padding: 2px 6px; border-radius: 3px;">${categoryPill}</span>
+            </div>
+            <span style="font-size: 9.5px; font-weight: 800; background: ${color}20; color: ${color}; border: 1px solid ${color}60; padding: 2px 8px; border-radius: 4px;">
+              ${curStatus.replace('_PENDING_INPUT', '')}
+            </span>
+          </div>
+
+          <div style="font-size: 13px; font-weight: 700; color: #f8fafc; margin-bottom: 3px;">
+            ${node.name}
+          </div>
+
+          <div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
+            ${node.employeeId ? node.employeeId : (node.category === 'governance_boundary' || node.category === 'human_governance' ? 'Four-Eyes Principal (ADR-032)' : 'Stateless Coordination')}
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b; font-family: monospace; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px;">
+            <span>Scope: <strong style="color: #38bdf8;">${node.authorityScope || 'internal'}</strong></span>
+            ${state.workerBadge ? `<span style="color: #a855f7; font-weight: 700;">${state.workerBadge}</span>` : `<span style="color: #10b981;">EAIES Verified</span>`}
+          </div>
+        </div>
+      `;
+
+      if (index < nodes.length - 1) {
+        cardsHtml += `
+          <div style="text-align: center; color: rgba(56, 189, 248, 0.4); font-size: 14px; margin: -4px 0;">
+            ▼
+          </div>
+        `;
+      }
+    });
+
+    cardsHtml += `</div>`;
+    this.container.innerHTML = cardsHtml;
+
+    // Attach click listeners to cards
+    nodes.forEach(node => {
+      const el = this.container.querySelector(`#dag-node-${node.id}`);
+      if (el) {
+        el.onclick = () => {
+          if (typeof this.options.onNodeSelect === 'function') {
+            this.options.onNodeSelect(node);
+          }
+        };
+      }
+    });
+  }
+
   _renderEdges(nodes, nodeStates) {
     let pathsHtml = '<g id="dag-edges-group">';
 
@@ -198,7 +314,7 @@ export class EaiosRenderer {
     } else if (node.category === 'coordination_primitive') {
       bgFill = "url(#grad-barrier)";
       borderColor = "rgba(245, 158, 11, 0.4)";
-    } else if (node.category === 'governance_boundary') {
+    } else if (node.category === 'governance_boundary' || node.category === 'human_governance') {
       bgFill = "url(#grad-gov)";
       borderColor = "rgba(239, 68, 68, 0.45)";
     } else if (node.category === 'action_executor') {
@@ -253,7 +369,7 @@ export class EaiosRenderer {
       categoryPill = "COORDINATION";
       pillBg = "rgba(245, 158, 11, 0.15)";
       pillText = "#fbbf24";
-    } else if (node.category === 'governance_boundary') {
+    } else if (node.category === 'governance_boundary' || node.category === 'human_governance') {
       categoryPill = "HUMAN GOVERNANCE";
       pillBg = "rgba(239, 68, 68, 0.2)";
       pillText = "#f87171";
@@ -298,7 +414,7 @@ export class EaiosRenderer {
 
         <!-- Subtitle / Actor Identity -->
         <text x="${x + 10}" y="${y + 59}" fill="#94a3b8" font-size="8.5">
-          ${node.employeeId ? node.employeeId : (node.category === 'governance_boundary' ? 'Four-Eyes Principal (ADR-032)' : 'Stateless Barrier')}
+          ${node.employeeId ? node.employeeId : (node.category === 'governance_boundary' || node.category === 'human_governance' ? 'Four-Eyes Principal (ADR-032)' : 'Stateless Barrier')}
         </text>
 
         <!-- Capability / Scope footprint (or auxTag if present) -->
