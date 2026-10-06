@@ -3793,3 +3793,11 @@ body.light-mode #eaios-corr-modal > div {
 body.light-mode #eaios-corr-modal h3 {
   color: #0f172a !important;
 }
+
+/* Mobile header: prevent horizontal overflow */
+@media (max-width: 600px) {
+  .font-size-slider-container, .toggle-label { display: none !important; }
+  .header-controls { gap: 8px; min-width: 0; flex-shrink: 1; }
+  .app-header { padding: 0 10px; }
+}
+

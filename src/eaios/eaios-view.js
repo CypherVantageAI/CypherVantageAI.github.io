@@ -574,6 +574,89 @@ function generateEaiosHtml() {
           padding: 10px 12px;
         }
       }
+
+      /* ================= LIGHT MODE THEME LAYER ================= */
+      body.light-mode #view-manager-eaios .eaios-view-wrapper { color: #1e293b; }
+      body.light-mode #view-manager-eaios .eaios-section-card,
+      body.light-mode #view-manager-eaios .eaios-hero-card {
+        background: #ffffff !important;
+        border-color: #e2e8f0 !important;
+        box-shadow: 0 1px 6px rgba(15, 23, 42, 0.06) !important;
+      }
+      body.light-mode #view-manager-eaios .eaios-hero-card { border-color: rgba(2, 132, 199, 0.35) !important; }
+      body.light-mode #view-manager-eaios .eaios-principle-banner,
+      body.light-mode #view-manager-eaios .eaios-equation-box,
+      body.light-mode #view-manager-eaios .eaios-flow-step,
+      body.light-mode #view-manager-eaios .eaios-explorable-card,
+      body.light-mode #view-manager-eaios [style*="background: rgba(10, 11, 16"],
+      body.light-mode #view-manager-eaios [style*="background: rgba(15, 23, 42"],
+      body.light-mode #view-manager-eaios [style*="background: rgba(22, 26, 43"],
+      body.light-mode #view-manager-eaios [style*="background: linear-gradient(135deg, rgba(22, 26, 43"],
+      body.light-mode #view-manager-eaios [style*="background: linear-gradient(135deg, rgba(15, 23, 42"],
+      body.light-mode #view-manager-eaios [style*="background: #0f172a"],
+      body.light-mode #view-manager-eaios [style*="background: #0d1322"],
+      body.light-mode #view-manager-eaios [style*="background: #0d111d"] {
+        background: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        color: #1e293b;
+      }
+      body.light-mode #view-manager-eaios .eaios-explorable-card:hover { background: #eff6ff !important; border-color: #0284c7 !important; box-shadow: 0 4px 14px rgba(2,132,199,0.12) !important; }
+      body.light-mode #view-manager-eaios [style*="border: 1px solid rgba(255, 255, 255"],
+      body.light-mode #view-manager-eaios [style*="border-bottom: 1px solid rgba(255, 255, 255"],
+      body.light-mode #view-manager-eaios [style*="border-top: 1px solid rgba(255, 255, 255"] { border-color: #e2e8f0 !important; }
+
+      /* Text tones */
+      body.light-mode #view-manager-eaios [style*="color: #f8fafc"],
+      body.light-mode #view-manager-eaios [style*="color: #e2e8f0"],
+      body.light-mode #view-manager-eaios h1, body.light-mode #view-manager-eaios h2, body.light-mode #view-manager-eaios h3 { color: #0f172a !important; }
+      body.light-mode #view-manager-eaios [style*="color: #cbd5e1"] { color: #334155 !important; }
+      body.light-mode #view-manager-eaios [style*="color: #94a3b8"] { color: #475569 !important; }
+      body.light-mode #view-manager-eaios [style*="color: #64748b"] { color: #64748b !important; }
+      body.light-mode #view-manager-eaios [style*="color: #38bdf8"] { color: #0369a1 !important; }
+      body.light-mode #view-manager-eaios [style*="color: #34d399"],
+      body.light-mode #view-manager-eaios [style*="color: #10b981"] { color: #047857 !important; }
+      body.light-mode #view-manager-eaios [style*="color: #fbbf24"],
+      body.light-mode #view-manager-eaios [style*="color: #f59e0b"],
+      body.light-mode #view-manager-eaios [style*="color: #fde68a"] { color: #b45309 !important; }
+      body.light-mode #view-manager-eaios [style*="color: #a78bfa"],
+      body.light-mode #view-manager-eaios [style*="color: #c084fc"] { color: #6d28d9 !important; }
+      body.light-mode #view-manager-eaios [style*="color: #f87171"] { color: #b91c1c !important; }
+      body.light-mode #view-manager-eaios code { background: #eef2f7; padding: 0 3px; border-radius: 3px; }
+      /* Solid action buttons keep white text */
+      body.light-mode #view-manager-eaios #eaios-btn-approve-action,
+      body.light-mode #view-manager-eaios #eaios-btn-reject-action,
+      body.light-mode #view-manager-eaios .eaios-btn-primary { color: #ffffff !important; }
+
+      /* Controls */
+      body.light-mode #view-manager-eaios .eaios-scen-btn { background: #ffffff; color: #334155; border-color: #cbd5e1; }
+      body.light-mode #view-manager-eaios .eaios-scen-btn:hover { background: #eff6ff; color: #0f172a; border-color: #0284c7; }
+      body.light-mode #view-manager-eaios .eaios-scen-btn.active { background: #2563eb !important; color: #ffffff !important; }
+      body.light-mode #view-manager-eaios .eaios-btn-secondary { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
+      body.light-mode #view-manager-eaios .eaios-btn-secondary:hover { background: #e2e8f0; color: #0f172a; }
+      body.light-mode #view-manager-eaios select,
+      body.light-mode #view-manager-eaios input[type="text"] { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+      body.light-mode #view-manager-eaios .eaios-audit-item:hover { background: #f1f5f9 !important; }
+      body.light-mode #view-manager-eaios [style*="background: rgb(15, 23, 42)"] { background: #ffffff !important; border-color: #cbd5e1 !important; }
+      body.light-mode #view-manager-eaios [style*="color: rgb(203, 213, 225)"] { color: #334155 !important; }
+      body.light-mode #view-manager-eaios [style*="color: rgb(56, 189, 248)"] { color: #0369a1 !important; }
+      body.light-mode #view-manager-eaios [style*="color: rgb(192, 132, 252)"] { color: #6d28d9 !important; }
+
+      /* Modal */
+      body.light-mode #eaios-detail-modal { background: rgba(15, 23, 42, 0.45) !important; }
+      body.light-mode #eaios-detail-modal > div { background: #ffffff !important; box-shadow: 0 16px 48px rgba(15,23,42,0.25) !important; }
+
+      /* DAG SVG */
+      body.light-mode #view-manager-eaios #eaios-dag-container { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+      body.light-mode #view-manager-eaios svg rect[fill="#0d111d"] { fill: #ffffff !important; }
+      body.light-mode #view-manager-eaios svg text[fill="#f8fafc"],
+      body.light-mode #view-manager-eaios svg text[fill="#e2e8f0"],
+      body.light-mode #view-manager-eaios svg text[fill="#ffffff"] { fill: #0f172a !important; }
+      body.light-mode #view-manager-eaios svg text[fill="#94a3b8"],
+      body.light-mode #view-manager-eaios svg text[fill="#cbd5e1"] { fill: #475569 !important; }
+      body.light-mode #view-manager-eaios svg line[stroke="#ffffff"] { stroke: #94a3b8 !important; }
+      body.light-mode #view-manager-eaios svg path[fill="rgba(255, 255, 255, 0.25)"] { fill: #94a3b8 !important; }
+      body.light-mode #view-manager-eaios svg [stroke="rgba(255, 255, 255, 0.15)"],
+      body.light-mode #view-manager-eaios svg [stroke="rgba(255, 255, 255, 0.2)"] { stroke: #94a3b8 !important; }
     </style>
 
     <div class="eaios-view-wrapper">
@@ -1290,6 +1373,8 @@ function initializeComponents() {
 
   const auditLog = document.getElementById('eaios-audit-log');
   simManager = new EaiosSimulationManager(renderer, auditLog, (state) => {
+    // The constructor calls reset() before `simManager` is assigned — skip until ready.
+    if (!simManager) return;
     // Keep inspector updated during simulation
     const currentNodes = simManager.getCurrentNodes();
     let inspectedNode = null;

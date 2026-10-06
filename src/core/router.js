@@ -5,16 +5,16 @@
 import { getState, saveState } from './db.js';
 
 // Import module renderers dynamically to trigger view refreshes
-import { renderExecutiveDashboard } from '../modules/dashboard.js?v=2.6.0';
-import { renderResilienceModule } from '../modules/resilience.js?v=2.6.0';
-import { renderDoraModule } from '../modules/dora.js?v=2.6.0';
-import { renderIctRiskModule } from '../modules/ictrisk.js?v=2.6.0';
-import { renderThirdPartyModule } from '../modules/thirdparty.js?v=2.6.0';
-import { renderReportsModule } from '../modules/reports.js?v=2.6.0';
-import { renderAiGovernanceModule } from '../modules/aigovernance.js?v=2.6.0';
-import { renderAnalystModule } from '../modules/analyst.js?v=2.6.0';
-import { renderCommandCentre } from '../modules/commandcentre.js?v=2.6.0';
-import { renderEaiosModule } from '../eaios/eaios-view.js?v=2.6.0';
+import { renderExecutiveDashboard } from '../modules/dashboard.js?v=2.7.0';
+import { renderResilienceModule } from '../modules/resilience.js?v=2.7.0';
+import { renderDoraModule } from '../modules/dora.js?v=2.7.0';
+import { renderIctRiskModule } from '../modules/ictrisk.js?v=2.7.0';
+import { renderThirdPartyModule } from '../modules/thirdparty.js?v=2.7.0';
+import { renderReportsModule } from '../modules/reports.js?v=2.7.0';
+import { renderAiGovernanceModule } from '../modules/aigovernance.js?v=2.7.0';
+import { renderAnalystModule } from '../modules/analyst.js?v=2.7.0';
+import { renderCommandCentre } from '../modules/commandcentre.js?v=2.7.0';
+import { renderEaiosModule } from '../eaios/eaios-view.js?v=2.7.0';
 
 
 export function switchTab(tabId) {
