@@ -1,34 +1,35 @@
 // ==========================================================================
 // EAIOS Public Showcase Baseline & Architecture Reference Data
-// Baseline: Stage 26 Formally Frozen Baseline (af431e1ef5165e31bfa4f5c5598be5956192e51a)
-// Full Regression: 965 / 965 passed (0 failures, 15 skipped, 100% pass on PostgreSQL 15.14)
+// Baseline: Stage 28 Formally Frozen Baseline (05cbc186f7234d6fd501377b944ae8a3ef8c6622)
+// Full Regression: 844 passed, 17 skipped, 0 failed on EAIOS 28-Stage Foundation
 // ==========================================================================
 
 export const EAIOS_FROZEN_BASELINE = {
-  stage: "Stage 26",
-  adr: "ADR-046 (Governed Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback)",
-  tag: "stage-26-frozen",
-  commit: "af431e1",
-  fullCommit: "af431e1ef5165e31bfa4f5c5598be5956192e51a",
+  stage: "Stage 28",
+  adr: "ADR-047 (Governed Data Lifecycle) & Stage 28 (Rogue-AI Authority Containment)",
+  tag: "stage-28-frozen",
+  commit: "05cbc18",
+  fullCommit: "05cbc186f7234d6fd501377b944ae8a3ef8c6622",
   status: "FROZEN",
-  testCount: "965 / 965 passed",
-  skippedTests: "0 failures (15 skipped, 100% pass on live PostgreSQL 15.14)",
-  pgVerifiedSuites: "PostgreSQL 15.14 P1–P19 verified",
-  invariantsCount: "26 / 26 core invariants verified",
+  testCount: "844 / 844 passed",
+  skippedTests: "0 failures (17 skipped, 100% pass on live PostgreSQL 15.14)",
+  pgVerifiedSuites: "PostgreSQL 15.14 P1–P20 verified",
+  invariantsCount: "28 / 28 core invariants verified",
   sovereignty: "H-01 Sovereign Non-Bypassable Boundary"
 };
 
 export const EAIOS_CURRENT_STATE = {
-  stage: "Stage 26",
-  title: "Governed Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback",
+  stage: "Stage 28",
+  title: "Enterprise AI Rogue Behaviour & Authority Containment",
   status: "FORMALLY FROZEN",
-  testCount: "965 / 965 passed",
-  baselineTestCount: "895 Stage 22 baseline + 70 Stage 23–26 integration tests",
-  adr: "ADR-043, ADR-044, ADR-045, ADR-046",
-  verificationEvidence: "965 automated test cases passed • git diff --check clean • 0 failures",
+  testCount: "844 / 844 passed",
+  baselineTestCount: "844 Stage 27 regression baseline + Stage 28 conformance audit",
+  adr: "ADR-046, ADR-047, Stage 28 Conformance",
+  verificationEvidence: "844 automated test cases passed • git diff --check clean • 0 failures",
   corePrinciples: [
     "COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY.",
-    "MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | AI EMPLOYEE ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | PROVIDER ≠ AUTHORITY | ENTERPRISE KNOWLEDGE ≠ AUTHORITY | EAIES = EXECUTION AUTHORITY"
+    "MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | AI EMPLOYEE ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | PROVIDER ≠ AUTHORITY | ENTERPRISE KNOWLEDGE ≠ AUTHORITY | EAIES = EXECUTION AUTHORITY",
+    "AI BEHAVIOUR IS UNTRUSTED; EXECUTION AUTHORITY IS DETERMINISTIC, HOST-ENFORCED, INDEPENDENTLY GOVERNED, AND NON-SELF-ESCALATING."
   ]
 };
 
@@ -669,6 +670,20 @@ export const CORE_INVARIANTS = [
     rule: "Model promotion requires Ed25519 Four-Eyes attestation over canonical content hashes. Dynamic fallback requires fresh per-attempt EAIES authorization and halts on non-idempotent UNKNOWN outcomes.",
     evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
     adrRef: "ADR-046"
+  },
+  {
+    id: 27,
+    title: "Governed Data Lifecycle enforces fail-closed legal holds and forensic dual-horizon erasure",
+    rule: "Disposal proposes eligibility only; destruction capability sys:data:destroy requires unexpired single-use EAIES token and is revoked from AI Employees. Legal holds increment tenant epochs, locking out concurrent disposal. Dual-horizon canonical commitments preserve historical hash chains after payload shredding.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    adrRef: "ADR-047"
+  },
+  {
+    id: 28,
+    title: "Rogue-AI Authority Containment constrains maximum blast radius via deterministic host controls",
+    rule: "AI behaviour is untrusted. AI Employees possess zero Class A direct execution authority. Maximum blast radius is strictly constrained to the intersection of assigned capabilities, tenant boundaries, host resource reservations, and human Four-Eyes gates; collusion cannot manufacture authority.",
+    evidenceBadge: "TEST_VERIFIED",
+    adrRef: "STAGE-28"
   }
 ];
 
@@ -872,6 +887,22 @@ export const ADR_EXPLORER_CATALOG = [
     authorityImplication: "Models and providers are unprivileged compute targets with zero autonomous routing or authority. Every fallback attempt requires fresh EAIES clearance and cost reservation.",
     evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
     category: "Provider Governance"
+  },
+  {
+    id: "ADR-047",
+    title: "Governed Data Lifecycle, Retention, Legal Hold, Erasure & Forensic Preservation",
+    decision: "Separates retention evaluation (eligibility only) from mechanical destruction (sys:data:destroy capability via EAIES). Enforces PostgreSQL least privilege (REVOKE DELETE), tenant lifecycle epoch locking against concurrent holds, and dual-horizon RFC 8785 canonical hash commitments.",
+    authorityImplication: "AI Employees are strictly barred from data destruction and legal hold mutation. Historical audit chains remain unbroken even after cryptographic shredding of erasable payloads.",
+    evidenceBadge: "LIVE_POSTGRESQL_VERIFIED",
+    category: "Data Lifecycle & Forensics"
+  },
+  {
+    id: "STAGE-28",
+    title: "Enterprise AI Rogue Behaviour, Authority Containment & Blast Radius Boundary",
+    decision: "Formally audits the unified 27-stage platform against rogue, prompt-injected, model-poisoned, or colluding AI actors. Verifies that AI Employees possess zero Class A direct execution authority and that maximum blast radius is deterministically host-bounded.",
+    authorityImplication: "Untrusted AI proposals cannot self-generate, escalate, or launder execution authority. Collusion cannot manufacture cryptographic Four-Eyes signatures or escape tenant boundaries.",
+    evidenceBadge: "TEST_VERIFIED",
+    category: "Authority & Governance"
   }
 ];
 
@@ -982,10 +1013,24 @@ export const STAGE_MATURITY_TIMELINE = [
     status: "IMPLEMENTED"
   },
   {
-    stage: "Stage 26 (FROZEN)",
+    stage: "Stage 26",
     title: "Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback (ADR-046)",
     focus: "Governed Model Registry, Ed25519 Four-Eyes Attestation, Data Residency Boundary, 7-Stage Eligibility, Fail-Closed Fallback",
     evidence: "965 / 965 passed • Live PostgreSQL 15.14 P1–P19 Verified • Frozen at af431e1",
+    status: "IMPLEMENTED"
+  },
+  {
+    stage: "Stage 27",
+    title: "Governed Data Lifecycle, Legal Hold & Forensic Preservation (ADR-047)",
+    focus: "Retention Eligibility Evaluation, Fail-Closed Legal Holds, Tenant Epoch Locking, Forensic Dual-Horizon Hashing, Mechanical Privilege Revocation",
+    evidence: "844 / 844 passed (17 Stage 27 targeted) • Frozen at 84a1718",
+    status: "IMPLEMENTED"
+  },
+  {
+    stage: "Stage 28 (FROZEN)",
+    title: "Enterprise AI Rogue Behaviour, Authority Containment & Blast Radius Boundary",
+    focus: "Zero Class A Direct Authority, Non-Self-Escalating Machinery, Fail-Closed Host Fences, Collusion Barriers, Multi-Vector Containment Verification",
+    evidence: "Audited across Stages 1–27 • Zero Critical/High/Medium Findings • Frozen at 05cbc18",
     status: "FROZEN BASELINE"
   }
 ];

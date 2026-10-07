@@ -685,11 +685,11 @@ function generateEaiosHtml() {
           <!-- Architectural Verification Status Indicators -->
           <div class="eaios-hero-badges">
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 26 Formally Frozen Baseline">
-                ✓ Stage 26 — Frozen Baseline
+              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 28 Formally Frozen Baseline">
+                ✓ Stage 28 — Frozen Baseline
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Full Automated Test Suite">
-                965 / 965 passed
+                844 passed • 0 failures
               </span>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
@@ -697,16 +697,16 @@ function generateEaiosHtml() {
                 PostgreSQL 15.14 + RLS
               </span>
               <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Model Registry (ADR-046)
+                Data Lifecycle (ADR-047)
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Dynamic Fallback & Resiliency
+                Rogue-AI Containment
               </span>
               <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Four-Eyes Ed25519
               </span>
               <span style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Fail-Closed EAIES Gate
+                Zero Class A Authority
               </span>
             </div>
           </div>
@@ -715,7 +715,7 @@ function generateEaiosHtml() {
         <!-- Secondary Historical Reference -->
         <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: #94a3b8;">
           <div>
-            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 26 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Governed Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback (ADR-046).
+            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 28 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Governed Data Lifecycle (ADR-047) & Rogue-AI Authority Containment Frontier.
           </div>
           <div style="font-family: monospace; font-size: 11px; color: #64748b;">
             H-01 SOVEREIGN • NON-BYPASSABLE EXECUTION BOUNDARY
@@ -924,7 +924,7 @@ function generateEaiosHtml() {
             The Six Major Architectural Layers
           </h2>
           <div style="font-size: 12.5px; color: #94a3b8;">
-            A structured mental model of the EAIOS governance and execution architecture up to Stage 26.
+            A structured mental model of the EAIOS governance and execution architecture up to Stage 28.
           </div>
         </div>
 
@@ -1216,14 +1216,14 @@ function generateEaiosHtml() {
       <div class="eaios-section-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 10px;">
           <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
-            26 Core Architectural Invariants
+            28 Core Architectural Invariants
           </h2>
           <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
-            Formal Verification Layer (965 Tests Passed)
+            Formal Verification Layer (844 Tests Passed)
           </span>
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Core governance guarantees verified across EAIOS architecture through Stage 26. Click any card to inspect full invariant proof.
+          Core governance guarantees verified across EAIOS architecture through Stage 28. Click any card to inspect full invariant proof.
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
@@ -1287,14 +1287,14 @@ function generateEaiosHtml() {
       </div>
 
       <!-- ================================================================= -->
-      <!-- 12. ARCHITECTURAL EVOLUTION (STAGES 1 TO 26 FROZEN)              -->
+      <!-- 12. ARCHITECTURAL EVOLUTION (STAGES 1 TO 28 FROZEN)              -->
       <!-- ================================================================= -->
       <div class="eaios-section-card eaios-info-card">
         <div style="font-size: 18px; font-weight: 800; color: #f8fafc; margin-bottom: 4px;">
           EAIOS Architectural Evolution
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
-          Progression of formal verification across execution kernel, resilience, tenancy, HITL governance, Transactional Outbox, Inbound Integrations, Sagas, Dynamic Policy Lifecycle, and Stage 26 Governed Model Registry & Fallback.
+          Progression of formal verification across execution kernel, resilience, tenancy, HITL governance, Transactional Outbox, Inbound Integrations, Sagas, Dynamic Policy Lifecycle, Stage 26 Model Registry, Stage 27 Governed Data Lifecycle, and Stage 28 Rogue-AI Authority Containment.
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
