@@ -878,38 +878,40 @@ function generateEaiosHtml() {
       <!-- ================================================================= -->
       <!-- 5. STAGE 26: FOUNDATION MODEL REGISTRY & DYNAMIC FALLBACK PIPELINES -->
       <!-- ================================================================= -->
+      <!-- 5. STAGE 28 FROZEN ARCHITECTURE BANNER (ADR-047 & ROGUE-AI)        -->
+      <!-- ================================================================= -->
       <div class="eaios-section-card eaios-info-card" style="border-left: 4px solid #10b981;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase;">
-              <span>★</span> STAGE 26 FROZEN ARCHITECTURE (ADR-043–046)
+              <span>★</span> STAGE 28 FROZEN ARCHITECTURE (ADR-047 & ROGUE-AI CONTAINMENT)
             </div>
             <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 2px 0 0 0;">
-              Governed Foundation Model Registry, Risk Tiering & Dynamic Provider Fallback
+              Governed Data Lifecycle, Legal Hold & Sovereign Rogue-AI Authority Containment
             </h2>
           </div>
           <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-            STAGE 26 FROZEN • 965 / 965 TESTS
+            STAGE 28 FROZEN • 844 / 844 TESTS
           </span>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Model Registry & Risk Tiering (ADR-046)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Data Lifecycle & Legal Hold (ADR-047)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Authoritative model definition catalog with risk tiers (Minimal, Limited, High, Critical), residency constraints (EU, US, UK, On-Premise), and Ed25519 Four-Eyes cryptographic attestation.
+              Retention schedules evaluate eligibility only; mechanical destruction requires unexpired EAIES token for sys:data:destroy. Tenant lifecycle epochs prevent hold-vs-delete concurrency races.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Dynamic Fallback & Substitution (ADR-046)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Forensic Dual-Horizon Preservation (ADR-047)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Deterministic 7-stage candidate resolution with per-attempt UUID tracking, fresh EAIES gate evaluation, budget pre-reservation, and fail-closed UNKNOWN halting on non-idempotent tasks.
+              Historical audit hash chains remain unbroken. Cryptographic shredding of erasable payloads leaves immutable RFC 8785 canonical salted commitments mathematically intact.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #ec4899; margin-bottom: 4px;">Incident Quarantine & Timers (ADR-043/045)</div>
+            <div style="font-size: 13px; font-weight: 800; color: #34d399; margin-bottom: 4px;">Rogue-AI Authority Containment (Stage 28)</div>
             <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-              Durable timers in PostgreSQL, systemic incident blast-radius quarantine, and backward DAG saga compensation executed under sovereign EAIES authority.
+              AI behaviour is untrusted. Zero Class A direct authority across all stages. Effective blast radius is strictly constrained to the intersection of host capability, quota, RLS, and Four-Eyes boundaries.
             </div>
           </div>
         </div>
