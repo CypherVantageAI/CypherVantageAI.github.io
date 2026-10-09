@@ -316,11 +316,15 @@ export class EaiosSimulationManager {
     let liveAssessment = null;
 
     try {
+      const requestCorrelationId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+        ? crypto.randomUUID()
+        : 'a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d';
+
       const resp = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Correlation-ID": this.correlationId
+          "X-Correlation-ID": requestCorrelationId
         },
         body: JSON.stringify({
           incident_id: "INC-2026-CLOUD-9941",

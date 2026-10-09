@@ -783,7 +783,7 @@ export const CORE_INVARIANTS = [
     title: "Rogue-AI Authority Containment constrains maximum blast radius via deterministic host controls",
     rule: "AI behaviour is untrusted. AI Employees possess zero Class A direct execution authority. Maximum blast radius is strictly constrained to the intersection of assigned capabilities, tenant boundaries, host resource reservations, and human Four-Eyes gates; collusion cannot manufacture authority.",
     evidenceBadge: "TEST_VERIFIED",
-    adrRef: "STAGE-28"
+    adrRef: "ADR-001 / ADR-036"
   }
 ];
 
@@ -997,7 +997,7 @@ export const ADR_EXPLORER_CATALOG = [
     category: "Data Lifecycle & Forensics"
   },
   {
-    id: "STAGE-28",
+    id: "ADR-001 / ADR-036",
     title: "Enterprise AI Rogue Behaviour, Authority Containment & Blast Radius Boundary",
     decision: "Formally audits the unified 27-stage platform against rogue, prompt-injected, model-poisoned, or colluding AI actors. Verifies that AI Employees possess zero Class A direct execution authority and that maximum blast radius is deterministically host-bounded.",
     authorityImplication: "Untrusted AI proposals cannot self-generate, escalate, or launder execution authority. Collusion cannot manufacture cryptographic Four-Eyes signatures or escape tenant boundaries.",
@@ -1128,7 +1128,7 @@ export const STAGE_MATURITY_TIMELINE = [
   },
   {
     stage: "Stage 28 (FROZEN)",
-    title: "Enterprise AI Rogue Behaviour, Authority Containment & Blast Radius Boundary",
+    title: "Rogue-AI Authority Containment & Blast Radius Boundary (ADR-001 / ADR-036)",
     focus: "Zero Class A Direct Authority, Non-Self-Escalating Machinery, Fail-Closed Host Fences, Collusion Barriers, Multi-Vector Containment Verification",
     evidence: "Audited across Stages 1–27 • Zero Critical/High/Medium Findings • Frozen at 05cbc18",
     status: "FROZEN BASELINE"

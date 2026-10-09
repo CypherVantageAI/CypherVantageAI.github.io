@@ -292,7 +292,18 @@ function generateEaiosHtml() {
         max-width: 1440px;
         margin: 0 auto;
         color: var(--text-primary, #e2e8f0);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: var(--font-body, 'Figtree', sans-serif);
+      }
+      .eaios-view-wrapper h1,
+      .eaios-view-wrapper h2,
+      .eaios-view-wrapper h3,
+      .eaios-view-wrapper h4 {
+        font-family: var(--font-headings, 'Figtree', sans-serif);
+        letter-spacing: -0.01em;
+      }
+      .eaios-view-wrapper code,
+      .eaios-view-wrapper pre {
+        font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
       }
       .eaios-section-card {
         background: rgba(22, 26, 43, 0.85);
@@ -322,8 +333,8 @@ function generateEaiosHtml() {
         border: 1px solid rgba(56, 189, 248, 0.3);
         border-radius: 8px;
         padding: 14px 18px;
-        font-family: 'SFMono-Regular', Consolas, monospace;
-        font-size: 11.5px;
+        font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+        font-size: 11px;
         line-height: 1.6;
         color: #cbd5e1;
         margin-top: 12px;
@@ -534,7 +545,8 @@ function generateEaiosHtml() {
         .eaios-grid-2col,
         .eaios-grid-subsystems,
         .eaios-grid-dag,
-        .eaios-grid-authority {
+        .eaios-grid-authority,
+        .eaios-hero-main-grid {
           grid-template-columns: 1fr !important;
           gap: 16px !important;
         }
@@ -551,7 +563,7 @@ function generateEaiosHtml() {
         }
         .eaios-scen-btn {
           flex: 1 1 calc(50% - 6px);
-          font-size: 11.5px;
+          font-size: 11px;
           padding: 8px 10px;
         }
       }
@@ -666,59 +678,74 @@ function generateEaiosHtml() {
       <!-- 1. HERO HEADER: REFERENCE ARCHITECTURE OVERVIEW & STATUS           -->
       <!-- ================================================================= -->
       <div class="eaios-hero-card eaios-info-card">
-        <div class="eaios-hero-header">
-          <div style="flex: 1; min-width: 280px;">
-            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 12px; border-radius: 9999px; margin-bottom: 12px;">
-              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
-              <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em;">ENTERPRISE REFERENCE ARCHITECTURE</span>
-            </div>
-            <h1 style="font-size: 28px; font-weight: 900; margin: 0 0 6px 0; color: #f8fafc; letter-spacing: -0.02em;">
+        <!-- Top Toolbar: Reference Pill & Baseline Verification Badges -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 14px; border-radius: 9999px;">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em;">ENTERPRISE REFERENCE ARCHITECTURE</span>
+          </div>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: monospace;" title="Stage 32.2 Formally Frozen Baseline">
+              ✓ Stage 32.2 — Frozen Baseline
+            </span>
+            <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; font-family: monospace;" title="Full Automated Test Suite">
+              971 passed • 0 failures
+            </span>
+          </div>
+        </div>
+
+        <!-- Main Body: Two-Column Balanced Space Distribution -->
+        <div class="eaios-hero-main-grid" style="display: grid; grid-template-columns: 1.45fr 1fr; gap: 24px; align-items: start;">
+          <div>
+            <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 8px 0; color: #f8fafc; letter-spacing: -0.01em;">
               EAIOS Enterprise AI Operating System
             </h1>
-            <div style="font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 8px;">
+            <div style="font-size: 14px; font-weight: 600; color: #38bdf8; margin-bottom: 12px; line-height: 1.45;">
               Deterministic governance, foundation model registry, workflow sagas & provider fallback management for enterprise AI.
             </div>
-            <p style="font-size: 13.5px; color: #cbd5e1; margin: 0; line-height: 1.6; max-width: 900px;">
+            <p style="font-size: 13px; color: #cbd5e1; margin: 0; line-height: 1.65;">
               EAIOS allows AI Employees, models and orchestrators to coordinate complex enterprise workflows while deterministic infrastructure retains authority over capability execution, model registration, residency scopes, transactional outbox/inbox delivery, distributed saga compensation, tenancy, lifecycle and human governance.
             </p>
           </div>
 
-          <!-- Architectural Verification Status Indicators -->
-          <div class="eaios-hero-badges">
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 32.2 Formally Frozen Baseline">
-                ✓ Stage 32.2 — Frozen Baseline
+          <!-- Right Column: Structured Architectural Primitives Box -->
+          <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 10.5px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">
+                Architectural Posture
               </span>
-              <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Full Automated Test Suite">
-                971 passed • 0 failures
-              </span>
+              <span style="font-size: 10px; color: #34d399; font-weight: 700;">Host Enforced</span>
             </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-              <span style="background: rgba(167, 139, 250, 0.15); color: #c084fc; border: 1px solid rgba(167, 139, 250, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <span style="background: rgba(167, 139, 250, 0.14); color: #c084fc; border: 1px solid rgba(167, 139, 250, 0.35); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 PostgreSQL 15.14 + RLS
               </span>
-              <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+              <span style="background: rgba(245, 158, 11, 0.14); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Operational Hardening (Stage 32.2)
               </span>
-              <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+              <span style="background: rgba(56, 189, 248, 0.14); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 ORO Vertical Slice (DORA)
               </span>
-              <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+              <span style="background: rgba(239, 68, 68, 0.14); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Four-Eyes Ed25519
               </span>
-              <span style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
+              <span style="background: rgba(148, 163, 184, 0.14); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Zero Class A Authority
               </span>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; line-height: 1.45; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 8px;">
+              Non-bypassable execution boundary mediated by <strong style="color: #38bdf8;">EAIES Proxy</strong> and host operating system kernel.
             </div>
           </div>
         </div>
 
         <!-- Secondary Historical Reference -->
-        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: #94a3b8;">
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11px; color: #94a3b8;">
           <div>
             <strong style="color: #cbd5e1;">Frozen Baseline:</strong> EAIOS is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Stage 32.2 Operational Hardening & Public Showcase Phase 1.
           </div>
-          <div style="font-family: monospace; font-size: 11px; color: #64748b;">
+          <div style="font-family: monospace; font-size: 10.5px; color: #64748b;">
             H-01 SOVEREIGN • NON-BYPASSABLE EXECUTION BOUNDARY
           </div>
         </div>
@@ -732,7 +759,7 @@ function generateEaiosHtml() {
           <div style="font-size: 16px; font-weight: 800; color: #f8fafc; text-transform: uppercase; letter-spacing: 0.04em;">
             Core Architectural Axiom
           </div>
-          <span style="font-size: 10.5px; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
+          <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
             NON-NEGOTIABLE INVARIANT
           </span>
         </div>
@@ -741,7 +768,7 @@ function generateEaiosHtml() {
           <div style="font-size: 16px; font-weight: 800; color: #38bdf8; letter-spacing: 0.02em;">
             COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY.
           </div>
-          <div style="font-size: 12.5px; color: #cbd5e1; margin-top: 6px; line-height: 1.5;">
+          <div style="font-size: 13px; color: #cbd5e1; margin-top: 6px; line-height: 1.55;">
             <strong>H-01 SOVEREIGN THESIS:</strong> AI coordinates work; Deterministic infrastructure retains execution authority. EAIOS is a deterministic governance and execution architecture for enterprise AI. AI Employees, foundation models, and orchestrators coordinate work, but they never become the authority to execute capabilities, consume resources, cross tenant boundaries, promote models, or approve their own authority. EAIES remains the final execution authority.
           </div>
         </div>
@@ -754,7 +781,7 @@ function generateEaiosHtml() {
           <span style="color: #f87171;">HUMAN APPROVAL ≠ CAPABILITY AUTHORITY</span> &nbsp;•&nbsp;
           <span style="color: #f87171;">PROVIDER ≠ AUTHORITY</span> &nbsp;•&nbsp;
           <span style="color: #f87171;">ENTERPRISE KNOWLEDGE ≠ AUTHORITY</span> &nbsp;•&nbsp;
-          <strong style="color: #10b981; font-size: 12.5px; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 4px; border: 1px solid #10b981;">EAIES = EXECUTION AUTHORITY</strong>
+          <strong style="color: #10b981; font-size: 12px; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 4px; border: 1px solid #10b981;">EAIES = EXECUTION AUTHORITY</strong>
         </div>
       </div>
 
@@ -766,7 +793,7 @@ function generateEaiosHtml() {
           <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0 0 4px 0;">
             EAIOS in One Minute — The Six-Level Execution Model
           </h2>
-          <div style="font-size: 12.5px; color: #94a3b8;">
+          <div style="font-size: 13px; color: #94a3b8;">
             Every enterprise transaction traverses a six-level deterministic execution model. Eligibility and model risk clearance are verified before execution authorization.
           </div>
         </div>
@@ -778,9 +805,9 @@ function generateEaiosHtml() {
                 <span style="font-family: monospace; font-size: 12px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;">
                   ${s.step}
                 </span>
-                <span style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">${s.badge}</span>
+                <span style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">${s.badge}</span>
               </div>
-              <div style="font-size: 13.5px; font-weight: 800; color: #f8fafc; margin-top: 4px;">${s.title}</div>
+              <div style="font-size: 14px; font-weight: 800; color: #f8fafc; margin-top: 4px;">${s.title}</div>
               <div style="font-size: 11px; font-weight: 600; color: #38bdf8;">${s.subtitle}</div>
               <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">${s.desc}</div>
             </div>
@@ -796,14 +823,14 @@ function generateEaiosHtml() {
           <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0 0 4px 0;">
             Where Does Authority Live?
           </h2>
-          <div style="font-size: 12.5px; color: #94a3b8;">
+          <div style="font-size: 13px; color: #94a3b8;">
             Human administrators govern configuration and Four-Eyes model promotion; lifecycle determines eligibility; EAIES independently authorizes execution.
           </div>
         </div>
 
         <div class="eaios-grid-authority">
           <!-- Visual Hierarchy Tree -->
-          <div style="background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 18px; font-family: monospace; font-size: 11.5px; line-height: 1.5;">
+          <div style="background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 18px; font-family: monospace; font-size: 11px; line-height: 1.5;">
             <div style="text-align: center;">
               <div style="display: inline-block; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 5px 14px; border-radius: 6px; font-weight: 700;">
                 Human Governance (Lifecycle, Ed25519 Attestations & Policy)
@@ -815,12 +842,12 @@ function generateEaiosHtml() {
             <div style="text-align: center; color: #64748b;">▼</div>
             <div style="display: flex; justify-content: space-around; gap: 8px; margin: 4px 0;">
               <div style="flex: 1; background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.3); border-radius: 6px; padding: 6px 8px; text-align: center;">
-                <div style="color: #c084fc; font-weight: 700; font-size: 10.5px;">AI Employee Identity</div>
-                <div style="color: #94a3b8; font-size: 9.5px;">Lifecycle Eligibility</div>
+                <div style="color: #c084fc; font-weight: 700; font-size: 11px;">AI Employee Identity</div>
+                <div style="color: #94a3b8; font-size: 10px;">Lifecycle Eligibility</div>
               </div>
               <div style="flex: 1; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 6px 8px; text-align: center;">
-                <div style="color: #38bdf8; font-weight: 700; font-size: 10.5px;">Model & Capability Binding</div>
-                <div style="color: #94a3b8; font-size: 9.5px;">Risk & Residency Eligibility</div>
+                <div style="color: #38bdf8; font-weight: 700; font-size: 11px;">Model & Capability Binding</div>
+                <div style="color: #94a3b8; font-size: 10px;">Risk & Residency Eligibility</div>
               </div>
             </div>
             <div style="text-align: center; color: #34d399; font-size: 10px; margin: 2px 0;">
@@ -828,7 +855,7 @@ function generateEaiosHtml() {
             </div>
             <div style="text-align: center; color: #34d399;">▼</div>
             <div style="text-align: center; margin: 4px 0;">
-              <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; color: #34d399; padding: 7px 18px; border-radius: 8px; font-weight: 800; font-size: 12.5px;">
+              <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; color: #34d399; padding: 7px 18px; border-radius: 8px; font-weight: 800; font-size: 12px;">
                 EAIES • EXECUTION AUTHORIZATION
               </div>
             </div>
@@ -837,7 +864,7 @@ function generateEaiosHtml() {
             </div>
             <div style="text-align: center; color: #38bdf8;">▼</div>
             <div style="text-align: center;">
-              <div style="display: inline-block; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 5px 14px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">
+              <div style="display: inline-block; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 5px 14px; border-radius: 6px; font-weight: 700; font-size: 11px;">
                 Dynamic Fallback, Outbox & Saga Gateway (ADR-039–046)
               </div>
             </div>
@@ -885,7 +912,7 @@ function generateEaiosHtml() {
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: #10b981; text-transform: uppercase;">
-              <span>★</span> STAGE 28 FROZEN ARCHITECTURE (ADR-047 & ROGUE-AI CONTAINMENT)
+              <span>★</span> STAGE 28 FROZEN ARCHITECTURE (ADR-047 & ADR-001/036 ROGUE-AI CONTAINMENT)
             </div>
             <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 2px 0 0 0;">
               Governed Data Lifecycle, Legal Hold & Sovereign Rogue-AI Authority Containment
@@ -899,19 +926,19 @@ function generateEaiosHtml() {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
             <div style="font-size: 13px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Data Lifecycle & Legal Hold (ADR-047)</div>
-            <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
+            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
               Retention schedules evaluate eligibility only; mechanical destruction requires unexpired EAIES token for sys:data:destroy. Tenant lifecycle epochs prevent hold-vs-delete concurrency races.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
             <div style="font-size: 13px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Forensic Dual-Horizon Preservation (ADR-047)</div>
-            <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
+            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
               Historical audit hash chains remain unbroken. Cryptographic shredding of erasable payloads leaves immutable RFC 8785 canonical salted commitments mathematically intact.
             </div>
           </div>
           <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
-            <div style="font-size: 13px; font-weight: 800; color: #34d399; margin-bottom: 4px;">Rogue-AI Authority Containment (Stage 28)</div>
-            <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
+            <div style="font-size: 13px; font-weight: 800; color: #34d399; margin-bottom: 4px;">Rogue-AI Authority Containment (ADR-001 / ADR-036)</div>
+            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
               AI behaviour is untrusted. Zero Class A direct authority across all stages. Effective blast radius is strictly constrained to the intersection of host capability, quota, RLS, and Four-Eyes boundaries.
             </div>
           </div>
@@ -1064,15 +1091,15 @@ function generateEaiosHtml() {
             <div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span id="eaios-scen-title" style="font-weight: 800; font-size: 14px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
-                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 1px 6px; border-radius: 3px; font-size: 9.5px; font-weight: 800;">
+                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800;">
                   TEST VERIFIED
                 </span>
               </div>
               <div id="eaios-scen-subtitle" style="font-size: 12px; color: #38bdf8; margin-top: 2px;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.subtitle}</div>
-              <div id="eaios-scen-desc" style="font-size: 11.5px; color: #cbd5e1; margin-top: 6px; line-height: 1.45;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
+              <div id="eaios-scen-desc" style="font-size: 12px; color: #cbd5e1; margin-top: 6px; line-height: 1.5;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
             </div>
             <div style="text-align: right;">
-              <span id="eaios-scen-evid" style="font-size: 10.5px; color: #a78bfa; font-family: monospace; background: rgba(167, 139, 250, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(167, 139, 250, 0.25);">
+              <span id="eaios-scen-evid" style="font-size: 11px; color: #a78bfa; font-family: monospace; background: rgba(167, 139, 250, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(167, 139, 250, 0.25);">
                 ${SHOWCASE_SCENARIOS.SCENARIO_ORO.evidenceRef}
               </span>
             </div>
@@ -1100,7 +1127,7 @@ function generateEaiosHtml() {
         <div id="eaios-approval-banner" style="display: none; margin-bottom: 16px; background: rgba(245, 158, 11, 0.12); border: 2px dashed #f59e0b; border-radius: 8px; padding: 18px;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
             <div style="flex: 1; min-width: 280px;">
-              <div style="display: inline-flex; align-items: center; gap: 6px; color: #fbbf24; font-weight: 800; font-size: 13.5px;">
+              <div style="display: inline-flex; align-items: center; gap: 6px; color: #fbbf24; font-weight: 800; font-size: 13px;">
                 <span>⚠️</span>
                 <span>WORKFLOW PAUSED: Human Governance Decision Gate (ADR-032 / PG Test P1)</span>
               </div>
@@ -1112,15 +1139,15 @@ function generateEaiosHtml() {
               <!-- Interactive Form Inputs -->
               <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 12px;">
                 <div>
-                  <label for="eaios-operator-select" style="font-size: 10.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Approver Identity:</label>
-                  <select id="eaios-operator-select" style="width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11.5px; margin-top: 3px; cursor: pointer;">
+                  <label for="eaios-operator-select" style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Approver Identity:</label>
+                  <select id="eaios-operator-select" style="width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px; cursor: pointer;">
                     <option value="bob@enterprise.example">bob@enterprise.example (Authorized Approver)</option>
                     <option value="alice@enterprise.example">alice@enterprise.example (Work Owner - Test 4-Eyes Deny)</option>
                   </select>
                 </div>
                 <div>
-                  <label for="eaios-operator-rationale" style="font-size: 10.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Decision Rationale (Mandatory):</label>
-                  <input type="text" id="eaios-operator-rationale" value="Approved for production run after secondary audit." style="width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11.5px; margin-top: 3px;" />
+                  <label for="eaios-operator-rationale" style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Decision Rationale (Mandatory):</label>
+                  <input type="text" id="eaios-operator-rationale" value="Approved for production run after secondary audit." style="width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px;" />
                 </div>
               </div>
             </div>
@@ -1197,7 +1224,7 @@ function generateEaiosHtml() {
           <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0 0 4px 0;">
             What is Actually Proven?
           </h2>
-          <div style="font-size: 12.5px; color: #94a3b8;">
+          <div style="font-size: 13px; color: #94a3b8;">
             EAIOS strictly distinguishes formal architectural properties, automated test suites, live PostgreSQL validation, and browser simulations.
           </div>
         </div>
@@ -1205,10 +1232,10 @@ function generateEaiosHtml() {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
           ${Object.values(EVIDENCE_BADGES).map(b => `
             <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid ${b.border}; border-radius: 8px; padding: 14px;">
-              <span style="background: ${b.bg}; color: ${b.color}; border: 1px solid ${b.border}; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 10.5px;">
+              <span style="background: ${b.bg}; color: ${b.color}; border: 1px solid ${b.border}; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 11px;">
                 ${b.label}
               </span>
-              <div style="font-size: 11.5px; color: #cbd5e1; margin-top: 8px; line-height: 1.45;">
+              <div style="font-size: 12px; color: #cbd5e1; margin-top: 8px; line-height: 1.5;">
                 ${b.description}
               </div>
             </div>
@@ -1237,15 +1264,15 @@ function generateEaiosHtml() {
             <div class="eaios-explorable-card eaios-inv-card" onclick="window.openEaiosModal('INVARIANT', '${inv.id}')" data-inv-id="${inv.id}" role="button" tabindex="0" aria-label="View details for Invariant ${inv.id}: ${inv.title}">
               <div>
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
-                  <span style="font-weight: 800; font-size: 12.5px; color: #38bdf8;">${inv.id}. ${inv.title}</span>
-                  <span style="font-size: 9px; color: #10b981; font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                  <span style="font-weight: 800; font-size: 13px; color: #38bdf8;">${inv.id}. ${inv.title}</span>
+                  <span style="font-size: 10px; color: #10b981; font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3); white-space: nowrap;">
                     ${inv.adrRef}
                   </span>
                 </div>
-                <div style="font-size: 11px; color: #cbd5e1; margin-top: 6px; line-height: 1.45;">${inv.rule}</div>
+                <div style="font-size: 12px; color: #cbd5e1; margin-top: 6px; line-height: 1.5;">${inv.rule}</div>
               </div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);">
-                <span style="font-size: 9.5px; color: #64748b; text-transform: uppercase;">${inv.evidenceBadge}</span>
+                <span style="font-size: 10px; color: #64748b; text-transform: uppercase;">${inv.evidenceBadge}</span>
                 <span style="font-size: 11px; color: #38bdf8; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">View details <span style="font-size: 13px;">→</span></span>
               </div>
             </div>
@@ -1262,7 +1289,7 @@ function generateEaiosHtml() {
             Architectural Decision Record (ADR) Explorer
           </h2>
           <span style="font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 4px; font-weight: 700;">
-            Canonical ADRs (ADR-001 to ADR-046)
+            Canonical ADRs (ADR-001 to ADR-047)
           </span>
         </div>
         <div style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
@@ -1274,17 +1301,17 @@ function generateEaiosHtml() {
             <div class="eaios-explorable-card eaios-adr-card" onclick="window.openEaiosModal('ADR', '${adr.id}')" data-adr-id="${adr.id}" role="button" tabindex="0" aria-label="View architectural decision for ${adr.id}: ${adr.title}">
               <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <span style="font-family: monospace; font-size: 11.5px; font-weight: 800; color: #38bdf8;">${adr.id}</span>
-                  <span style="font-size: 9px; font-weight: 800; color: #a78bfa; background: rgba(167, 139, 250, 0.15); padding: 1px 5px; border-radius: 3px;">${adr.category}</span>
+                  <span style="font-family: monospace; font-size: 11px; font-weight: 800; color: #38bdf8;">${adr.id}</span>
+                  <span style="font-size: 10px; font-weight: 800; color: #a78bfa; background: rgba(167, 139, 250, 0.15); padding: 2px 6px; border-radius: 3px;">${adr.category}</span>
                 </div>
-                <div style="font-size: 12.5px; font-weight: 700; color: #f8fafc; margin-bottom: 6px;">${adr.title}</div>
-                <div style="font-size: 11px; color: #cbd5e1; line-height: 1.4; margin-bottom: 6px;">${adr.decision}</div>
-                <div style="font-size: 10.5px; color: #94a3b8; line-height: 1.35; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px;">
+                <div style="font-size: 13px; font-weight: 700; color: #f8fafc; margin-bottom: 6px;">${adr.title}</div>
+                <div style="font-size: 12px; color: #cbd5e1; line-height: 1.45; margin-bottom: 6px;">${adr.decision}</div>
+                <div style="font-size: 11px; color: #94a3b8; line-height: 1.4; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px;">
                   <strong style="color: #fbbf24;">Authority Implication:</strong> ${adr.authorityImplication}
                 </div>
               </div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);">
-                <span style="font-size: 9.5px; color: #64748b; text-transform: uppercase;">${adr.evidenceBadge}</span>
+                <span style="font-size: 10px; color: #64748b; text-transform: uppercase;">${adr.evidenceBadge}</span>
                 <span style="font-size: 11px; color: #38bdf8; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">View details <span style="font-size: 13px;">→</span></span>
               </div>
             </div>
@@ -1313,13 +1340,13 @@ function generateEaiosHtml() {
                   </span>
                   <span style="font-weight: 700; font-size: 13px; color: #f8fafc;">${stg.title}</span>
                 </div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 4px;">${stg.focus}</div>
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${stg.focus}</div>
               </div>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <span style="font-size: 10.5px; color: ${stg.status === 'FROZEN BASELINE' ? '#34d399' : '#10b981'}; font-family: monospace; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <span style="font-size: 11px; color: ${stg.status === 'FROZEN BASELINE' ? '#34d399' : '#10b981'}; font-family: monospace; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
                   ${stg.evidence}
                 </span>
-                <span style="font-size: 9.5px; font-weight: 800; color: ${stg.status === 'FROZEN BASELINE' ? '#34d399' : '#38bdf8'}; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 3px;">
+                <span style="font-size: 10px; font-weight: 800; color: ${stg.status === 'FROZEN BASELINE' ? '#34d399' : '#38bdf8'}; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 3px;">
                   ${stg.status}
                 </span>
               </div>
@@ -1336,7 +1363,7 @@ function generateEaiosHtml() {
           <!-- Modal Header -->
           <div style="padding: 16px 20px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 10px;">
-              <span id="eaios-modal-badge" style="font-family: monospace; font-size: 11.5px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);">
+              <span id="eaios-modal-badge" style="font-family: monospace; font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);">
                 ADR-000
               </span>
               <h2 id="eaios-modal-title" style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">
@@ -1349,7 +1376,7 @@ function generateEaiosHtml() {
           </div>
 
           <!-- Modal Body -->
-          <div id="eaios-modal-body" style="padding: 20px; overflow-y: auto; max-height: 60vh; font-size: 12.5px; line-height: 1.55; color: #cbd5e1; display: flex; flex-direction: column; gap: 14px;">
+          <div id="eaios-modal-body" style="padding: 20px; overflow-y: auto; max-height: 60vh; font-size: 13px; line-height: 1.55; color: #cbd5e1; display: flex; flex-direction: column; gap: 14px;">
             <!-- Populated dynamically -->
           </div>
 
@@ -1456,7 +1483,7 @@ function updateInspector(node) {
           <span style="font-size: 10px; font-weight: 800; color: #38bdf8; text-transform: uppercase;">${(node.category || 'node').replace('_', ' ')}</span>
           <h3 style="font-size: 14px; font-weight: 700; color: #f8fafc; margin: 2px 0 0 0;">${node.name}</h3>
         </div>
-        <span style="font-size: 9.5px; font-weight: 800; padding: 2px 8px; border-radius: 4px; background: ${color}20; color: ${color}; border: 1px solid ${color}50; cursor: default;">
+        <span style="font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; background: ${color}20; color: ${color}; border: 1px solid ${color}50; cursor: default;">
           ${status}
         </span>
       </div>
@@ -1466,8 +1493,8 @@ function updateInspector(node) {
     <!-- EAIES AUTHORITY CHECK PANEL -->
     <div style="background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 12px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-        <div style="font-size: 10.5px; text-transform: uppercase; color: #38bdf8; font-weight: 800;">EAIES Sovereign Gate Check</div>
-        <span style="font-size: 9.5px; font-weight: 800; padding: 2px 6px; border-radius: 3px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); cursor: default;">
+        <div style="font-size: 11px; text-transform: uppercase; color: #38bdf8; font-weight: 800;">EAIES Sovereign Gate Check</div>
+        <span style="font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 3px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); cursor: default;">
           POLICY & RESIDENCY VALIDATED
         </span>
       </div>
