@@ -7,8 +7,10 @@ import {
   DAG_SCENARIO_A_NODES,
   DAG_SCENARIO_B_C_NODES,
   DAG_SCENARIO_D_NODES,
+  DAG_SCENARIO_ORO_NODES,
   TENANT_RLS_RECORDS,
-  COST_GOVERNANCE_CONFIG
+  COST_GOVERNANCE_CONFIG,
+  EAIOS_BACKEND_CONFIG
 } from './eaios-data.js';
 
 export class EaiosSimulationManager {
@@ -16,7 +18,7 @@ export class EaiosSimulationManager {
     this.renderer = renderer;
     this.auditLogElement = auditLogElement;
     this.onStateChange = onStateChange;
-    this.activeScenario = 'scenario_a';
+    this.activeScenario = 'scenario_oro';
     this.isRunning = false;
     this.auditEvents = [];
     this.selectedNodeId = null;
@@ -55,6 +57,8 @@ export class EaiosSimulationManager {
       return DAG_SCENARIO_A_NODES;
     } else if (this.activeScenario === 'scenario_d') {
       return DAG_SCENARIO_D_NODES;
+    } else if (this.activeScenario === 'scenario_oro') {
+      return DAG_SCENARIO_ORO_NODES;
     } else {
       return DAG_SCENARIO_B_C_NODES;
     }
@@ -248,13 +252,127 @@ export class EaiosSimulationManager {
 
   async runActiveScenario() {
     if (this.isRunning) return;
-    if (this.activeScenario === 'scenario_a') {
+    if (this.activeScenario === 'scenario_oro') {
+      await this.runScenarioORO();
+    } else if (this.activeScenario === 'scenario_a') {
       await this.runScenarioA();
     } else if (this.activeScenario === 'scenario_b' || this.activeScenario === 'scenario_c') {
       await this.runScenarioB_C_Initiation();
     } else if (this.activeScenario === 'scenario_d') {
       await this.runScenarioD();
     }
+  }
+
+  /**
+   * SHOWCASE SCENARIO: Operational Resilience Officer (ORO)
+   * Critical Third-Party Service Outage • DORA Resilience Impact Synthesis
+   */
+  async runScenarioORO() {
+    this.reset();
+    this.isRunning = true;
+
+    // Phase 1: Ingest Third-Party Outage Event (Untrusted context)
+    this.workflowInstance.status = "RUNNING";
+    this.budgetState.reserved = 3500;
+    this.budgetState.remaining = 6500;
+    this._addAudit("OUTAGE_INGESTED", "Critical ICT outage telemetry ingested: ApexCloud EMEA Multi-Tenant DB Cluster partition (INC-2026-CLOUD-9941).", "INGRESS_GATEWAY", "SUCCESS", { nodeId: "node_1_outage_intake", adrRef: "ADR-011" });
+    this._addAudit("BUDGET_RESERVED", "Dual-phase token pre-reservation committed: 3,500 tokens ($3.50 micro-USD) held in escrow.", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
+    this.nodeStates["node_1_outage_intake"].status = "EXECUTING";
+    this.nodeStates["node_1_outage_intake"].workerBadge = "ingress-worker [ACTIVE]";
+    this._render();
+    await this._sleep(700);
+
+    this.nodeStates["node_1_outage_intake"].status = "COMPLETED";
+    this.nodeStates["node_1_outage_intake"].workerBadge = "Lease Released";
+    this._render();
+    await this._sleep(400);
+
+    // Phase 2: Parallel Branch Dispatch (IBS Impact Mapping & DORA Synthesis)
+    this.nodeStates["node_2_ibs_impact_mapping"].status = "EXECUTING";
+    this.nodeStates["node_2_ibs_impact_mapping"].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    this.nodeStates["node_3_dora_pillar_synthesis"].status = "EXECUTING";
+    this.nodeStates["node_3_dora_pillar_synthesis"].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    this._addAudit("EAIES_AUTH_CHECK", "EAIES evaluated resilience.impact.synthesize for emp-op-resilience-01 -> AUTHORIZATION GRANTED (Scope: resilience_synthesize).", "EAIES_PROXY", "SUCCESS", { adrRef: "ADR-001" });
+    this._addAudit("IBS_MAPPING", "Mapped affected Important Business Services: Payment Clearing Core, Wholesale Liquidity & Client Portal.", "ORO_ANALYST", "SUCCESS", { nodeId: "node_2_ibs_impact_mapping" });
+    this._addAudit("DORA_SYNTHESIS", "DORA Pillars evaluated: Pillar 1 (ICT Risk), Pillar 2 (Incident Reporting RTS Art 19), Pillar 5 (3rd-Party Concentration).", "ORO_ANALYST", "SUCCESS", { nodeId: "node_3_dora_pillar_synthesis" });
+    this._render();
+    await this._sleep(900);
+
+    this.nodeStates["node_2_ibs_impact_mapping"].status = "COMPLETED";
+    this.nodeStates["node_3_dora_pillar_synthesis"].status = "COMPLETED";
+    this.nodeStates["node_2_ibs_impact_mapping"].workerBadge = "Lease Released";
+    this.nodeStates["node_3_dora_pillar_synthesis"].workerBadge = "Lease Released";
+    this._render();
+    await this._sleep(500);
+
+    // Phase 3: Structured Resilience Recommendation (Non-Authorizing AI Proposal)
+    this.nodeStates["node_4_resilience_recommendation"].status = "EXECUTING";
+    this.nodeStates["node_4_resilience_recommendation"].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    this._render();
+
+    // Query Live Bounded Backend
+    const backendUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`;
+    let liveBackendSuccess = false;
+    let liveAssessment = null;
+
+    try {
+      const resp = await fetch(backendUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Correlation-ID": this.correlationId
+        },
+        body: JSON.stringify({
+          incident_id: "INC-2026-CLOUD-9941",
+          provider_name: "ApexCloud EMEA Infrastructure Services",
+          service_impacted: "Multi-Tenant Database Cluster & API Message Router (Primary Availability Zone)",
+          severity: "CRITICAL",
+          outage_start: "2026-10-07T18:15:00Z",
+          estimated_recovery: "2026-10-07T22:30:00Z",
+          vendor_telemetry: {
+            region: "eu-west-1",
+            affected_tenants_estimate: 1420,
+            underlying_cause: "Power distribution failure and automated failover network partition",
+            service_level: "DEGRADED_FAILOVER_UNAVAILABLE"
+          }
+        })
+      });
+
+      if (resp.ok) {
+        const data = await resp.json();
+        liveAssessment = data.assessment;
+        liveBackendSuccess = true;
+        this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}]: Synthesis verified via ${EAIOS_BACKEND_CONFIG.baseUrl}. Tokens Settled: ${data.governance_metadata?.cost_governance?.tokens_settled}. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: "node_4_resilience_recommendation", correlationId: data.correlation_id });
+      } else {
+        const errorText = await resp.text();
+        this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}]: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
+      }
+    } catch (netErr) {
+      this._addAudit("BACKEND_UNAVAILABLE", `Live Backend Connection Failed (${netErr.message}). Endpoint: ${backendUrl}. Bounded demonstration halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
+    }
+
+    if (!liveBackendSuccess) {
+      this.nodeStates["node_4_resilience_recommendation"].status = "FAILED";
+      this.nodeStates["node_4_resilience_recommendation"].workerBadge = "Backend Offline";
+      this.workflowInstance.status = "FAILED";
+      this.isRunning = false;
+      this._render();
+      return;
+    }
+
+    this.nodeStates["node_4_resilience_recommendation"].status = "COMPLETED";
+    this.nodeStates["node_4_resilience_recommendation"].workerBadge = "Lease Released";
+    this._render();
+    await this._sleep(400);
+
+    // Phase 4: Four-Eyes Executive Decision Gate -> PAUSE
+    this.nodeStates["node_5_hitl_executive_decision"].status = "PAUSED_PENDING_INPUT";
+    this.workflowInstance.status = "PAUSED_PENDING_INPUT";
+    this.humanApproval.status = "PAUSED_PENDING_INPUT";
+    this._addAudit("FOUR_EYES_GATE_PAUSED", "High-impact remediation requires Four-Eyes executive authorization. State transitioned to PAUSED_PENDING_INPUT (ADR-032).", "HITL_SERVICE", "PAUSED", { nodeId: "node_5_hitl_executive_decision", adrRef: "ADR-032" });
+    this._showApprovalBanner();
+    this.isRunning = false;
+    this._render();
   }
 
   /**
@@ -371,14 +489,19 @@ export class EaiosSimulationManager {
    * Submit Human Decision (Approve or Reject) with Four-Eyes Validation
    */
   async submitHumanDecision(decision, approverEmail, rationaleText) {
-    if (this.nodeStates["node_2_hitl_approval_gate"]?.status !== "PAUSED_PENDING_INPUT") {
+    const isOroGate = this.nodeStates["node_5_hitl_executive_decision"]?.status === "PAUSED_PENDING_INPUT";
+    const isStandardGate = this.nodeStates["node_2_hitl_approval_gate"]?.status === "PAUSED_PENDING_INPUT";
+
+    if (!isOroGate && !isStandardGate) {
       alert("Workflow is not currently waiting at a HITL decision gate.");
       return;
     }
 
+    const gateNodeId = isOroGate ? "node_5_hitl_executive_decision" : "node_2_hitl_approval_gate";
+
     // Four-Eyes Check (ADR-032 / PG Test P3)
     if (approverEmail.trim().toLowerCase() === this.workOwner.toLowerCase()) {
-      this._addAudit("FOUR_EYES_VIOLATION", `Approval rejected: Work owner (${approverEmail}) cannot self-approve high-impact decision (403 Forbidden).`, "HITL_SERVICE", "DENIED", { nodeId: "node_2_hitl_approval_gate", adrRef: "ADR-032" });
+      this._addAudit("FOUR_EYES_VIOLATION", `Approval rejected: Work owner (${approverEmail}) cannot self-approve high-impact decision (403 Forbidden).`, "HITL_SERVICE", "DENIED", { nodeId: gateNodeId, adrRef: "ADR-032" });
       alert(`[403 - FOUR-EYES VIOLATION]\nApprover '${approverEmail}' matches the Work Owner '${this.workOwner}'.\nDual-control governance requires an independent approver.`);
       this._render();
       return;
@@ -386,6 +509,59 @@ export class EaiosSimulationManager {
 
     this._hideApprovalBanner();
     this.isRunning = true;
+
+    if (isOroGate) {
+      if (decision === 'APPROVE') {
+        this.humanApproval.status = "APPROVED";
+        this.humanApproval.decision = "APPROVE";
+        this.humanApproval.approver = approverEmail;
+        this.humanApproval.rationale = rationaleText;
+        this.nodeStates["node_5_hitl_executive_decision"].status = "COMPLETED";
+
+        this._addAudit("DECISION_INGESTED", `Asynchronous human approval ingested: approver=${approverEmail}, rationale="${rationaleText}" (ADR-032)`, "HITL_SERVICE", "SUCCESS", { nodeId: "node_5_hitl_executive_decision", adrRef: "ADR-032" });
+        this._render();
+        await this._sleep(700);
+
+        // Fresh EAIES Authorization for Remediation Action
+        this.nodeStates["node_6_governed_failover_execution"].status = "EXECUTING";
+        this.nodeStates["node_6_governed_failover_execution"].workerBadge = "emp-action-executor-01 [ACTIVE]";
+        this._addAudit("FRESH_EAIES_AUTH", "EAIES evaluates fresh capability request for regulatory.action.execute -> AUTHORIZATION GRANTED (Token: valid, 60s lease).", "EAIES_PROXY", "SUCCESS", { nodeId: "node_6_governed_failover_execution", adrRef: "ADR-001" });
+        this._render();
+        await this._sleep(900);
+
+        this.nodeStates["node_6_governed_failover_execution"].status = "COMPLETED";
+        this.workflowInstance.status = "COMPLETED";
+        this.budgetState.settled = 3120;
+        this.budgetState.reserved = 0;
+        this.budgetState.remaining = 6880;
+        this._addAudit("ACTION_EXECUTED", "ACT-DR-001 executed: Secondary region failover DNS switchover committed. RTO: 18m.", "ACTION_EXECUTOR", "SUCCESS", { nodeId: "node_6_governed_failover_execution" });
+        this._addAudit("COST_SETTLED", "Final token settlement committed: 3,120 tokens used (380 tokens refunded).", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
+        this._addAudit("WORKFLOW_COMPLETED", "Workflow instance reached terminal COMPLETED state under unbroken correlation ID.", "AUDIT_LEDGER", "SUCCESS", { adrRef: "ADR-026" });
+        this.isRunning = false;
+        this._render();
+
+      } else if (decision === 'REJECT') {
+        this.humanApproval.status = "REJECTED";
+        this.humanApproval.decision = "REJECT";
+        this.humanApproval.approver = approverEmail;
+        this.humanApproval.rationale = rationaleText;
+        this.nodeStates["node_5_hitl_executive_decision"].status = "REJECTED";
+
+        this._addAudit("DECISION_INGESTED", `Executive rejection ingested: approver=${approverEmail}, rationale="${rationaleText}"`, "HITL_SERVICE", "REJECTED", { nodeId: "node_5_hitl_executive_decision", adrRef: "ADR-032" });
+        this._render();
+        await this._sleep(700);
+
+        this.nodeStates["node_6_governed_failover_execution"].status = "SKIPPED";
+        this.workflowInstance.status = "FAILED";
+        this.budgetState.reserved = 0;
+        this.budgetState.remaining = 10000;
+        this._addAudit("DOWNSTREAM_PRUNED", "Downstream failover action PRUNED (SKIPPED). Zero mutation committed.", "ORCHESTRATOR", "SUCCESS", { adrRef: "ADR-032" });
+        this._addAudit("BUDGET_RELEASED", "Unused reservation refunded in full (3,500 tokens).", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
+        this.isRunning = false;
+        this._render();
+      }
+      return;
+    }
 
     if (decision === 'APPROVE') {
       // SCENARIO B: Resume Approved Workflow

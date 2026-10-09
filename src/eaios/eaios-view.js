@@ -38,6 +38,7 @@ let isInitialized = false;
 window.selectEaiosScenario = function(scenarioKey) {
   if (!simManager) return;
   const btnMap = {
+    'scenario_oro': { id: 'eaios-scenario-btn-oro', key: 'SCENARIO_ORO' },
     'scenario_a': { id: 'eaios-scenario-btn-a', key: 'SCENARIO_A' },
     'scenario_b': { id: 'eaios-scenario-btn-b', key: 'SCENARIO_B' },
     'scenario_c': { id: 'eaios-scenario-btn-c', key: 'SCENARIO_C' },
@@ -685,11 +686,11 @@ function generateEaiosHtml() {
           <!-- Architectural Verification Status Indicators -->
           <div class="eaios-hero-badges">
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 28 Formally Frozen Baseline">
-                ✓ Stage 28 — Frozen Baseline
+              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Stage 32.2 Formally Frozen Baseline">
+                ✓ Stage 32.2 — Frozen Baseline
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; font-family: monospace;" title="Full Automated Test Suite">
-                844 passed • 0 failures
+                971 passed • 0 failures
               </span>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
@@ -697,10 +698,10 @@ function generateEaiosHtml() {
                 PostgreSQL 15.14 + RLS
               </span>
               <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Data Lifecycle (ADR-047)
+                Operational Hardening (Stage 32.2)
               </span>
               <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
-                Rogue-AI Containment
+                ORO Vertical Slice (DORA)
               </span>
               <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">
                 Four-Eyes Ed25519
@@ -715,7 +716,7 @@ function generateEaiosHtml() {
         <!-- Secondary Historical Reference -->
         <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: #94a3b8;">
           <div>
-            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> Stage 28 is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Governed Data Lifecycle (ADR-047) & Rogue-AI Authority Containment Frontier.
+            <strong style="color: #cbd5e1;">Frozen Baseline:</strong> EAIOS is formally frozen at commit <code style="color: #38bdf8;">${EAIOS_FROZEN_BASELINE.commit}</code> (tag <code style="color: #cbd5e1;">${EAIOS_FROZEN_BASELINE.tag}</code>) governing Stage 32.2 Operational Hardening & Public Showcase Phase 1.
           </div>
           <div style="font-family: monospace; font-size: 11px; color: #64748b;">
             H-01 SOVEREIGN • NON-BYPASSABLE EXECUTION BOUNDARY
@@ -1039,7 +1040,10 @@ function generateEaiosHtml() {
             </div>
           </div>
           <div role="tablist" aria-label="EAIOS Architectural Scenarios" style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button id="eaios-scenario-btn-a" onclick="window.selectEaiosScenario('scenario_a')" role="tab" aria-selected="true" tabindex="0" class="eaios-scen-btn active">
+            <button id="eaios-scenario-btn-oro" onclick="window.selectEaiosScenario('scenario_oro')" role="tab" aria-selected="true" tabindex="0" class="eaios-scen-btn active" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800;">
+              ⚡ Showcase: ORO Outage
+            </button>
+            <button id="eaios-scenario-btn-a" onclick="window.selectEaiosScenario('scenario_a')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
               Scenario A: Autonomous
             </button>
             <button id="eaios-scenario-btn-b" onclick="window.selectEaiosScenario('scenario_b')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
@@ -1059,17 +1063,17 @@ function generateEaiosHtml() {
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
             <div>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="eaios-scen-title" style="font-weight: 800; font-size: 14px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_A.name}</span>
-                <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); padding: 1px 6px; border-radius: 3px; font-size: 9.5px; font-weight: 800;">
-                  INTERACTIVE SIMULATION
+                <span id="eaios-scen-title" style="font-weight: 800; font-size: 14px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
+                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 1px 6px; border-radius: 3px; font-size: 9.5px; font-weight: 800;">
+                  TEST VERIFIED
                 </span>
               </div>
-              <div id="eaios-scen-subtitle" style="font-size: 12px; color: #38bdf8; margin-top: 2px;">${SHOWCASE_SCENARIOS.SCENARIO_A.subtitle}</div>
-              <div id="eaios-scen-desc" style="font-size: 11.5px; color: #cbd5e1; margin-top: 6px; line-height: 1.45;">${SHOWCASE_SCENARIOS.SCENARIO_A.description}</div>
+              <div id="eaios-scen-subtitle" style="font-size: 12px; color: #38bdf8; margin-top: 2px;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.subtitle}</div>
+              <div id="eaios-scen-desc" style="font-size: 11.5px; color: #cbd5e1; margin-top: 6px; line-height: 1.45;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
             </div>
             <div style="text-align: right;">
               <span id="eaios-scen-evid" style="font-size: 10.5px; color: #a78bfa; font-family: monospace; background: rgba(167, 139, 250, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(167, 139, 250, 0.25);">
-                ${SHOWCASE_SCENARIOS.SCENARIO_A.evidenceRef}
+                ${SHOWCASE_SCENARIOS.SCENARIO_ORO.evidenceRef}
               </span>
             </div>
           </div>
