@@ -615,8 +615,9 @@ function generateEaiosHtml() {
       }
       .eaios-grid-dag {
         display: grid;
-        grid-template-columns: 1.8fr 1.2fr;
+        grid-template-columns: 1fr 1fr;
         gap: 20px;
+        align-items: stretch;
       }
       .eaios-grid-authority {
         display: grid;
@@ -1377,9 +1378,9 @@ function generateEaiosHtml() {
           </div>
         </div>
 
-        <!-- DAG TOPOLOGY & LIVE INSPECTOR -->
+        <!-- DAG TOPOLOGY & LIVE INSPECTOR + AUDIT OUTPUT SIDE-BY-SIDE -->
         <div class="eaios-grid-dag">
-          <!-- DAG TOPOLOGY VIEWER -->
+          <!-- LEFT COLUMN: DAG TOPOLOGY VIEWER -->
           <div style="display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
               <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Governed DAG Execution Frontier</div>
@@ -1393,38 +1394,41 @@ function generateEaiosHtml() {
               </div>
             </div>
 
-            <div id="eaios-dag-container" style="flex: 1; min-height: 380px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; position: relative;">
+            <div id="eaios-dag-container" style="flex: 1; min-height: 480px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; position: relative;">
               <!-- SVG / Mobile DOM DAG rendered dynamically by EaiosRenderer -->
             </div>
           </div>
 
-          <!-- LIVE STATE, EAIES & GOVERNANCE INSPECTOR -->
-          <div class="eaios-info-card" style="display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Sovereign Node & Authority Inspector</div>
-              <span style="font-size: 10px; color: #38bdf8; font-family: monospace; background: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">
-                H-01 SOVEREIGN
-              </span>
+          <!-- RIGHT COLUMN: LIVE OUTPUTS (INSPECTOR & AUDIT STREAM STACKED) -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- LIVE STATE, EAIES & GOVERNANCE INSPECTOR -->
+            <div class="eaios-info-card" style="display: flex; flex-direction: column;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Sovereign Node & Authority Inspector</div>
+                <span style="font-size: 10px; color: #38bdf8; font-family: monospace; background: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">
+                  H-01 SOVEREIGN
+                </span>
+              </div>
+              <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Real-time inspection of active worker leases and EAIES policy decisions</div>
+
+              <div id="eaios-inspector-content" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Dynamically populated in updateInspector() -->
+              </div>
             </div>
-            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Real-time inspection of active worker leases and EAIES policy decisions</div>
 
-            <div id="eaios-inspector-content" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <!-- Dynamically populated in updateInspector() -->
+            <!-- ENTERPRISE FORENSIC AUDIT STREAM -->
+            <div class="eaios-info-card" style="display: flex; flex-direction: column; flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                <div style="font-size: 13px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-046)</div>
+                <span style="font-size: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                  Causal Root: CORR-2026-000741
+                </span>
+              </div>
+
+              <div id="eaios-audit-log" style="height: 240px; overflow-y: auto; background: rgba(10, 11, 16, 0.9); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="color: #64748b; text-align: center; padding-top: 100px;">Awaiting workflow execution event stream...</div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <!-- AUDIT EVENT STREAM -->
-        <div style="margin-top: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-046)</div>
-            <span style="font-size: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
-              Causal Root: CORR-2026-000741
-            </span>
-          </div>
-
-          <div id="eaios-audit-log" style="height: 180px; overflow-y: auto; background: rgba(10, 11, 16, 0.9); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
-            <div style="color: #64748b; text-align: center; padding-top: 70px;">Awaiting workflow execution event stream...</div>
           </div>
         </div>
       </div>
