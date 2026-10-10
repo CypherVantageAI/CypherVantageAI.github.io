@@ -8,6 +8,7 @@ import {
   DAG_SCENARIO_B_C_NODES,
   DAG_SCENARIO_D_NODES,
   DAG_SCENARIO_ORO_NODES,
+  ORO_SCENARIO_CATALOGUE,
   TENANT_RLS_RECORDS,
   COST_GOVERNANCE_CONFIG,
   EAIOS_BACKEND_CONFIG
@@ -19,6 +20,7 @@ export class EaiosSimulationManager {
     this.auditLogElement = auditLogElement;
     this.onStateChange = onStateChange;
     this.activeScenario = 'scenario_oro';
+    this.activeOroScenarioId = 'scenario_oro';
     this.isRunning = false;
     this.auditEvents = [];
     this.selectedNodeId = null;
@@ -44,27 +46,73 @@ export class EaiosSimulationManager {
       status: 'AUTHENTICATED'
     };
 
+    // Monotonic Run Generation Counter (Prevents Stale Asynchronous Response Contamination)
+    this.runGeneration = 0;
+
     this.reset();
   }
 
   setScenario(scenarioKey) {
-    this.activeScenario = scenarioKey;
-    this.reset();
+    // Invalidate any active asynchronous run prior to scenario replacement
+    this.runGeneration++;
+
+    // If scenarioKey is a recognized ORO catalogue ID
+    if (ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[scenarioKey]) {
+      this.activeScenario = scenarioKey;
+      this.activeOroScenarioId = scenarioKey;
+      this.reset();
+      return;
+    }
+
+    // Supported standard architectural scenarios
+    const standardScenarios = ['scenario_a', 'scenario_b', 'scenario_c', 'scenario_d'];
+    if (standardScenarios.includes(scenarioKey)) {
+      this.activeScenario = scenarioKey;
+      this.reset();
+      return;
+    }
+
+    // Deterministic rejection of unknown scenario identifiers
+    console.warn(`[EAIOS Simulation] Unknown scenario key rejected: ${scenarioKey}`);
+  }
+
+  setOroScenario(oroScenarioId) {
+    this.runGeneration++;
+    if (ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[oroScenarioId]) {
+      this.activeScenario = oroScenarioId;
+      this.activeOroScenarioId = oroScenarioId;
+      this.reset();
+    } else {
+      console.warn(`[EAIOS Simulation] Unknown ORO scenario ID rejected: ${oroScenarioId}`);
+    }
+  }
+
+  getActiveOroScenario() {
+    if (ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[this.activeOroScenarioId]) {
+      return ORO_SCENARIO_CATALOGUE[this.activeOroScenarioId];
+    }
+    return ORO_SCENARIO_CATALOGUE?.['scenario_oro'] || null;
   }
 
   getCurrentNodes() {
+    // Check if the current active scenario is in the ORO scenario catalogue
+    if (ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[this.activeScenario]) {
+      return ORO_SCENARIO_CATALOGUE[this.activeScenario].nodes;
+    }
+
     if (this.activeScenario === 'scenario_a') {
       return DAG_SCENARIO_A_NODES;
     } else if (this.activeScenario === 'scenario_d') {
       return DAG_SCENARIO_D_NODES;
-    } else if (this.activeScenario === 'scenario_oro') {
-      return DAG_SCENARIO_ORO_NODES;
     } else {
       return DAG_SCENARIO_B_C_NODES;
     }
   }
 
   reset() {
+    // Increment generation to invalidate any in-flight asynchronous operations
+    this.runGeneration++;
+
     this.isRunning = false;
     this.correlationId = "CORR-2026-000741";
     this.workItemId = "wi-2026-9b4d8c72";
@@ -113,6 +161,10 @@ export class EaiosSimulationManager {
 
     this._hideApprovalBanner();
     this._render();
+  }
+
+  _isRunActive(generation, scenarioId) {
+    return generation === this.runGeneration && this.isRunning && this.activeScenario === scenarioId;
   }
 
   selectNode(nodeId) {
@@ -252,7 +304,7 @@ export class EaiosSimulationManager {
 
   async runActiveScenario() {
     if (this.isRunning) return;
-    if (this.activeScenario === 'scenario_oro') {
+    if (ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[this.activeScenario]) {
       await this.runScenarioORO();
     } else if (this.activeScenario === 'scenario_a') {
       await this.runScenarioA();
@@ -265,49 +317,89 @@ export class EaiosSimulationManager {
 
   /**
    * SHOWCASE SCENARIO: Operational Resilience Officer (ORO)
-   * Critical Third-Party Service Outage • DORA Resilience Impact Synthesis
+   * Dynamically executes the active scenario from ORO_SCENARIO_CATALOGUE.
    */
   async runScenarioORO() {
     this.reset();
     this.isRunning = true;
 
-    // Phase 1: Ingest Third-Party Outage Event (Untrusted context)
+    const currentGeneration = this.runGeneration;
+    const currentScenarioId = this.activeScenario;
+
+    const scenario = this.getActiveOroScenario();
+    const currentNodes = this.getCurrentNodes();
+    const node1Id = currentNodes[0]?.id || "node_1_outage_intake";
+    const node2Id = currentNodes[1]?.id || "node_2_ibs_impact_mapping";
+    const node3Id = currentNodes[2]?.id || "node_3_dora_pillar_synthesis";
+    const node4Id = currentNodes[3]?.id || "node_4_resilience_recommendation";
+    const node5Id = currentNodes[4]?.id || "node_5_hitl_executive_decision";
+
+    // Phase 1: Ingest Scenario Event (Untrusted Context)
     this.workflowInstance.status = "RUNNING";
     this.budgetState.reserved = 3500;
     this.budgetState.remaining = 6500;
-    this._addAudit("OUTAGE_INGESTED", "Critical ICT outage telemetry ingested: ApexCloud EMEA Multi-Tenant DB Cluster partition (INC-2026-CLOUD-9941).", "INGRESS_GATEWAY", "SUCCESS", { nodeId: "node_1_outage_intake", adrRef: "ADR-011" });
+    const intakeDesc = `Incident telemetry ingested for [${scenario?.name || 'Operational Outage'}]: ${scenario?.incidentId || 'INC-2026-CLOUD-9941'} (${scenario?.backendPayload?.service_impacted || 'Service disruption'}).`;
+    this._addAudit("OUTAGE_INGESTED", intakeDesc, "INGRESS_GATEWAY", "SUCCESS", { nodeId: node1Id, adrRef: "ADR-011" });
     this._addAudit("BUDGET_RESERVED", "Dual-phase token pre-reservation committed: 3,500 tokens ($3.50 micro-USD) held in escrow.", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
-    this.nodeStates["node_1_outage_intake"].status = "EXECUTING";
-    this.nodeStates["node_1_outage_intake"].workerBadge = "ingress-worker [ACTIVE]";
+
+    if (this.nodeStates[node1Id]) {
+      this.nodeStates[node1Id].status = "EXECUTING";
+      this.nodeStates[node1Id].workerBadge = "ingress-worker [ACTIVE]";
+    }
     this._render();
     await this._sleep(700);
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
 
-    this.nodeStates["node_1_outage_intake"].status = "COMPLETED";
-    this.nodeStates["node_1_outage_intake"].workerBadge = "Lease Released";
+    if (this.nodeStates[node1Id]) {
+      this.nodeStates[node1Id].status = "COMPLETED";
+      this.nodeStates[node1Id].workerBadge = "Lease Released";
+    }
     this._render();
     await this._sleep(400);
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
 
     // Phase 2: Parallel Branch Dispatch (IBS Impact Mapping & DORA Synthesis)
-    this.nodeStates["node_2_ibs_impact_mapping"].status = "EXECUTING";
-    this.nodeStates["node_2_ibs_impact_mapping"].workerBadge = "emp-op-resilience-01 [ACTIVE]";
-    this.nodeStates["node_3_dora_pillar_synthesis"].status = "EXECUTING";
-    this.nodeStates["node_3_dora_pillar_synthesis"].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    if (this.nodeStates[node2Id]) {
+      this.nodeStates[node2Id].status = "EXECUTING";
+      this.nodeStates[node2Id].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    }
+    if (this.nodeStates[node3Id]) {
+      this.nodeStates[node3Id].status = "EXECUTING";
+      this.nodeStates[node3Id].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    }
+
     this._addAudit("EAIES_AUTH_CHECK", "EAIES evaluated resilience.impact.synthesize for emp-op-resilience-01 -> AUTHORIZATION GRANTED (Scope: resilience_synthesize).", "EAIES_PROXY", "SUCCESS", { adrRef: "ADR-001" });
-    this._addAudit("IBS_MAPPING", "Mapped affected Important Business Services: Payment Clearing Core, Wholesale Liquidity & Client Portal.", "ORO_ANALYST", "SUCCESS", { nodeId: "node_2_ibs_impact_mapping" });
-    this._addAudit("DORA_SYNTHESIS", "DORA Pillars evaluated: Pillar 1 (ICT Risk), Pillar 2 (Incident Reporting RTS Art 19), Pillar 5 (3rd-Party Concentration).", "ORO_ANALYST", "SUCCESS", { nodeId: "node_3_dora_pillar_synthesis" });
+    const ibsList = scenario?.affectedIBS?.join(', ') || 'Payment Clearing Core, Wholesale Liquidity';
+    this._addAudit("IBS_MAPPING", `Mapped affected Important Business Services: ${ibsList}. Target RTO: ${scenario?.targetRTO || '2 Hours'}.`, "ORO_ANALYST", "SUCCESS", { nodeId: node2Id });
+
+    const doraSummary = scenario?.doraMappings ? scenario.doraMappings[0] : "Pillar 1 (ICT Risk), Pillar 2 (Incident Reporting RTS Art 19)";
+    this._addAudit("DORA_SYNTHESIS", `DORA & Regulatory Dimensions evaluated: ${doraSummary}.`, "ORO_ANALYST", "SUCCESS", { nodeId: node3Id });
+
+    if (scenario?.adversePaths?.evidenceStatus && scenario.adversePaths.evidenceStatus !== "CONFIRMED") {
+      this._addAudit("ADVERSE_EVIDENCE_FLAGGED", `Telemetry status flagged: [${scenario.adversePaths.evidenceStatus}] - ${scenario.adversePaths.evidenceNote}`, "EVIDENCE_GATEWAY", "SUSPECT", { nodeId: node2Id });
+    }
+
     this._render();
     await this._sleep(900);
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
 
-    this.nodeStates["node_2_ibs_impact_mapping"].status = "COMPLETED";
-    this.nodeStates["node_3_dora_pillar_synthesis"].status = "COMPLETED";
-    this.nodeStates["node_2_ibs_impact_mapping"].workerBadge = "Lease Released";
-    this.nodeStates["node_3_dora_pillar_synthesis"].workerBadge = "Lease Released";
+    if (this.nodeStates[node2Id]) {
+      this.nodeStates[node2Id].status = "COMPLETED";
+      this.nodeStates[node2Id].workerBadge = "Lease Released";
+    }
+    if (this.nodeStates[node3Id]) {
+      this.nodeStates[node3Id].status = "COMPLETED";
+      this.nodeStates[node3Id].workerBadge = "Lease Released";
+    }
     this._render();
     await this._sleep(500);
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
 
     // Phase 3: Structured Resilience Recommendation (Non-Authorizing AI Proposal)
-    this.nodeStates["node_4_resilience_recommendation"].status = "EXECUTING";
-    this.nodeStates["node_4_resilience_recommendation"].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    if (this.nodeStates[node4Id]) {
+      this.nodeStates[node4Id].status = "EXECUTING";
+      this.nodeStates[node4Id].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    }
     this._render();
 
     // Query Live Bounded Backend
@@ -322,6 +414,22 @@ export class EaiosSimulationManager {
     this.correlationId = `${requestCorrelationId} (PENDING)`;
     this._render();
 
+    // Resolve payload dynamically from the active scenario
+    const payloadToSend = scenario?.backendPayload || {
+      incident_id: "INC-2026-CLOUD-9941",
+      provider_name: "ApexCloud EMEA Infrastructure Services",
+      service_impacted: "Multi-Tenant Database Cluster & API Message Router (Primary Availability Zone)",
+      severity: "CRITICAL",
+      outage_start: "2026-10-07T18:15:00Z",
+      estimated_recovery: "2026-10-07T22:30:00Z",
+      vendor_telemetry: {
+        region: "eu-west-1",
+        affected_tenants_estimate: 1420,
+        underlying_cause: "Power distribution failure and automated failover network partition",
+        service_level: "DEGRADED_FAILOVER_UNAVAILABLE"
+      }
+    };
+
     try {
       const resp = await fetch(backendUrl, {
         method: "POST",
@@ -329,34 +437,26 @@ export class EaiosSimulationManager {
           "Content-Type": "application/json",
           "X-Correlation-ID": requestCorrelationId
         },
-        body: JSON.stringify({
-          incident_id: "INC-2026-CLOUD-9941",
-          provider_name: "ApexCloud EMEA Infrastructure Services",
-          service_impacted: "Multi-Tenant Database Cluster & API Message Router (Primary Availability Zone)",
-          severity: "CRITICAL",
-          outage_start: "2026-10-07T18:15:00Z",
-          estimated_recovery: "2026-10-07T22:30:00Z",
-          vendor_telemetry: {
-            region: "eu-west-1",
-            affected_tenants_estimate: 1420,
-            underlying_cause: "Power distribution failure and automated failover network partition",
-            service_level: "DEGRADED_FAILOVER_UNAVAILABLE"
-          }
-        })
+        body: JSON.stringify(payloadToSend)
       });
+
+      // Stale-response isolation: discard if run generation or active scenario was superseded
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
 
       let data;
       if (resp.ok) {
         try {
           data = await resp.json();
         } catch (parseErr) {
+          if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
           this.correlationId = `${requestCorrelationId} (RESPONSE PROCESSING FAILED)`;
-          this._addAudit("BACKEND_ERROR", `Failed to parse backend JSON response (${parseErr.message}). Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
+          this._addAudit("BACKEND_ERROR", `Failed to parse backend JSON response (${parseErr.message}). Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
           liveBackendSuccess = false;
           data = null;
         }
 
         if (data) {
+          if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
           liveAssessment = data.assessment;
           liveBackendSuccess = true;
 
@@ -377,37 +477,49 @@ export class EaiosSimulationManager {
             }
           }
 
-          this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}]: Synthesis verified via ${EAIOS_BACKEND_CONFIG.baseUrl}. Tokens Settled: ${data.governance_metadata?.cost_governance?.tokens_settled}. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: "node_4_resilience_recommendation", correlationId: this.correlationId });
+          this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}]: Synthesis verified via ${EAIOS_BACKEND_CONFIG.baseUrl}. Tokens Settled: ${data.governance_metadata?.cost_governance?.tokens_settled}. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: node4Id, correlationId: this.correlationId });
         }
       } else {
         const errorText = await resp.text();
+        if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
         this.correlationId = `${requestCorrelationId} (HTTP ${resp.status} ERROR)`;
-        this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}]: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
+        this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}]: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
       }
     } catch (netErr) {
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
       this.correlationId = `${requestCorrelationId} (CONNECTION FAILED)`;
-      this._addAudit("BACKEND_UNAVAILABLE", `Live Backend Connection Failed (${netErr.message}). Endpoint: ${backendUrl}. Bounded demonstration halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
+      this._addAudit("BACKEND_UNAVAILABLE", `Live Backend Connection Failed (${netErr.message}). Endpoint: ${backendUrl}. Bounded demonstration halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
     }
 
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+
     if (!liveBackendSuccess) {
-      this.nodeStates["node_4_resilience_recommendation"].status = "FAILED";
-      this.nodeStates["node_4_resilience_recommendation"].workerBadge = "Backend Offline";
+      if (this.nodeStates[node4Id]) {
+        this.nodeStates[node4Id].status = "FAILED";
+        this.nodeStates[node4Id].workerBadge = "Backend Offline";
+      }
       this.workflowInstance.status = "FAILED";
       this.isRunning = false;
       this._render();
       return;
     }
 
-    this.nodeStates["node_4_resilience_recommendation"].status = "COMPLETED";
-    this.nodeStates["node_4_resilience_recommendation"].workerBadge = "Lease Released";
+    if (this.nodeStates[node4Id]) {
+      this.nodeStates[node4Id].status = "COMPLETED";
+      this.nodeStates[node4Id].workerBadge = "Lease Released";
+    }
     this._render();
     await this._sleep(400);
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
 
     // Phase 4: Four-Eyes Executive Decision Gate -> PAUSE
-    this.nodeStates["node_5_hitl_executive_decision"].status = "PAUSED_PENDING_INPUT";
+    if (this.nodeStates[node5Id]) {
+      this.nodeStates[node5Id].status = "PAUSED_PENDING_INPUT";
+    }
     this.workflowInstance.status = "PAUSED_PENDING_INPUT";
     this.humanApproval.status = "PAUSED_PENDING_INPUT";
-    this._addAudit("FOUR_EYES_GATE_PAUSED", "High-impact remediation requires Four-Eyes executive authorization. State transitioned to PAUSED_PENDING_INPUT (ADR-032).", "HITL_SERVICE", "PAUSED", { nodeId: "node_5_hitl_executive_decision", adrRef: "ADR-032" });
+    const decisionReq = scenario?.decisionProfile?.requiredDecision || "High-impact remediation requires Four-Eyes executive authorization";
+    this._addAudit("FOUR_EYES_GATE_PAUSED", `${decisionReq}. State transitioned to PAUSED_PENDING_INPUT (ADR-032).`, "HITL_SERVICE", "PAUSED", { nodeId: node5Id, adrRef: "ADR-032" });
     this._showApprovalBanner();
     this.isRunning = false;
     this._render();
@@ -527,7 +639,11 @@ export class EaiosSimulationManager {
    * Submit Human Decision (Approve or Reject) with Four-Eyes Validation
    */
   async submitHumanDecision(decision, approverEmail, rationaleText) {
-    const isOroGate = this.nodeStates["node_5_hitl_executive_decision"]?.status === "PAUSED_PENDING_INPUT";
+    const currentNodes = this.getCurrentNodes();
+    const node5Id = currentNodes[4]?.id || "node_5_hitl_executive_decision";
+    const node6Id = currentNodes[5]?.id || "node_6_governed_failover_execution";
+
+    const isOroGate = this.nodeStates[node5Id]?.status === "PAUSED_PENDING_INPUT";
     const isStandardGate = this.nodeStates["node_2_hitl_approval_gate"]?.status === "PAUSED_PENDING_INPUT";
 
     if (!isOroGate && !isStandardGate) {
@@ -535,7 +651,7 @@ export class EaiosSimulationManager {
       return;
     }
 
-    const gateNodeId = isOroGate ? "node_5_hitl_executive_decision" : "node_2_hitl_approval_gate";
+    const gateNodeId = isOroGate ? node5Id : "node_2_hitl_approval_gate";
 
     // Four-Eyes Check (ADR-032 / PG Test P3)
     if (approverEmail.trim().toLowerCase() === this.workOwner.toLowerCase()) {
@@ -549,30 +665,39 @@ export class EaiosSimulationManager {
     this.isRunning = true;
 
     if (isOroGate) {
+      const scenario = this.getActiveOroScenario();
+
       if (decision === 'APPROVE') {
         this.humanApproval.status = "APPROVED";
         this.humanApproval.decision = "APPROVE";
         this.humanApproval.approver = approverEmail;
         this.humanApproval.rationale = rationaleText;
-        this.nodeStates["node_5_hitl_executive_decision"].status = "COMPLETED";
+        if (this.nodeStates[node5Id]) this.nodeStates[node5Id].status = "COMPLETED";
 
-        this._addAudit("DECISION_INGESTED", `Asynchronous human approval ingested: approver=${approverEmail}, rationale="${rationaleText}" (ADR-032)`, "HITL_SERVICE", "SUCCESS", { nodeId: "node_5_hitl_executive_decision", adrRef: "ADR-032" });
+        this._addAudit("DECISION_INGESTED", `Asynchronous human approval ingested: approver=${approverEmail}, rationale="${rationaleText}" (ADR-032)`, "HITL_SERVICE", "SUCCESS", { nodeId: node5Id, adrRef: "ADR-032" });
         this._render();
         await this._sleep(700);
 
         // Fresh EAIES Authorization for Remediation Action
-        this.nodeStates["node_6_governed_failover_execution"].status = "EXECUTING";
-        this.nodeStates["node_6_governed_failover_execution"].workerBadge = "emp-action-executor-01 [ACTIVE]";
-        this._addAudit("FRESH_EAIES_AUTH", "EAIES evaluates fresh capability request for regulatory.action.execute -> AUTHORIZATION GRANTED (Token: valid, 60s lease).", "EAIES_PROXY", "SUCCESS", { nodeId: "node_6_governed_failover_execution", adrRef: "ADR-001" });
+        if (this.nodeStates[node6Id]) {
+          this.nodeStates[node6Id].status = "EXECUTING";
+          this.nodeStates[node6Id].workerBadge = "emp-action-executor-01 [ACTIVE]";
+        }
+        this._addAudit("FRESH_EAIES_AUTH", "EAIES evaluates fresh capability request for regulatory.action.execute -> AUTHORIZATION GRANTED (Token: valid, 60s lease).", "EAIES_PROXY", "SUCCESS", { nodeId: node6Id, adrRef: "ADR-001" });
         this._render();
         await this._sleep(900);
 
-        this.nodeStates["node_6_governed_failover_execution"].status = "COMPLETED";
+        if (this.nodeStates[node6Id]) {
+          this.nodeStates[node6Id].status = "COMPLETED";
+          this.nodeStates[node6Id].workerBadge = "Lease Released";
+        }
         this.workflowInstance.status = "COMPLETED";
         this.budgetState.settled = 3120;
         this.budgetState.reserved = 0;
         this.budgetState.remaining = 6880;
-        this._addAudit("ACTION_EXECUTED", "ACT-DR-001 executed: Secondary region failover DNS switchover committed. RTO: 18m.", "ACTION_EXECUTOR", "SUCCESS", { nodeId: "node_6_governed_failover_execution" });
+
+        const actionExecutedMsg = `Remediation action executed under governed supervision for [${scenario?.name || 'Operational Outage'}]. Invariant: Model proposed, Human authorized, EAIES executed.`;
+        this._addAudit("ACTION_EXECUTED", actionExecutedMsg, "ACTION_EXECUTOR", "SUCCESS", { nodeId: node6Id });
         this._addAudit("COST_SETTLED", "Final token settlement committed: 3,120 tokens used (380 tokens refunded).", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
         this._addAudit("WORKFLOW_COMPLETED", "Workflow instance reached terminal COMPLETED state under unbroken correlation ID.", "AUDIT_LEDGER", "SUCCESS", { adrRef: "ADR-026" });
         this.isRunning = false;
@@ -583,17 +708,21 @@ export class EaiosSimulationManager {
         this.humanApproval.decision = "REJECT";
         this.humanApproval.approver = approverEmail;
         this.humanApproval.rationale = rationaleText;
-        this.nodeStates["node_5_hitl_executive_decision"].status = "REJECTED";
+        if (this.nodeStates[node5Id]) this.nodeStates[node5Id].status = "REJECTED";
 
-        this._addAudit("DECISION_INGESTED", `Executive rejection ingested: approver=${approverEmail}, rationale="${rationaleText}"`, "HITL_SERVICE", "REJECTED", { nodeId: "node_5_hitl_executive_decision", adrRef: "ADR-032" });
+        this._addAudit("DECISION_INGESTED", `Executive rejection ingested: approver=${approverEmail}, rationale="${rationaleText}"`, "HITL_SERVICE", "REJECTED", { nodeId: node5Id, adrRef: "ADR-032" });
         this._render();
         await this._sleep(700);
 
-        this.nodeStates["node_6_governed_failover_execution"].status = "SKIPPED";
+        if (this.nodeStates[node6Id]) {
+          this.nodeStates[node6Id].status = "SKIPPED";
+        }
         this.workflowInstance.status = "FAILED";
         this.budgetState.reserved = 0;
         this.budgetState.remaining = 10000;
-        this._addAudit("DOWNSTREAM_PRUNED", "Downstream failover action PRUNED (SKIPPED). Zero mutation committed.", "ORCHESTRATOR", "SUCCESS", { adrRef: "ADR-032" });
+
+        const compensationDesc = scenario?.adversePaths?.rejectionSagaCompensation || "Downstream remediation action PRUNED (SKIPPED). Zero mutation committed.";
+        this._addAudit("DOWNSTREAM_PRUNED", `Downstream action PRUNED (SKIPPED). Compensation: ${compensationDesc}`, "ORCHESTRATOR", "SUCCESS", { adrRef: "ADR-032" });
         this._addAudit("BUDGET_RELEASED", "Unused reservation refunded in full (3,500 tokens).", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
         this.isRunning = false;
         this._render();

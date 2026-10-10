@@ -561,6 +561,627 @@ export const DAG_SCENARIO_ORO_NODES = [
   }
 ];
 
+export const DAG_SCENARIO_ORO_CYBER_NODES = [
+  {
+    id: "node_1_cyber_threat_intake",
+    name: "EDR Threat Intake & Demarcation",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Ingress Intake Gate (ADR-011)",
+    capabilityId: "intake.event.ingest",
+    authorityScope: "intake_ingest",
+    description: "Ingests endpoint encryption signals and mass extortion alerts from threat intelligence feed as untrusted telemetry.",
+    dependencies: [],
+    x: 90,
+    y: 190
+  },
+  {
+    id: "node_2_custody_impact_mapping",
+    name: "Custody & Settlement Blast Radius",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Maps lateral threat propagation to Customer Custody Ledger and Real-Time Settlement Subnet.",
+    dependencies: ["node_1_cyber_threat_intake"],
+    parallelGroup: "oro_cyber_branch",
+    x: 330,
+    y: 90
+  },
+  {
+    id: "node_3_dora_art19_classification",
+    name: "DORA RTS Art. 19 & NIS2 Scope",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Synthesizes major ICT-related incident criteria under DORA Article 19 and statutory 4-hour supervisory notice triggers.",
+    dependencies: ["node_1_cyber_threat_intake"],
+    parallelGroup: "oro_cyber_branch",
+    x: 330,
+    y: 290
+  },
+  {
+    id: "node_4_containment_recommendation",
+    name: "Quarantine & Backup Assessment",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Recommends subnet network isolation (ACT-SEC-004) and restoration from air-gapped immutable WORM snapshots. Advisory only.",
+    dependencies: ["node_2_custody_impact_mapping", "node_3_dora_art19_classification"],
+    x: 570,
+    y: 190
+  },
+  {
+    id: "node_5_hitl_quarantine_decision",
+    name: "Four-Eyes CISO Decision Gate",
+    category: "governance_boundary",
+    employeeId: null,
+    employeeName: "Security Executive Authority Gate (ADR-032)",
+    capabilityId: "governance.approval.evaluate",
+    authorityScope: "executive_signoff",
+    description: "Workflow pauses (PAUSED_PENDING_INPUT). High-impact network severing requires dual-control human authorization.",
+    dependencies: ["node_4_containment_recommendation"],
+    isGate: true,
+    x: 810,
+    y: 190
+  },
+  {
+    id: "node_6_governed_quarantine_execution",
+    name: "Governed Isolation & Evidence Freeze",
+    category: "action_executor",
+    employeeId: "emp-action-executor-01",
+    employeeName: "Approved Action Executor",
+    capabilityId: "regulatory.action.execute",
+    authorityScope: "action_execute",
+    description: "Executes verified network isolation (ACT-SEC-004), seals cryptographic memory dumps, and settles token budget.",
+    dependencies: ["node_5_hitl_quarantine_decision"],
+    x: 1050,
+    y: 190
+  }
+];
+
+export const DAG_SCENARIO_ORO_THIRD_PARTY_NODES = [
+  {
+    id: "node_1_vendor_failure_intake",
+    name: "SaaS Ingress Failure Intake",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Ingress Intake Gate (ADR-011)",
+    capabilityId: "intake.event.ingest",
+    authorityScope: "intake_ingest",
+    description: "Ingests persistent HTTP 504 timeouts and zero-ETA outage notices from critical messaging vendor as untrusted telemetry.",
+    dependencies: [],
+    x: 90,
+    y: 190
+  },
+  {
+    id: "node_2_concentration_risk_mapping",
+    name: "Concentration & Market SLA Impact",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Quantifies downstream settlement backlog and concentration exposure across all tier-1 clearing participants.",
+    dependencies: ["node_1_vendor_failure_intake"],
+    parallelGroup: "oro_tp_branch",
+    x: 330,
+    y: 90
+  },
+  {
+    id: "node_3_dora_pillar5_assessment",
+    name: "DORA Pillar 5 Contractual Review",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Evaluates contractual RTO breach thresholds, subcontractor audit trails, and multi-vendor fallback obligations.",
+    dependencies: ["node_1_vendor_failure_intake"],
+    parallelGroup: "oro_tp_branch",
+    x: 330,
+    y: 290
+  },
+  {
+    id: "node_4_vendor_switch_recommendation",
+    name: "Contingency Routing Assessment",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Recommends bypass of degraded primary vendor and activation of secondary SWIFT ISO 20022 gateway (ACT-VEN-002).",
+    dependencies: ["node_2_concentration_risk_mapping", "node_3_dora_pillar5_assessment"],
+    x: 570,
+    y: 190
+  },
+  {
+    id: "node_5_hitl_vendor_switch_decision",
+    name: "Four-Eyes Vendor Bypass Gate",
+    category: "governance_boundary",
+    employeeId: null,
+    employeeName: "Procurement & Operations Authority Gate (ADR-032)",
+    capabilityId: "governance.approval.evaluate",
+    authorityScope: "executive_signoff",
+    description: "Workflow pauses (PAUSED_PENDING_INPUT). Switching clearing rails mandates dual-control commercial and ops sign-off.",
+    dependencies: ["node_4_vendor_switch_recommendation"],
+    isGate: true,
+    x: 810,
+    y: 190
+  },
+  {
+    id: "node_6_governed_vendor_switch_execution",
+    name: "Governed Rail Switch & Settlement",
+    category: "action_executor",
+    employeeId: "emp-action-executor-01",
+    employeeName: "Approved Action Executor",
+    capabilityId: "regulatory.action.execute",
+    authorityScope: "action_execute",
+    description: "Executes verified traffic re-routing (ACT-VEN-002) to secondary partner under fresh EAIES authorization and settles tokens.",
+    dependencies: ["node_5_hitl_vendor_switch_decision"],
+    x: 1050,
+    y: 190
+  }
+];
+
+export const DAG_SCENARIO_ORO_INTEGRITY_NODES = [
+  {
+    id: "node_1_integrity_alert_intake",
+    name: "Reconciliation Inconsistency Intake",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Ingress Intake Gate (ADR-011)",
+    capabilityId: "intake.event.ingest",
+    authorityScope: "intake_ingest",
+    description: "Ingests cryptographic ledger checksum mismatch alerts across 14,000 journal lines as untrusted telemetry.",
+    dependencies: [],
+    x: 90,
+    y: 190
+  },
+  {
+    id: "node_2_ledger_divergence_mapping",
+    name: "Ledger Divergence & Blast Radius",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Traces silent data divergence between Real-Time Clearing Cache and Durable Settlement Book.",
+    dependencies: ["node_1_integrity_alert_intake"],
+    parallelGroup: "oro_int_branch",
+    x: 330,
+    y: 90
+  },
+  {
+    id: "node_3_dora_art10_integrity_review",
+    name: "DORA Art. 10 Data Protection Audit",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Evaluates DORA Article 10 data integrity mandates, zero-tamper evidence requirements, and accounting freeze criteria.",
+    dependencies: ["node_1_integrity_alert_intake"],
+    parallelGroup: "oro_int_branch",
+    x: 330,
+    y: 290
+  },
+  {
+    id: "node_4_quarantine_rollback_recommendation",
+    name: "Partition Quarantine Assessment",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Recommends freezing corrupt ledger partitions and rolling back to verified block checksum (ACT-DATA-003).",
+    dependencies: ["node_2_ledger_divergence_mapping", "node_3_dora_art10_integrity_review"],
+    x: 570,
+    y: 190
+  },
+  {
+    id: "node_5_hitl_rollback_decision",
+    name: "Four-Eyes Settlement Freeze Gate",
+    category: "governance_boundary",
+    employeeId: null,
+    employeeName: "Chief Accounting Officer Authority Gate (ADR-032)",
+    capabilityId: "governance.approval.evaluate",
+    authorityScope: "executive_signoff",
+    description: "Workflow pauses (PAUSED_PENDING_INPUT). Freezing transaction books requires dual-control accounting and legal authorization.",
+    dependencies: ["node_4_quarantine_rollback_recommendation"],
+    isGate: true,
+    x: 810,
+    y: 190
+  },
+  {
+    id: "node_6_governed_rollback_execution",
+    name: "Governed State Rollback & Settlement",
+    category: "action_executor",
+    employeeId: "emp-action-executor-01",
+    employeeName: "Approved Action Executor",
+    capabilityId: "regulatory.action.execute",
+    authorityScope: "action_execute",
+    description: "Applies verified transaction quarantine (ACT-DATA-003), commences state replay, and settles token budget.",
+    dependencies: ["node_5_hitl_rollback_decision"],
+    x: 1050,
+    y: 190
+  }
+];
+
+export const DAG_SCENARIO_ORO_COMPOUND_NODES = [
+  {
+    id: "node_1_compound_alert_intake",
+    name: "Compound Multi-Vector Intake",
+    category: "coordination_primitive",
+    employeeId: null,
+    employeeName: "Ingress Intake Gate (ADR-011)",
+    capabilityId: "intake.event.ingest",
+    authorityScope: "intake_ingest",
+    description: "Ingests concurrent alerts: SaaS vendor communications collapse coinciding with secondary cloud region DDoS saturation.",
+    dependencies: [],
+    x: 90,
+    y: 190
+  },
+  {
+    id: "node_2_cascading_dependency_mapping",
+    name: "Cascading Multi-Service Mapping",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Maps concurrent failure across both Wholesale Clearing and Retail Liquidity Rails; calculates compounding blast radius.",
+    dependencies: ["node_1_compound_alert_intake"],
+    parallelGroup: "oro_cmp_branch",
+    x: 330,
+    y: 90
+  },
+  {
+    id: "node_3_dora_systemic_crisis_review",
+    name: "Systemic Crisis & Regulatory Threshold",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Evaluates multi-pillar statutory criteria (Pillar 1, 2, 4, 5) and activates mandatory emergency regulatory notification protocols.",
+    dependencies: ["node_1_compound_alert_intake"],
+    parallelGroup: "oro_cmp_branch",
+    x: 330,
+    y: 290
+  },
+  {
+    id: "node_4_triage_escalation_recommendation",
+    name: "Priority Triage Assessment",
+    category: "ai_employee",
+    employeeId: "emp-op-resilience-01",
+    employeeName: "Operational Resilience Officer",
+    capabilityId: "resilience.impact.synthesize",
+    authorityScope: "resilience_synthesize",
+    description: "Synthesizes multi-vector recovery plan (ACT-CMP-005): throttle non-critical portals to preserve core liquidity settlement bandwidth.",
+    dependencies: ["node_2_cascading_dependency_mapping", "node_3_dora_systemic_crisis_review"],
+    x: 570,
+    y: 190
+  },
+  {
+    id: "node_5_hitl_board_emergency_decision",
+    name: "Four-Eyes Crisis Committee Gate",
+    category: "governance_boundary",
+    employeeId: null,
+    employeeName: "Board Resilience Crisis Gate (ADR-032)",
+    capabilityId: "governance.approval.evaluate",
+    authorityScope: "executive_signoff",
+    description: "Workflow pauses (PAUSED_PENDING_INPUT). Non-critical channel shedding requires dual-control Board Risk Committee authorization.",
+    dependencies: ["node_4_triage_escalation_recommendation"],
+    isGate: true,
+    x: 810,
+    y: 190
+  },
+  {
+    id: "node_6_governed_compound_execution",
+    name: "Governed Triage & Settlement",
+    category: "action_executor",
+    employeeId: "emp-action-executor-01",
+    employeeName: "Approved Action Executor",
+    capabilityId: "regulatory.action.execute",
+    authorityScope: "action_execute",
+    description: "Executes verified priority load shed (ACT-CMP-005) under fresh EAIES authorization and settles token budget.",
+    dependencies: ["node_5_hitl_board_emergency_decision"],
+    x: 1050,
+    y: 190
+  }
+];
+
+export const ORO_SCENARIO_CATALOGUE = {
+  scenario_oro: {
+    id: "scenario_oro",
+    name: "Cloud Region Infrastructure Outage",
+    subtitle: "Primary Cloud Availability Zone Partition • Multi-Tenant DB Outage & Standby Failover",
+    severity: "CRITICAL",
+    incidentId: "INC-2026-CLOUD-9941",
+    description: "Simulates an abrupt power distribution failure and network partition at primary cloud provider (ApexCloud EMEA). Validates multi-service blast radius, statutory DORA reporting triggers, and governed DNS failover to UK-South.",
+    affectedIBS: [
+      "Payment Clearing & Settlement Core",
+      "Wholesale Liquidity Reporting & Cash Management",
+      "Client Transaction Portal"
+    ],
+    affectedServices: [
+      "Multi-Tenant Database Cluster (Primary AZ)",
+      "API Message Router",
+      "Real-Time Liquidity Cache"
+    ],
+    doraMappings: [
+      "Pillar 1: ICT Risk Management (Unplanned disruption of critical cloud infrastructure)",
+      "Pillar 2: ICT-Related Incident Reporting (RTS Art. 19 major incident threshold exceeded)",
+      "Pillar 5: Managing ICT Third-Party Risk (Concentration risk & standby failover readiness)"
+    ],
+    targetRTO: "2 Hours (Regulatory Max Tolerable Downtime: 4 Hours)",
+    targetRPO: "0 (Zero Data Loss via Synchronous Replica)",
+    nodes: DAG_SCENARIO_ORO_NODES,
+    backendPayload: {
+      incident_id: "INC-2026-CLOUD-9941",
+      provider_name: "ApexCloud EMEA Infrastructure Services",
+      service_impacted: "Multi-Tenant Database Cluster & API Message Router (Primary Availability Zone)",
+      severity: "CRITICAL",
+      outage_start: "2026-10-07T18:15:00Z",
+      estimated_recovery: "2026-10-07T22:30:00Z",
+      vendor_telemetry: {
+        region: "eu-west-1",
+        affected_tenants_estimate: 1420,
+        underlying_cause: "Power distribution failure and automated failover network partition",
+        service_level: "DEGRADED_FAILOVER_UNAVAILABLE"
+      }
+    },
+    decisionProfile: {
+      decisionOwnerRole: "Operational Resilience Incident Commander (Role: Head of Resilience)",
+      requiredDecision: "Authorize live production DNS switchover to secondary cloud region (UK-South)",
+      fourEyesRequired: true,
+      consequenceStatement: "Initiates live traffic diversion away from failed primary AZ to secondary hot-standby."
+    },
+    adversePaths: {
+      evidenceStatus: "CONFLICTING",
+      evidenceNote: "Provider status page reports 'investigating elevated latencies'; internal probes measure 100% packet loss.",
+      rejectionSagaCompensation: "Aborts DNS cutover, maintains current routing to prevent split-brain partition, escalates to Manual Runbook."
+    },
+    disclosures: {
+      syntheticBadge: "DEMO TELEMETRY: SYNTHESISED",
+      budgetType: "BUDGET: REQUEST-SCOPED IN-MEMORY",
+      approvalType: "SIMULATED UI GATE (NO WEBAUTHN)"
+    }
+  },
+
+  oro_cyber_ransomware: {
+    id: "oro_cyber_ransomware",
+    name: "Ransomware & Cyber Containment",
+    subtitle: "Extortion Event • Customer Custody Ledger Blast Radius & Air-Gapped Snapshot Recovery",
+    severity: "CRITICAL",
+    incidentId: "INC-2026-CYBER-8820",
+    description: "Simulates an active lateral encryption event across settlement caching layers. Demonstrates containment recommendations over failover, forensic evidence preservation, and governed recovery from immutable air-gapped snapshots.",
+    affectedIBS: [
+      "Customer Custody Ledger & Asset Safekeeping",
+      "Wholesale Liquidity Reporting & Cash Management"
+    ],
+    affectedServices: [
+      "In-Memory Settlement Cache Subnet",
+      "Staging Directory Cluster",
+      "Identity Federation Gateway"
+    ],
+    doraMappings: [
+      "Pillar 2: ICT-Related Incident Reporting (DORA RTS Art. 19 - Cyber Attack with Malicious Exfiltration)",
+      "Pillar 4: Digital Operational Resilience Testing (Threat-Led Penetration Testing TLPT Scenarios)"
+    ],
+    targetRTO: "4 Hours (Air-Gapped Snapshot Hydration SLA)",
+    targetRPO: "15 Minutes (Last Verified Immutable WORM Block)",
+    nodes: DAG_SCENARIO_ORO_CYBER_NODES,
+    backendPayload: {
+      incident_id: "INC-2026-CYBER-8820",
+      provider_name: "Internal Cyber Defense & EDR Platform",
+      service_impacted: "In-Memory Settlement Cache Subnet (Host Fleet Alpha)",
+      severity: "CRITICAL",
+      outage_start: "2026-10-09T03:42:00Z",
+      estimated_recovery: "2026-10-09T08:00:00Z",
+      vendor_telemetry: {
+        region: "uk-south",
+        threat_actor_attribution: "Uncategorized Ransomware Variant (LockBit-derived signature)",
+        encryption_rate_mbps: 450,
+        compromised_endpoints_count: 18,
+        containment_status: "LATERAL_SPREAD_DETECTED"
+      }
+    },
+    decisionProfile: {
+      decisionOwnerRole: "Chief Information Security Officer (Role: CISO)",
+      requiredDecision: "Authorize immediate network isolation of payment settlement subnet and freeze memory dumps",
+      fourEyesRequired: true,
+      consequenceStatement: "Halts live payment ingress on Subnet Alpha to prevent malware spread; freezes volatile memory for forensics."
+    },
+    adversePaths: {
+      evidenceStatus: "UNCONFIRMED",
+      evidenceNote: "Threat actor claims exfiltration of client PII; data loss remains unconfirmed pending deep packet inspection.",
+      rejectionSagaCompensation: "Maintains network connectivity, notifies CSIRT of containment rejection, activates packet mirror."
+    },
+    disclosures: {
+      syntheticBadge: "DEMO TELEMETRY: SYNTHESISED",
+      budgetType: "BUDGET: REQUEST-SCOPED IN-MEMORY",
+      approvalType: "SIMULATED UI GATE (NO WEBAUTHN)"
+    }
+  },
+
+  oro_third_party_outage: {
+    id: "oro_third_party_outage",
+    name: "Critical Third-Party Concentration Failure",
+    subtitle: "Core SaaS Messaging Blackout • Contractual SLA Breach & Backup Rail Activation",
+    severity: "HIGH",
+    incidentId: "INC-2026-VENDOR-7730",
+    description: "Simulates an unannounced outage of a critical third-party messaging gateway. Focuses on DORA Pillar 5 concentration risk, missing vendor telemetry, contractual RTO breach, and governed failover to an alternative SWIFT provider.",
+    affectedIBS: [
+      "Payment Clearing & Settlement Core",
+      "Client Transaction Portal"
+    ],
+    affectedServices: [
+      "Third-Party ISO 20022 Gateway Service",
+      "Interbank Payment Messaging Bus"
+    ],
+    doraMappings: [
+      "Pillar 5: Managing ICT Third-Party Risk (Contractual RTO breach & concentration vulnerability)",
+      "Pillar 1: ICT Risk Management (Contingency arrangements for critical ICT third-party service providers)"
+    ],
+    targetRTO: "1 Hour (Contractual Vendor SLA: 15 Minutes — BREACHED)",
+    targetRPO: "0 (Zero In-Flight Message Loss via Transactional Inbox)",
+    nodes: DAG_SCENARIO_ORO_THIRD_PARTY_NODES,
+    backendPayload: {
+      incident_id: "INC-2026-VENDOR-7730",
+      provider_name: "ClearLink Global Financial Messaging Ltd",
+      service_impacted: "Primary ISO 20022 Financial Gateway (API Endpoint Cluster)",
+      severity: "HIGH",
+      outage_start: "2026-10-08T11:00:00Z",
+      estimated_recovery: "2026-10-08T14:00:00Z",
+      vendor_telemetry: {
+        region: "global-saas",
+        downtime_elapsed_minutes: 85,
+        contractual_sla_target_minutes: 15,
+        vendor_support_ticket: "TKT-CL-99214-CRIT",
+        vendor_status: "UNRESPONSIVE_NO_ETA"
+      }
+    },
+    decisionProfile: {
+      decisionOwnerRole: "Head of Banking Operations & Third-Party Oversight",
+      requiredDecision: "Authorize contractual vendor bypass and traffic diversion to secondary SWIFT backup rail",
+      fourEyesRequired: true,
+      consequenceStatement: "Terminates primary vendor feed and initiates traffic transmission through secondary contingency partner."
+    },
+    adversePaths: {
+      evidenceStatus: "MISSING",
+      evidenceNote: "Third-party vendor has published no public status update or recovery ETA after 85 minutes of total downtime.",
+      rejectionSagaCompensation: "Cancels secondary provider route, leaves in-flight batches queued in transactional outbox, alerts Treasury."
+    },
+    disclosures: {
+      syntheticBadge: "DEMO TELEMETRY: SYNTHESISED",
+      budgetType: "BUDGET: REQUEST-SCOPED IN-MEMORY",
+      approvalType: "SIMULATED UI GATE (NO WEBAUTHN)"
+    }
+  },
+
+  oro_data_corruption: {
+    id: "oro_data_corruption",
+    name: "Silent Data Corruption & Integrity Failure",
+    subtitle: "Divergent Transaction Checksums • Liveness Healthy but Ledger Inconsistent",
+    severity: "CRITICAL",
+    incidentId: "INC-2026-INTEG-6640",
+    description: "Simulates a silent data integrity failure where API liveness probes return 200 OK, but cryptographic checksum verification identifies divergence across 14,000 ledger rows. Recommends transaction isolation and state replay.",
+    affectedIBS: [
+      "Payment Clearing & Settlement Core",
+      "Customer Custody Ledger & Asset Safekeeping"
+    ],
+    affectedServices: [
+      "Real-Time Clearing Cache",
+      "Durable Core Settlement Ledger",
+      "Ledger Reconciliation Worker Fleet"
+    ],
+    doraMappings: [
+      "Pillar 1: ICT Risk Management (Data integrity protection and reconciliation monitoring)",
+      "Pillar 2: ICT-Related Incident Reporting (Systemic financial integrity compromise under DORA RTS Art. 19)"
+    ],
+    targetRTO: "3 Hours (Ledger Partition Replay SLA)",
+    targetRPO: "0 (Deterministic rollback to last validated merkle tree block)",
+    nodes: DAG_SCENARIO_ORO_INTEGRITY_NODES,
+    backendPayload: {
+      incident_id: "INC-2026-INTEG-6640",
+      provider_name: "Internal Core Ledger & Reconciliation Engine",
+      service_impacted: "Distributed Settlement Ledger (Shard 04 Partition)",
+      severity: "CRITICAL",
+      outage_start: "2026-10-09T14:10:00Z",
+      estimated_recovery: "2026-10-09T17:30:00Z",
+      vendor_telemetry: {
+        region: "eu-west-1",
+        divergent_journal_records: 14208,
+        checksum_mismatch_detected: true,
+        liveness_probe_status: "200_OK_SILENT_CORRUPTION",
+        merkle_root_verified: false
+      }
+    },
+    decisionProfile: {
+      decisionOwnerRole: "Chief Accounting Officer & Lead Settlement Officer",
+      requiredDecision: "Authorize immediate transaction batch freeze and state rollback to validated block checkpoint",
+      fourEyesRequired: true,
+      consequenceStatement: "Halts real-time clearing processing on Shard 04; initiates safe historical transaction replay."
+    },
+    adversePaths: {
+      evidenceStatus: "CONFIRMED",
+      evidenceNote: "Deterministic SHA-256 state tree mismatch verified across three independent audit nodes.",
+      rejectionSagaCompensation: "Cancels ledger rollback, flags shard as tainted, routes clearing to manual paper exception desk."
+    },
+    disclosures: {
+      syntheticBadge: "DEMO TELEMETRY: SYNTHESISED",
+      budgetType: "BUDGET: REQUEST-SCOPED IN-MEMORY",
+      approvalType: "SIMULATED UI GATE (NO WEBAUTHN)"
+    }
+  },
+
+  oro_compound_incident: {
+    id: "oro_compound_incident",
+    name: "Compound Incident: Multi-Vector Crisis",
+    subtitle: "Third-Party SaaS Outage Concurrent with Regional DDoS Saturation • Priority Triage",
+    severity: "CRITICAL",
+    incidentId: "INC-2026-COMPOUND-5510",
+    description: "Simulates a compound dual-vector crisis: a critical messaging vendor experiences an outage simultaneously with a DDoS volume attack targeting standby infrastructure. Recommends selective load-shedding and statutory regulator escalation.",
+    affectedIBS: [
+      "Payment Clearing & Settlement Core",
+      "Wholesale Liquidity Reporting & Cash Management",
+      "Client Transaction Portal"
+    ],
+    affectedServices: [
+      "Primary ISO 20022 Gateway Service",
+      "Secondary Failover Network Ingress",
+      "Public Client Gateway API"
+    ],
+    doraMappings: [
+      "Pillar 1: ICT Risk Management (Compound threat modeling and capacity exhaustion)",
+      "Pillar 2: ICT-Related Incident Reporting (Systemic major incident with multi-pillar impact)",
+      "Pillar 5: Managing ICT Third-Party Risk (Cascading vendor dependency failures)"
+    ],
+    targetRTO: "2 Hours (Wholesale Clearing) / 6 Hours (Client Portal)",
+    targetRPO: "0 (Zero Data Loss for High-Priority Settlement Streams)",
+    nodes: DAG_SCENARIO_ORO_COMPOUND_NODES,
+    backendPayload: {
+      incident_id: "INC-2026-COMPOUND-5510",
+      provider_name: "ApexCloud EMEA & ClearLink Financial Services",
+      service_impacted: "Core Messaging Bus & Standby Cloud Ingress",
+      severity: "CRITICAL",
+      outage_start: "2026-10-09T16:05:00Z",
+      estimated_recovery: "2026-10-09T20:30:00Z",
+      vendor_telemetry: {
+        region: "multi-region",
+        compound_vectors: ["THIRD_PARTY_SLA_BREACH", "STANDBY_DDOS_SATURATION"],
+        ingress_packet_drop_pct: 68.4,
+        vendor_availability_pct: 0.0,
+        triage_recommendation: "SHED_RETAIL_PRESERVE_WHOLESALE"
+      }
+    },
+    decisionProfile: {
+      decisionOwnerRole: "Board Operational Resilience Crisis Committee",
+      requiredDecision: "Authorize emergency load-shedding of retail transaction portals to preserve wholesale clearing bandwidth",
+      fourEyesRequired: true,
+      consequenceStatement: "Temporarily throttles retail customer portal access; preserves 100% bandwidth for interbank wholesale settlement."
+    },
+    adversePaths: {
+      evidenceStatus: "CONFLICTING",
+      evidenceNote: "DDoS mitigation partner reports traffic clean; internal ingress metrics indicate 68% packet loss.",
+      rejectionSagaCompensation: "Rejects selective load-shedding, maintains open channels, risks systemic cascade, alerts EBA/PRA."
+    },
+    disclosures: {
+      syntheticBadge: "DEMO TELEMETRY: SYNTHESISED",
+      budgetType: "BUDGET: REQUEST-SCOPED IN-MEMORY",
+      approvalType: "SIMULATED UI GATE (NO WEBAUTHN)"
+    }
+  }
+};
+
+
 export const TENANT_RLS_RECORDS = [
   {
     id: "doc_gwm_001",

@@ -17,6 +17,7 @@ import {
   STAGE_13_LIFECYCLE_STATES,
   EVIDENCE_BADGES,
   SHOWCASE_SCENARIOS,
+  ORO_SCENARIO_CATALOGUE,
   CORE_INVARIANTS,
   ADR_EXPLORER_CATALOG,
   STAGE_MATURITY_TIMELINE,
@@ -60,6 +61,23 @@ window.selectEaiosScenario = function(scenarioKey) {
       activeBtn.classList.add('active');
       activeBtn.setAttribute('aria-selected', 'true');
     }
+  }
+
+  // Toggle ORO sub-selector visibility
+  const oroSubSelector = document.getElementById('eaios-oro-sub-selector');
+  const oroContextCard = document.getElementById('eaios-oro-context-card');
+  const isOroActive = scenarioKey === 'scenario_oro' || (ORO_SCENARIO_CATALOGUE && !!ORO_SCENARIO_CATALOGUE[scenarioKey]);
+
+  if (oroSubSelector) {
+    oroSubSelector.style.display = isOroActive ? 'block' : 'none';
+  }
+  if (oroContextCard) {
+    oroContextCard.style.display = isOroActive ? 'block' : 'none';
+  }
+
+  if (isOroActive) {
+    window.updateOroScenarioUi(simManager.activeOroScenarioId || 'scenario_oro');
+  } else if (entry) {
     const info = SHOWCASE_SCENARIOS[entry.key];
     if (info) {
       const titleEl = document.getElementById('eaios-scen-title');
@@ -73,15 +91,8 @@ window.selectEaiosScenario = function(scenarioKey) {
 
       const synthBadge = document.getElementById('eaios-scen-synthetic-badge');
       const budgetBadge = document.getElementById('eaios-scen-budget-badge');
-      if (synthBadge && budgetBadge) {
-        if (scenarioKey === 'scenario_oro') {
-          synthBadge.style.display = 'inline-block';
-          budgetBadge.style.display = 'inline-block';
-        } else {
-          synthBadge.style.display = 'none';
-          budgetBadge.style.display = 'none';
-        }
-      }
+      if (synthBadge) synthBadge.style.display = 'none';
+      if (budgetBadge) budgetBadge.style.display = 'none';
     }
   }
 
@@ -89,6 +100,95 @@ window.selectEaiosScenario = function(scenarioKey) {
   if (nodes && nodes[0]) {
     updateInspector(nodes[0]);
   }
+};
+
+window.selectOroSubScenario = function(subScenarioId) {
+  if (!simManager) return;
+  simManager.setOroScenario(subScenarioId);
+
+  // Update active state in sub-selector buttons
+  document.querySelectorAll('.eaios-oro-sub-btn').forEach(btn => {
+    btn.classList.remove('active');
+    btn.setAttribute('aria-pressed', 'false');
+    btn.style.background = 'rgba(15, 23, 42, 0.6)';
+    btn.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+    btn.style.color = '#94a3b8';
+  });
+
+  const activeSubBtn = document.getElementById(`eaios-sub-btn-${subScenarioId}`);
+  if (activeSubBtn) {
+    activeSubBtn.classList.add('active');
+    activeSubBtn.setAttribute('aria-pressed', 'true');
+    activeSubBtn.style.background = 'rgba(56, 189, 248, 0.15)';
+    activeSubBtn.style.borderColor = 'rgba(56, 189, 248, 0.5)';
+    activeSubBtn.style.color = '#38bdf8';
+  }
+
+  window.updateOroScenarioUi(subScenarioId);
+
+  const nodes = simManager.getCurrentNodes();
+  if (nodes && nodes[0]) {
+    updateInspector(nodes[0]);
+  }
+};
+
+window.updateOroScenarioUi = function(scenarioId) {
+  const scenario = ORO_SCENARIO_CATALOGUE?.[scenarioId];
+  if (!scenario) return;
+
+  const titleEl = document.getElementById('eaios-scen-title');
+  const subEl = document.getElementById('eaios-scen-subtitle');
+  const descEl = document.getElementById('eaios-scen-desc');
+  const evidEl = document.getElementById('eaios-scen-evid');
+
+  if (titleEl) titleEl.textContent = `Showcase: ${scenario.name}`;
+  if (subEl) subEl.textContent = scenario.subtitle;
+  if (descEl) descEl.textContent = scenario.description;
+  if (evidEl) evidEl.textContent = `Stage 33 ORO Slice • ${scenario.incidentId}`;
+
+  const synthBadge = document.getElementById('eaios-scen-synthetic-badge');
+  const budgetBadge = document.getElementById('eaios-scen-budget-badge');
+  if (synthBadge) {
+    synthBadge.style.display = 'inline-block';
+    synthBadge.textContent = scenario.disclosures?.syntheticBadge || 'DEMO TELEMETRY: SYNTHESISED';
+  }
+  if (budgetBadge) {
+    budgetBadge.style.display = 'inline-block';
+    budgetBadge.textContent = scenario.disclosures?.budgetType || 'BUDGET: REQUEST-SCOPED IN-MEMORY';
+  }
+
+  // Populate Context Panel elements
+  const ibsEl = document.getElementById('eaios-oro-ctx-ibs');
+  const doraEl = document.getElementById('eaios-oro-ctx-dora');
+  const rtoEl = document.getElementById('eaios-oro-ctx-rto');
+  const rpoEl = document.getElementById('eaios-oro-ctx-rpo');
+  const evidenceStatusEl = document.getElementById('eaios-oro-ctx-evidence-status');
+  const evidenceNoteEl = document.getElementById('eaios-oro-ctx-evidence-note');
+  const decisionEl = document.getElementById('eaios-oro-ctx-decision');
+  const consequenceEl = document.getElementById('eaios-oro-ctx-consequence');
+
+  if (ibsEl) ibsEl.textContent = scenario.affectedIBS.join(' • ');
+  if (doraEl) doraEl.textContent = scenario.doraMappings.join(' | ');
+  if (rtoEl) rtoEl.textContent = scenario.targetRTO;
+  if (rpoEl) rpoEl.textContent = scenario.targetRPO;
+
+  if (evidenceStatusEl) {
+    const status = scenario.adversePaths?.evidenceStatus || 'CONFIRMED';
+    evidenceStatusEl.textContent = status;
+    if (status === 'CONFIRMED') {
+      evidenceStatusEl.style.color = '#34d399';
+      evidenceStatusEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    } else if (status === 'CONFLICTING' || status === 'SUSPECT') {
+      evidenceStatusEl.style.color = '#fbbf24';
+      evidenceStatusEl.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+    } else {
+      evidenceStatusEl.style.color = '#f87171';
+      evidenceStatusEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+    }
+  }
+  if (evidenceNoteEl) evidenceNoteEl.textContent = scenario.adversePaths?.evidenceNote || 'Standard telemetry intake.';
+  if (decisionEl) decisionEl.textContent = scenario.decisionProfile?.requiredDecision || 'Four-Eyes executive authorization required.';
+  if (consequenceEl) consequenceEl.textContent = scenario.decisionProfile?.consequenceStatement || 'Execution authorized under fresh EAIES evaluation.';
 };
 
 window.runEaiosScenario = function() {
@@ -720,6 +820,17 @@ function generateEaiosHtml() {
             <p style="font-size: 13px; color: #cbd5e1; margin: 0; line-height: 1.65;">
               EAIOS allows AI Employees, models and orchestrators to coordinate complex enterprise workflows while deterministic infrastructure retains authority over capability execution, model registration, residency scopes, transactional outbox/inbox delivery, distributed saga compensation, tenancy, lifecycle and human governance.
             </p>
+
+            <!-- Prominent ORO Showcase Signpost Callout -->
+            <div style="margin-top: 14px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div style="font-size: 12.5px; color: #cbd5e1; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16px;">⚡</span>
+                <span>Simulate orchestration of agents to see them live in action:</span>
+              </div>
+              <button onclick="window.selectEaiosScenario('scenario_oro'); document.getElementById('eaios-active-scenario-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });" class="eaios-scen-btn" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; font-weight: 800; font-size: 12px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);">
+                ⚡ Showcase: ORO Outage
+              </button>
+            </div>
           </div>
 
           <!-- Right Column: Structured Architectural Primitives Box -->
@@ -1008,10 +1119,10 @@ function generateEaiosHtml() {
             </p>
 
             <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
-              <button id="eaios-btn-rls-gwm" onclick="window.switchEaiosTenant('GLOBAL-WEALTH-MANAGEMENT')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+              <button id="eaios-btn-rls-gwm" onclick="window.switchEaiosTenant('GLOBAL-WEALTH-MANAGEMENT')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; padding: 7px 10px; border-radius: 4px; font-family: var(--font-body, 'Figtree', sans-serif); font-size: 11.5px; font-weight: 600; letter-spacing: normal;">
                 Tenant: GLOBAL-WEALTH-MANAGEMENT
               </button>
-              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: #0f172a; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); padding: 7px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: #0f172a; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); padding: 7px 10px; border-radius: 4px; font-family: var(--font-body, 'Figtree', sans-serif); font-size: 11.5px; font-weight: 600; letter-spacing: normal;">
                 Tenant: INSTITUTIONAL-INVESTMENT-BANKING
               </button>
             </div>
@@ -1127,6 +1238,80 @@ function generateEaiosHtml() {
               <span id="eaios-scen-evid" style="font-size: 11px; color: #a78bfa; font-family: monospace; background: rgba(167, 139, 250, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(167, 139, 250, 0.25);">
                 ${SHOWCASE_SCENARIOS.SCENARIO_ORO.evidenceRef}
               </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORO RESILIENCE SCENARIO SUB-SELECTOR -->
+        <fieldset id="eaios-oro-sub-selector" style="margin: 0 0 16px 0; padding: 12px 14px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 8px;">
+          <legend style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 4px; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">
+              Operational Resilience Incident Catalogue (5 Scenarios)
+            </span>
+            <span style="font-size: 10px; color: #94a3b8; font-family: monospace;">
+              Deterministic Demonstration Fixtures • Live Bounded Backend
+            </span>
+          </legend>
+          <div role="group" aria-label="Operational resilience incident scenario options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+            <button id="eaios-sub-btn-scenario_oro" type="button" onclick="window.selectOroSubScenario('scenario_oro')" aria-pressed="true" class="eaios-oro-sub-btn active" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.15); color: #38bdf8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 11px; font-weight: 800;">1. Cloud Outage (Baseline)</div>
+              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">AZ Power & Network Partition</div>
+            </button>
+            <button id="eaios-sub-btn-oro_cyber_ransomware" type="button" onclick="window.selectOroSubScenario('oro_cyber_ransomware')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 11px; font-weight: 800;">2. Ransomware & Cyber</div>
+              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">Subnet Isolation & Air-Gap WORM</div>
+            </button>
+            <button id="eaios-sub-btn-oro_third_party_outage" type="button" onclick="window.selectOroSubScenario('oro_third_party_outage')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 11px; font-weight: 800;">3. Third-Party Failure</div>
+              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">SaaS RTO Breach & Backup Rail</div>
+            </button>
+            <button id="eaios-sub-btn-oro_data_corruption" type="button" onclick="window.selectOroSubScenario('oro_data_corruption')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 11px; font-weight: 800;">4. Data Integrity Breach</div>
+              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">Checksum Mismatch & State Replay</div>
+            </button>
+            <button id="eaios-sub-btn-oro_compound_incident" type="button" onclick="window.selectOroSubScenario('oro_compound_incident')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 11px; font-weight: 800;">5. Compound Incident</div>
+              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">Vendor Outage + DDoS Saturation</div>
+            </button>
+          </div>
+        </fieldset>
+
+        <!-- ORO CONTEXTUAL RESILIENCE PANEL -->
+        <div id="eaios-oro-context-card" style="margin-bottom: 16px; background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 14px 18px; font-size: 11.5px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+            <div>
+              <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Impacted Important Business Services (IBS)</div>
+              <div id="eaios-oro-ctx-ibs" style="color: #f8fafc; font-weight: 600; margin-top: 3px;">Payment Clearing Core • Wholesale Liquidity • Client Portal</div>
+
+              <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 8px;">DORA Dimension & Supervisory Mandates</div>
+              <div id="eaios-oro-ctx-dora" style="color: #38bdf8; font-size: 11px; margin-top: 2px;">Pillar 1: ICT Risk | Pillar 2: RTS Art. 19 | Pillar 5: Third-Party Risk</div>
+            </div>
+            <div>
+              <div style="display: flex; gap: 16px;">
+                <div>
+                  <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Recovery Target (RTO)</div>
+                  <div id="eaios-oro-ctx-rto" style="color: #34d399; font-weight: 700; margin-top: 2px;">2 Hours</div>
+                </div>
+                <div>
+                  <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Data Loss Limit (RPO)</div>
+                  <div id="eaios-oro-ctx-rpo" style="color: #34d399; font-weight: 700; margin-top: 2px;">0 (Zero Data Loss)</div>
+                </div>
+                <div>
+                  <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Evidence Status</div>
+                  <span id="eaios-oro-ctx-evidence-status" style="display: inline-block; font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 3px; border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 2px;">CONFLICTING</span>
+                </div>
+              </div>
+              <div style="color: #94a3b8; font-size: 10.5px; margin-top: 6px; line-height: 1.35;" id="eaios-oro-ctx-evidence-note">
+                Provider status claims monitoring; internal telemetry probes measure 100% loss.
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 10.5px;">
+            <div>
+              <span style="color: #64748b;">Required Decision:</span> <strong id="eaios-oro-ctx-decision" style="color: #cbd5e1;">Authorize live production DNS switchover to UK-South</strong>
+            </div>
+            <div style="color: #64748b;">
+              Consequence: <span id="eaios-oro-ctx-consequence" style="color: #94a3b8;">Traffic diverted to secondary standby</span>
             </div>
           </div>
         </div>
@@ -1481,6 +1666,9 @@ function initializeComponents() {
   const initialNodes = simManager.getCurrentNodes();
   if (initialNodes && initialNodes[0]) {
     updateInspector(initialNodes[0]);
+  }
+  if (window.updateOroScenarioUi) {
+    window.updateOroScenarioUi('scenario_oro');
   }
 
   // Non-blocking, point-in-time preflight health check
