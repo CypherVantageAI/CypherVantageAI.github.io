@@ -49,6 +49,9 @@ export class EaiosSimulationManager {
     // Monotonic Run Generation Counter (Prevents Stale Asynchronous Response Contamination)
     this.runGeneration = 0;
 
+    // Executive Decision Record (In-Memory Traceability)
+    this.executiveDecisionRecord = null;
+
     this.reset();
   }
 
@@ -158,6 +161,57 @@ export class EaiosSimulationManager {
 
     this.auditEvents = [];
     this._addAudit("SYSTEM_RESET", `Topology initialized for ${this.activeScenario.toUpperCase()} under Stage 26 baseline`, "SYSTEM", "SUCCESS");
+
+    // Initialize or clear Executive Decision Record for active scenario
+    const activeOro = this.getActiveOroScenario();
+    if (activeOro) {
+      this.executiveDecisionRecord = {
+        scenarioId: activeOro.id,
+        scenarioName: activeOro.name,
+        incidentId: activeOro.incidentId,
+        severity: activeOro.severity,
+        affectedService: activeOro.serviceImpacted || activeOro.affectedServices?.[0] || 'Core Infrastructure',
+        syntheticDisclosure: activeOro.disclosures?.syntheticBadge || 'SYNTHETIC TELEMETRY • DEMONSTRATION WORKFLOW',
+        evidence: {
+          status: activeOro.adversePaths?.evidenceStatus || 'CONFIRMED',
+          note: activeOro.adversePaths?.evidenceNote || 'Standard telemetry intake.',
+          impactedIBS: activeOro.affectedIBS || [],
+          doraDimension: activeOro.doraMappings || []
+        },
+        assessment: {
+          status: 'PENDING_EVALUATION',
+          action: null,
+          rationale: null,
+          tokensSettled: null,
+          isAdvisoryOnly: true,
+          backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+        },
+        governance: {
+          axiom: 'RECOMMENDATION != ACTION',
+          constraint: 'Model advisory proposal does not convey execution authority. Requires dual-control executive approval.',
+          requiredDecision: activeOro.decisionProfile?.requiredDecision || 'Four-Eyes executive authorization required.',
+          decisionOwnerRole: activeOro.decisionProfile?.decisionOwnerRole || 'Resilience Incident Commander'
+        },
+        humanDecision: {
+          state: 'PENDING',
+          approver: null,
+          rationale: null,
+          simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+        },
+        outcome: {
+          workflowState: 'INITIALIZED',
+          simulatedEffect: 'Awaiting execution. Zero mutations committed to live cloud or infrastructure.',
+          timestamp: new Date().toISOString()
+        },
+        traceability: {
+          correlationId: this.correlationId,
+          instanceId: this.instanceId,
+          memoryOnlyDisclosure: 'IN-MEMORY ONLY (Not persisted to server-side durable storage)'
+        }
+      };
+    } else {
+      this.executiveDecisionRecord = null;
+    }
 
     this._hideApprovalBanner();
     this._render();
@@ -478,17 +532,60 @@ export class EaiosSimulationManager {
           }
 
           this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}]: Synthesis verified via ${EAIOS_BACKEND_CONFIG.baseUrl}. Tokens Settled: ${data.governance_metadata?.cost_governance?.tokens_settled}. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: node4Id, correlationId: this.correlationId });
+
+          // Update Executive Decision Record with actual backend response
+          if (this.executiveDecisionRecord) {
+            this.executiveDecisionRecord.assessment = {
+              status: 'SYNTHESIS_VERIFIED',
+              action: data.recommended_action || data.recommendation?.action || 'FAILOVER_SECONDARY_REGION',
+              rationale: data.assessment?.summary || data.assessment || 'Backend advisory synthesized from multi-service telemetry.',
+              tokensSettled: data.governance_metadata?.cost_governance?.tokens_settled || 150,
+              isAdvisoryOnly: data.is_advisory_only !== undefined ? data.is_advisory_only : true,
+              humanApprovalRequired: data.human_approval_required !== undefined ? data.human_approval_required : true,
+              backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+            };
+            this.executiveDecisionRecord.traceability.correlationId = this.correlationId;
+            this.executiveDecisionRecord.outcome.workflowState = 'PAUSED_PENDING_INPUT';
+            this.executiveDecisionRecord.outcome.simulatedEffect = 'Advisory plan formulated. Execution halted fail-closed awaiting human gate sign-off.';
+            this.executiveDecisionRecord.outcome.timestamp = new Date().toISOString();
+          }
         }
       } else {
         const errorText = await resp.text();
         if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
         this.correlationId = `${requestCorrelationId} (HTTP ${resp.status} ERROR)`;
         this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}]: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
+
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.assessment = {
+            status: `FAILED_HTTP_${resp.status}`,
+            action: null,
+            rationale: `Backend error returned: ${errorText.substring(0, 80)}. Zero advisory action generated.`,
+            tokensSettled: 0,
+            isAdvisoryOnly: true,
+            backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+          };
+          this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
+          this.executiveDecisionRecord.outcome.simulatedEffect = 'Execution halted fail-closed. Zero mutations committed.';
+        }
       }
     } catch (netErr) {
       if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
       this.correlationId = `${requestCorrelationId} (CONNECTION FAILED)`;
       this._addAudit("BACKEND_UNAVAILABLE", `Live Backend Connection Failed (${netErr.message}). Endpoint: ${backendUrl}. Bounded demonstration halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
+
+      if (this.executiveDecisionRecord) {
+        this.executiveDecisionRecord.assessment = {
+          status: 'UNAVAILABLE_CONNECTION_FAILED',
+          action: null,
+          rationale: `Backend connection unavailable (${netErr.message}). Fail-closed: Zero recommendations fabricated.`,
+          tokensSettled: 0,
+          isAdvisoryOnly: true,
+          backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+        };
+        this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
+        this.executiveDecisionRecord.outcome.simulatedEffect = 'Execution halted fail-closed. Zero mutations committed.';
+      }
     }
 
     if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
@@ -518,6 +615,9 @@ export class EaiosSimulationManager {
     }
     this.workflowInstance.status = "PAUSED_PENDING_INPUT";
     this.humanApproval.status = "PAUSED_PENDING_INPUT";
+    if (this.executiveDecisionRecord) {
+      this.executiveDecisionRecord.outcome.workflowState = "PAUSED_PENDING_INPUT";
+    }
     const decisionReq = scenario?.decisionProfile?.requiredDecision || "High-impact remediation requires Four-Eyes executive authorization";
     this._addAudit("FOUR_EYES_GATE_PAUSED", `${decisionReq}. State transitioned to PAUSED_PENDING_INPUT (ADR-032).`, "HITL_SERVICE", "PAUSED", { nodeId: node5Id, adrRef: "ADR-032" });
     this._showApprovalBanner();
@@ -674,6 +774,15 @@ export class EaiosSimulationManager {
         this.humanApproval.rationale = rationaleText;
         if (this.nodeStates[node5Id]) this.nodeStates[node5Id].status = "COMPLETED";
 
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.humanDecision = {
+            state: 'APPROVED',
+            approver: approverEmail,
+            rationale: rationaleText,
+            simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+          };
+        }
+
         this._addAudit("DECISION_INGESTED", `Asynchronous human approval ingested: approver=${approverEmail}, rationale="${rationaleText}" (ADR-032)`, "HITL_SERVICE", "SUCCESS", { nodeId: node5Id, adrRef: "ADR-032" });
         this._render();
         await this._sleep(700);
@@ -698,8 +807,20 @@ export class EaiosSimulationManager {
 
         const actionExecutedMsg = `Remediation action executed under governed supervision for [${scenario?.name || 'Operational Outage'}]. Invariant: Model proposed, Human authorized, EAIES executed.`;
         this._addAudit("ACTION_EXECUTED", actionExecutedMsg, "ACTION_EXECUTOR", "SUCCESS", { nodeId: node6Id });
-        this._addAudit("COST_SETTLED", "Final token settlement committed: 3,120 tokens used (380 tokens refunded).", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
-        this._addAudit("WORKFLOW_COMPLETED", "Workflow instance reached terminal COMPLETED state under unbroken correlation ID.", "AUDIT_LEDGER", "SUCCESS", { adrRef: "ADR-026" });
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.humanDecision = {
+            state: 'APPROVED',
+            approver: approverEmail,
+            rationale: rationaleText,
+            simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+          };
+          this.executiveDecisionRecord.outcome = {
+            workflowState: 'COMPLETED',
+            simulatedEffect: `Remediation action executed under governed supervision for [${scenario?.name || 'Operational Outage'}]. Simulated effect: ${scenario?.decisionProfile?.consequenceStatement || 'Remediation completed.'} Zero live infrastructure mutations.`,
+            timestamp: new Date().toISOString()
+          };
+        }
+
         this.isRunning = false;
         this._render();
 
@@ -724,6 +845,21 @@ export class EaiosSimulationManager {
         const compensationDesc = scenario?.adversePaths?.rejectionSagaCompensation || "Downstream remediation action PRUNED (SKIPPED). Zero mutation committed.";
         this._addAudit("DOWNSTREAM_PRUNED", `Downstream action PRUNED (SKIPPED). Compensation: ${compensationDesc}`, "ORCHESTRATOR", "SUCCESS", { adrRef: "ADR-032" });
         this._addAudit("BUDGET_RELEASED", "Unused reservation refunded in full (3,500 tokens).", "COST_GOVERNANCE", "SUCCESS", { adrRef: "ADR-022" });
+
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.humanDecision = {
+            state: 'REJECTED',
+            approver: approverEmail,
+            rationale: rationaleText,
+            simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+          };
+          this.executiveDecisionRecord.outcome = {
+            workflowState: 'FAILED_REJECTED',
+            simulatedEffect: `Action rejected. Compensated via safe pruning: ${compensationDesc}. Zero mutations committed.`,
+            timestamp: new Date().toISOString()
+          };
+        }
+
         this.isRunning = false;
         this._render();
       }

@@ -130,6 +130,7 @@ window.selectOroSubScenario = function(subScenarioId) {
   if (nodes && nodes[0]) {
     updateInspector(nodes[0]);
   }
+  updateExecutiveDecisionRecord();
 };
 
 window.updateOroScenarioUi = function(scenarioId) {
@@ -221,6 +222,7 @@ window.resetEaiosSimulation = function() {
   if (nodes && nodes[0]) {
     updateInspector(nodes[0]);
   }
+  updateExecutiveDecisionRecord();
   const btnRun = document.getElementById('eaios-btn-run');
   if (btnRun) {
     btnRun.disabled = false;
@@ -1427,6 +1429,11 @@ function generateEaiosHtml() {
             </div>
           </div>
         </div>
+
+        <!-- EXECUTIVE DECISION RECORD (ORO ADVISORY & HUMAN GATE AUDIT) -->
+        <div id="eaios-decision-record-container" style="margin-top: 20px;">
+          <!-- Dynamically populated via updateExecutiveDecisionRecord() -->
+        </div>
       </div>
 
       <!-- ================================================================= -->
@@ -1648,10 +1655,8 @@ function initializeComponents() {
     if (activeCorrEl) {
       activeCorrEl.textContent = state.correlationId || 'INITIALIZING';
     }
-    const inspectorCorrEl = document.getElementById('eaios-inspector-correlation-id');
-    if (inspectorCorrEl) {
-      inspectorCorrEl.textContent = state.correlationId || 'INITIALIZING';
-    }
+    // Update Executive Decision Record
+    updateExecutiveDecisionRecord();
   });
 
   // Handle window resize for dynamic responsive layout rerendering
@@ -1670,6 +1675,7 @@ function initializeComponents() {
   if (window.updateOroScenarioUi) {
     window.updateOroScenarioUi('scenario_oro');
   }
+  updateExecutiveDecisionRecord();
 
   // Non-blocking, point-in-time preflight health check
   checkApiPreflight();
@@ -1743,6 +1749,121 @@ function updateInspector(node) {
       <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">OCC Entity Version: <code style="color: #38bdf8;">v${node.version || 1}</code></div>
       <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Outbox Coupling: <code style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</code></div>
       <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Correlation: <code id="eaios-inspector-correlation-id" style="color: #38bdf8;">${simManager?.correlationId || 'INITIALIZING'}</code></div>
+    </div>
+  `;
+}
+
+/**
+ * Renders the Executive Decision Record for the active ORO scenario.
+ * Follows strict governance disclosure: in-memory only, simulated UI states, advisory boundaries.
+ */
+function updateExecutiveDecisionRecord() {
+  const container = document.getElementById('eaios-decision-record-container');
+  if (!container) return;
+
+  const rec = simManager?.executiveDecisionRecord;
+  if (!rec) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const isApproved = rec.humanDecision?.state === 'APPROVED';
+  const isRejected = rec.humanDecision?.state === 'REJECTED';
+  const decisionBadgeColor = isApproved ? '#10b981' : (isRejected ? '#ef4444' : '#fbbf24');
+  const decisionBadgeBg = isApproved ? 'rgba(16, 185, 129, 0.15)' : (isRejected ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)');
+  const decisionBorder = isApproved ? 'rgba(16, 185, 129, 0.4)' : (isRejected ? 'rgba(239, 68, 68, 0.4)' : 'rgba(245, 158, 11, 0.4)');
+
+  container.innerHTML = `
+    <div class="eaios-info-card" style="background: rgba(10, 15, 28, 0.95); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 18px 22px;">
+      <!-- Record Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 10.5px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.25);">
+              EXECUTIVE DECISION RECORD
+            </span>
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #f8fafc;">
+              ${rec.incidentId} • ${rec.scenarioName}
+            </span>
+            <span style="font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35);">
+              SEVERITY: ${rec.severity}
+            </span>
+          </div>
+          <div style="font-size: 11.5px; color: #94a3b8; margin-top: 4px;">
+            Target Service: <strong style="color: #cbd5e1;">${rec.affectedService}</strong>
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 10px; font-family: monospace; color: #64748b;">
+          <div>${rec.syntheticDisclosure}</div>
+          <div style="color: #fbbf24; margin-top: 2px;">${rec.traceability.memoryOnlyDisclosure}</div>
+        </div>
+      </div>
+
+      <!-- Seven-Pillar Structured Decision Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+        <!-- 1 & 2. Telemetry & Evidence Considered -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+          <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8; margin-bottom: 6px;">
+            1. Evidence & Telemetry Intake
+          </div>
+          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+            <div>Status: <strong style="color: ${rec.evidence.status === 'CONFIRMED' ? '#34d399' : '#fbbf24'};">${rec.evidence.status}</strong></div>
+            <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${rec.evidence.note}</div>
+            <div style="margin-top: 6px; color: #64748b; font-size: 10px;">Impacted IBS:</div>
+            <div style="color: #38bdf8; font-size: 10.5px;">${rec.evidence.impactedIBS.slice(0, 2).join(' • ')}</div>
+          </div>
+        </div>
+
+        <!-- 3. Backend Advisory Assessment -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">2. Backend Advisory Assessment</span>
+            <span style="font-size: 9.5px; font-weight: 700; color: #34d399;">${rec.assessment.status}</span>
+          </div>
+          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+            <div>Advisory Action: <code style="color: #a78bfa;">${rec.assessment.action || 'PENDING_DISPATCH'}</code></div>
+            <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${rec.assessment.rationale}</div>
+            <div style="margin-top: 6px; font-size: 10px; color: #64748b;">
+              Settled Tokens: <strong style="color: #10b981;">${rec.assessment.tokensSettled !== null ? rec.assessment.tokensSettled : '0 (Not billed)'}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 & 5. Governance Constraints & Dual-Control Decision -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">3. Governance & Human Decision</span>
+            <span style="font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 3px; background: ${decisionBadgeBg}; color: ${decisionBadgeColor}; border: 1px solid ${decisionBorder};">
+              ${rec.humanDecision.state}
+            </span>
+          </div>
+          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+            <div>Rule: <strong style="color: #fbbf24;">${rec.governance.axiom}</strong></div>
+            <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${rec.governance.constraint}</div>
+            <div style="margin-top: 6px; font-size: 10.5px;">
+              Approver: <code style="color: #38bdf8;">${rec.humanDecision.approver || 'Awaiting Gate Action'}</code>
+            </div>
+            <div style="font-size: 9.5px; color: #fbbf24; margin-top: 2px;">${rec.humanDecision.simulatedDisclosure}</div>
+          </div>
+        </div>
+
+        <!-- 6 & 7. Simulated Outcome & Traceability -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">4. Outcome & Traceability</span>
+            <span style="font-size: 9.5px; font-weight: 700; color: #38bdf8;">${rec.outcome.workflowState}</span>
+          </div>
+          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+            <div style="color: #94a3b8; font-size: 10.5px;">${rec.outcome.simulatedEffect}</div>
+            <div style="margin-top: 6px; font-family: monospace; font-size: 10px; color: #64748b;">
+              Correlation: <span style="color: #38bdf8;">${rec.traceability.correlationId}</span>
+            </div>
+            <div style="font-family: monospace; font-size: 9.5px; color: #64748b; margin-top: 2px;">
+              Timestamp: ${rec.outcome.timestamp}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
