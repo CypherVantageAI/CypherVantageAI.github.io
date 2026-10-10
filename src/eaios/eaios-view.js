@@ -199,6 +199,11 @@ window.runEaiosScenario = function() {
     btnRun.style.opacity = '0.7';
     btnRun.innerHTML = `<span>⏳ Simulating...</span>`;
   }
+  // Smoothly bring the simulation frontier into full view
+  const simFrontier = document.getElementById('eaios-simulation-frontier');
+  if (simFrontier) {
+    simFrontier.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
   simManager.runActiveScenario();
   setTimeout(() => {
     if (btnRun) {
@@ -828,7 +833,7 @@ function generateEaiosHtml() {
                 <span style="font-size: 16px;">⚡</span>
                 <span>Simulate orchestration of agents to see them live in action:</span>
               </div>
-              <button onclick="window.selectEaiosScenario('scenario_oro'); document.getElementById('eaios-active-scenario-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });" class="eaios-scen-btn" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; font-weight: 800; font-size: 12px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);">
+              <button onclick="window.selectEaiosScenario('scenario_oro'); document.getElementById('eaios-simulation-frontier')?.scrollIntoView({ behavior: 'smooth', block: 'start' });" class="eaios-scen-btn" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; font-weight: 800; font-size: 12px; padding: 7px 16px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);">
                 ⚡ Showcase: ORO Outage
               </button>
             </div>
@@ -1181,62 +1186,64 @@ function generateEaiosHtml() {
       <!-- ================================================================= -->
       <!-- 8. EXPLORE THE ARCHITECTURE: INTERACTIVE SCENARIOS & DAG FRONTIER  -->
       <!-- ================================================================= -->
-      <div class="eaios-section-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;">
+      <div id="eaios-simulation-frontier" class="eaios-section-card" style="scroll-margin-top: 20px;">
+        <!-- Header & Scenario Selector Tabs -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0 0 4px 0;">
+            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0 0 2px 0;">
               Explore the Architecture — Interactive Scenarios
             </h2>
-            <div style="font-size: 12px; color: #94a3b8;">
-              Test how EAIOS executes autonomous pipelines, enforces Four-Eyes gates, executes reverse DAG compensation, and manages dynamic provider fallback.
+            <div style="font-size: 11.5px; color: #94a3b8;">
+              Live simulation of autonomous orchestration, Four-Eyes human authorization, DAG sagas, and real-time forensic auditing.
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <div id="eaios-api-preflight-pill" style="font-family: monospace; font-size: 10px; font-weight: 700; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div id="eaios-api-preflight-pill" style="font-family: monospace; font-size: 10px; font-weight: 700; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
               <span id="eaios-api-preflight-dot" style="width: 6px; height: 6px; border-radius: 50%; background: #38bdf8;"></span>
               <span id="eaios-api-preflight-text">API: CHECKING...</span>
             </div>
-            <div role="tablist" aria-label="EAIOS Architectural Scenarios" style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button id="eaios-scenario-btn-oro" onclick="window.selectEaiosScenario('scenario_oro')" role="tab" aria-selected="true" tabindex="0" class="eaios-scen-btn active" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800;">
+            <div role="tablist" aria-label="EAIOS Architectural Scenarios" style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button id="eaios-scenario-btn-oro" onclick="window.selectEaiosScenario('scenario_oro')" role="tab" aria-selected="true" tabindex="0" class="eaios-scen-btn active" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800; padding: 6px 12px; font-size: 11.5px;">
                 ⚡ Showcase: ORO Outage
               </button>
-              <button id="eaios-scenario-btn-a" onclick="window.selectEaiosScenario('scenario_a')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
+              <button id="eaios-scenario-btn-a" onclick="window.selectEaiosScenario('scenario_a')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn" style="padding: 6px 10px; font-size: 11px;">
                 Scenario A: Autonomous
               </button>
-              <button id="eaios-scenario-btn-b" onclick="window.selectEaiosScenario('scenario_b')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
+              <button id="eaios-scenario-btn-b" onclick="window.selectEaiosScenario('scenario_b')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn" style="padding: 6px 10px; font-size: 11px;">
                 Scenario B: HITL Approval
               </button>
-              <button id="eaios-scenario-btn-c" onclick="window.selectEaiosScenario('scenario_c')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
-                Scenario C: Rejection & Compensation
+              <button id="eaios-scenario-btn-c" onclick="window.selectEaiosScenario('scenario_c')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn" style="padding: 6px 10px; font-size: 11px;">
+                Scenario C: Compensation
               </button>
-              <button id="eaios-scenario-btn-d" onclick="window.selectEaiosScenario('scenario_d')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
-                Scenario D: Governed Knowledge
+              <button id="eaios-scenario-btn-d" onclick="window.selectEaiosScenario('scenario_d')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn" style="padding: 6px 10px; font-size: 11px;">
+                Scenario D: Governed RAG
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Active Scenario Description Banner -->
-        <div id="eaios-active-scenario-card" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span id="eaios-scen-title" style="font-weight: 800; font-size: 14px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
-                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800;">
-                  TEST VERIFIED
-                </span>
-                <span id="eaios-scen-synthetic-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.02em;">
-                  DEMO TELEMETRY: SYNTHESISED
-                </span>
-                <span id="eaios-scen-budget-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.02em;">
-                  BUDGET: REQUEST-SCOPED IN-MEMORY
-                </span>
+        <!-- Compact Active Scenario Card with Integrated Execution Controls -->
+        <div id="eaios-active-scenario-card" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="flex: 1; min-width: 260px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span id="eaios-scen-title" style="font-weight: 800; font-size: 13.5px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
+                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 9.5px; font-weight: 800;">TEST VERIFIED</span>
+                <span id="eaios-scen-synthetic-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">DEMO TELEMETRY</span>
+                <span id="eaios-scen-budget-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">BUDGET: IN-MEMORY</span>
               </div>
-              <div id="eaios-scen-subtitle" style="font-size: 12px; color: #38bdf8; margin-top: 2px;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.subtitle}</div>
-              <div id="eaios-scen-desc" style="font-size: 12px; color: #cbd5e1; margin-top: 6px; line-height: 1.5;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
+              <div id="eaios-scen-desc" style="font-size: 11.5px; color: #cbd5e1; margin-top: 3px; line-height: 1.4;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
             </div>
-            <div style="text-align: right;">
-              <span id="eaios-scen-evid" style="font-size: 11px; color: #a78bfa; font-family: monospace; background: rgba(167, 139, 250, 0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(167, 139, 250, 0.25);">
+
+            <!-- Action Controls directly embedded in scenario card -->
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button id="eaios-btn-run" onclick="window.runEaiosScenario()" class="eaios-btn-primary" aria-label="Run selected simulation scenario" style="padding: 8px 18px; font-size: 12.5px; font-weight: 800; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);">
+                ▶ Run Simulation
+              </button>
+              <button id="eaios-btn-reset" onclick="window.resetEaiosSimulation()" class="eaios-btn-secondary" aria-label="Reset simulation state" style="padding: 8px 14px; font-size: 11.5px;">
+                Reset
+              </button>
+              <span id="eaios-scen-evid" style="font-size: 10px; color: #a78bfa; font-family: monospace; background: rgba(167, 139, 250, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(167, 139, 250, 0.25);">
                 ${SHOWCASE_SCENARIOS.SCENARIO_ORO.evidenceRef}
               </span>
             </div>
@@ -1244,70 +1251,76 @@ function generateEaiosHtml() {
         </div>
 
         <!-- ORO RESILIENCE SCENARIO SUB-SELECTOR -->
-        <fieldset id="eaios-oro-sub-selector" style="margin: 0 0 16px 0; padding: 12px 14px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 8px;">
-          <legend style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 4px; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">
+        <fieldset id="eaios-oro-sub-selector" style="margin: 0 0 12px 0; padding: 8px 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 8px;">
+          <legend style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 4px; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+            <span style="font-size: 10.5px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">
               Operational Resilience Incident Catalogue (5 Scenarios)
             </span>
-            <span style="font-size: 10px; color: #94a3b8; font-family: monospace;">
-              Deterministic Demonstration Fixtures • Live Bounded Backend
-            </span>
+            <div style="display: flex; gap: 10px; font-size: 10px; color: #94a3b8; align-items: center;">
+              <span>Correlation: <code id="eaios-active-correlation-id" style="color: #38bdf8;">INITIALIZING</code></span>
+              <span>•</span>
+              <span>Outbox: <strong style="color: #10b981;">ADR-039</strong></span>
+            </div>
           </legend>
-          <div role="group" aria-label="Operational resilience incident scenario options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
-            <button id="eaios-sub-btn-scenario_oro" type="button" onclick="window.selectOroSubScenario('scenario_oro')" aria-pressed="true" class="eaios-oro-sub-btn active" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.15); color: #38bdf8; cursor: pointer; transition: all 0.15s;">
-              <div style="font-size: 11px; font-weight: 800;">1. Cloud Outage (Baseline)</div>
-              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">AZ Power & Network Partition</div>
+          <div role="group" aria-label="Operational resilience incident scenario options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px;">
+            <button id="eaios-sub-btn-scenario_oro" type="button" onclick="window.selectOroSubScenario('scenario_oro')" aria-pressed="true" class="eaios-oro-sub-btn active" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.15); color: #38bdf8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 10.5px; font-weight: 800;">1. Cloud Outage</div>
+              <div style="font-size: 9px; opacity: 0.8;">AZ Partition & Failover</div>
             </button>
-            <button id="eaios-sub-btn-oro_cyber_ransomware" type="button" onclick="window.selectOroSubScenario('oro_cyber_ransomware')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
-              <div style="font-size: 11px; font-weight: 800;">2. Ransomware & Cyber</div>
-              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">Subnet Isolation & Air-Gap WORM</div>
+            <button id="eaios-sub-btn-oro_cyber_ransomware" type="button" onclick="window.selectOroSubScenario('oro_cyber_ransomware')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 10.5px; font-weight: 800;">2. Ransomware</div>
+              <div style="font-size: 9px; opacity: 0.8;">Subnet Isolation WORM</div>
             </button>
-            <button id="eaios-sub-btn-oro_third_party_outage" type="button" onclick="window.selectOroSubScenario('oro_third_party_outage')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
-              <div style="font-size: 11px; font-weight: 800;">3. Third-Party Failure</div>
-              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">SaaS RTO Breach & Backup Rail</div>
+            <button id="eaios-sub-btn-oro_third_party_outage" type="button" onclick="window.selectOroSubScenario('oro_third_party_outage')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 10.5px; font-weight: 800;">3. Third-Party Failure</div>
+              <div style="font-size: 9px; opacity: 0.8;">SaaS RTO Backup Rail</div>
             </button>
-            <button id="eaios-sub-btn-oro_data_corruption" type="button" onclick="window.selectOroSubScenario('oro_data_corruption')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
-              <div style="font-size: 11px; font-weight: 800;">4. Data Integrity Breach</div>
-              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">Checksum Mismatch & State Replay</div>
+            <button id="eaios-sub-btn-oro_data_corruption" type="button" onclick="window.selectOroSubScenario('oro_data_corruption')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 10.5px; font-weight: 800;">4. Data Integrity</div>
+              <div style="font-size: 9px; opacity: 0.8;">Checksum Replay</div>
             </button>
-            <button id="eaios-sub-btn-oro_compound_incident" type="button" onclick="window.selectOroSubScenario('oro_compound_incident')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
-              <div style="font-size: 11px; font-weight: 800;">5. Compound Incident</div>
-              <div style="font-size: 9.5px; opacity: 0.8; margin-top: 2px;">Vendor Outage + DDoS Saturation</div>
+            <button id="eaios-sub-btn-oro_compound_incident" type="button" onclick="window.selectOroSubScenario('oro_compound_incident')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+              <div style="font-size: 10.5px; font-weight: 800;">5. Compound Incident</div>
+              <div style="font-size: 9px; opacity: 0.8;">Vendor Outage + DDoS</div>
             </button>
           </div>
         </fieldset>
 
-        <!-- ORO CONTEXTUAL RESILIENCE PANEL -->
-        <div id="eaios-oro-context-card" style="margin-bottom: 16px; background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 14px 18px; font-size: 11.5px;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+        <!-- ORO CONTEXTUAL RESILIENCE PANEL (COMPACT DETAILS TOGGLE) -->
+        <details id="eaios-oro-context-card" style="margin-bottom: 12px; background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 8px 14px; font-size: 11px;">
+          <summary style="cursor: pointer; color: #38bdf8; font-weight: 700; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+            <span>📋 Inspect DORA Regulatory Profile & Incident Targets (IBS, RTO, RPO)</span>
+            <span style="font-size: 10px; color: #94a3b8;">Click to expand</span>
+          </summary>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);">
             <div>
-              <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Impacted Important Business Services (IBS)</div>
-              <div id="eaios-oro-ctx-ibs" style="color: #f8fafc; font-weight: 600; margin-top: 3px;">Payment Clearing Core • Wholesale Liquidity • Client Portal</div>
+              <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Impacted Important Business Services (IBS)</div>
+              <div id="eaios-oro-ctx-ibs" style="color: #f8fafc; font-weight: 600; margin-top: 2px;">Payment Clearing Core • Wholesale Liquidity • Client Portal</div>
 
-              <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 8px;">DORA Dimension & Supervisory Mandates</div>
-              <div id="eaios-oro-ctx-dora" style="color: #38bdf8; font-size: 11px; margin-top: 2px;">Pillar 1: ICT Risk | Pillar 2: RTS Art. 19 | Pillar 5: Third-Party Risk</div>
+              <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">DORA Dimension & Supervisory Mandates</div>
+              <div id="eaios-oro-ctx-dora" style="color: #38bdf8; font-size: 10.5px; margin-top: 2px;">Pillar 1: ICT Risk | Pillar 2: RTS Art. 19 | Pillar 5: Third-Party Risk</div>
             </div>
             <div>
-              <div style="display: flex; gap: 16px;">
+              <div style="display: flex; gap: 14px;">
                 <div>
-                  <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Recovery Target (RTO)</div>
+                  <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Recovery Target (RTO)</div>
                   <div id="eaios-oro-ctx-rto" style="color: #34d399; font-weight: 700; margin-top: 2px;">2 Hours</div>
                 </div>
                 <div>
-                  <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Data Loss Limit (RPO)</div>
+                  <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Data Loss Limit (RPO)</div>
                   <div id="eaios-oro-ctx-rpo" style="color: #34d399; font-weight: 700; margin-top: 2px;">0 (Zero Data Loss)</div>
                 </div>
                 <div>
-                  <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase;">Evidence Status</div>
-                  <span id="eaios-oro-ctx-evidence-status" style="display: inline-block; font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 3px; border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 2px;">CONFLICTING</span>
+                  <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Evidence Status</div>
+                  <span id="eaios-oro-ctx-evidence-status" style="display: inline-block; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 3px; border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 2px;">CONFLICTING</span>
                 </div>
               </div>
-              <div style="color: #94a3b8; font-size: 10.5px; margin-top: 6px; line-height: 1.35;" id="eaios-oro-ctx-evidence-note">
+              <div style="color: #94a3b8; font-size: 10px; margin-top: 4px; line-height: 1.3;" id="eaios-oro-ctx-evidence-note">
                 Provider status claims monitoring; internal telemetry probes measure 100% loss.
               </div>
             </div>
           </div>
-          <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 10.5px;">
+          <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 10px;">
             <div>
               <span style="color: #64748b;">Required Decision:</span> <strong id="eaios-oro-ctx-decision" style="color: #cbd5e1;">Authorize live production DNS switchover to UK-South</strong>
             </div>
@@ -1315,24 +1328,7 @@ function generateEaiosHtml() {
               Consequence: <span id="eaios-oro-ctx-consequence" style="color: #94a3b8;">Traffic diverted to secondary standby</span>
             </div>
           </div>
-        </div>
-
-        <!-- Controls Action Row -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button id="eaios-btn-run" onclick="window.runEaiosScenario()" class="eaios-btn-primary" aria-label="Run selected simulation scenario">
-              ▶ Run Selected Scenario
-            </button>
-            <button id="eaios-btn-reset" onclick="window.resetEaiosSimulation()" class="eaios-btn-secondary" aria-label="Reset simulation state">
-              Reset
-            </button>
-          </div>
-          <div style="display: flex; gap: 10px; font-size: 11px; color: #94a3b8; align-items: center; flex-wrap: wrap;">
-            <span>Correlation ID: <code id="eaios-active-correlation-id" style="color: #38bdf8;">INITIALIZING</code></span>
-            <span>•</span>
-            <span>Outbox Coupling: <strong style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</strong></span>
-          </div>
-        </div>
+        </details>
 
         <!-- HUMAN APPROVAL INTERACTIVE OPERATOR BANNER (ADR-032) -->
         <div id="eaios-approval-banner" style="display: none; margin-bottom: 16px; background: rgba(245, 158, 11, 0.12); border: 2px dashed #f59e0b; border-radius: 8px; padding: 18px;">

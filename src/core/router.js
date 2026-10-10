@@ -14,7 +14,7 @@ import { renderReportsModule } from '../modules/reports.js?v=2.7.0';
 import { renderAiGovernanceModule } from '../modules/aigovernance.js?v=2.7.0';
 import { renderAnalystModule } from '../modules/analyst.js?v=2.7.0';
 import { renderCommandCentre } from '../modules/commandcentre.js?v=2.7.0';
-import { renderEaiosModule } from '../eaios/eaios-view.js?v=2.7.0';
+import { renderEaiosModule } from '../eaios/eaios-view.js?v=2.8.0';
 
 
 export function switchTab(tabId) {
