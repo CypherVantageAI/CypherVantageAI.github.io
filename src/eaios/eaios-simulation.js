@@ -315,11 +315,14 @@ export class EaiosSimulationManager {
     let liveBackendSuccess = false;
     let liveAssessment = null;
 
-    try {
-      const requestCorrelationId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
-        ? crypto.randomUUID()
-        : 'a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d';
+    const requestCorrelationId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+      ? crypto.randomUUID()
+      : 'a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d';
 
+    this.correlationId = `${requestCorrelationId} (PENDING)`;
+    this._render();
+
+    try {
       const resp = await fetch(backendUrl, {
         method: "POST",
         headers: {
@@ -342,16 +345,47 @@ export class EaiosSimulationManager {
         })
       });
 
+      let data;
       if (resp.ok) {
-        const data = await resp.json();
-        liveAssessment = data.assessment;
-        liveBackendSuccess = true;
-        this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}]: Synthesis verified via ${EAIOS_BACKEND_CONFIG.baseUrl}. Tokens Settled: ${data.governance_metadata?.cost_governance?.tokens_settled}. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: "node_4_resilience_recommendation", correlationId: data.correlation_id });
+        try {
+          data = await resp.json();
+        } catch (parseErr) {
+          this.correlationId = `${requestCorrelationId} (RESPONSE PROCESSING FAILED)`;
+          this._addAudit("BACKEND_ERROR", `Failed to parse backend JSON response (${parseErr.message}). Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
+          liveBackendSuccess = false;
+          data = null;
+        }
+
+        if (data) {
+          liveAssessment = data.assessment;
+          liveBackendSuccess = true;
+
+          // Verify correlation ID match across body and header
+          const bodyCorrId = data.correlation_id;
+          const headerCorrId = resp.headers ? resp.headers.get("X-Correlation-ID") : null;
+
+          if (bodyCorrId && headerCorrId && bodyCorrId !== headerCorrId) {
+            this.correlationId = `${bodyCorrId} (HEADER/BODY DISAGREEMENT: header ${headerCorrId})`;
+          } else {
+            const returnedCorrId = bodyCorrId || headerCorrId;
+            if (returnedCorrId === requestCorrelationId) {
+              this.correlationId = requestCorrelationId;
+            } else if (returnedCorrId) {
+              this.correlationId = `${returnedCorrId} (MISMATCH: sent ${requestCorrelationId})`;
+            } else {
+              this.correlationId = `${requestCorrelationId} (UNCONFIRMED)`;
+            }
+          }
+
+          this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}]: Synthesis verified via ${EAIOS_BACKEND_CONFIG.baseUrl}. Tokens Settled: ${data.governance_metadata?.cost_governance?.tokens_settled}. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: "node_4_resilience_recommendation", correlationId: this.correlationId });
+        }
       } else {
         const errorText = await resp.text();
+        this.correlationId = `${requestCorrelationId} (HTTP ${resp.status} ERROR)`;
         this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}]: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
       }
     } catch (netErr) {
+      this.correlationId = `${requestCorrelationId} (CONNECTION FAILED)`;
       this._addAudit("BACKEND_UNAVAILABLE", `Live Backend Connection Failed (${netErr.message}). Endpoint: ${backendUrl}. Bounded demonstration halted.`, "LIVE_BACKEND", "FAILED", { nodeId: "node_4_resilience_recommendation" });
     }
 

@@ -21,7 +21,8 @@ import {
   ADR_EXPLORER_CATALOG,
   STAGE_MATURITY_TIMELINE,
   TENANT_RLS_RECORDS,
-  COST_GOVERNANCE_CONFIG
+  COST_GOVERNANCE_CONFIG,
+  EAIOS_BACKEND_CONFIG
 } from './eaios-data.js';
 
 import { EaiosRenderer } from './eaios-renderer.js';
@@ -69,6 +70,18 @@ window.selectEaiosScenario = function(scenarioKey) {
       if (subEl) subEl.textContent = info.subtitle;
       if (descEl) descEl.textContent = info.description;
       if (evidEl) evidEl.textContent = info.evidenceRef;
+
+      const synthBadge = document.getElementById('eaios-scen-synthetic-badge');
+      const budgetBadge = document.getElementById('eaios-scen-budget-badge');
+      if (synthBadge && budgetBadge) {
+        if (scenarioKey === 'scenario_oro') {
+          synthBadge.style.display = 'inline-block';
+          budgetBadge.style.display = 'inline-block';
+        } else {
+          synthBadge.style.display = 'none';
+          budgetBadge.style.display = 'none';
+        }
+      }
     }
   }
 
@@ -1066,22 +1079,28 @@ function generateEaiosHtml() {
               Test how EAIOS executes autonomous pipelines, enforces Four-Eyes gates, executes reverse DAG compensation, and manages dynamic provider fallback.
             </div>
           </div>
-          <div role="tablist" aria-label="EAIOS Architectural Scenarios" style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button id="eaios-scenario-btn-oro" onclick="window.selectEaiosScenario('scenario_oro')" role="tab" aria-selected="true" tabindex="0" class="eaios-scen-btn active" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800;">
-              ⚡ Showcase: ORO Outage
-            </button>
-            <button id="eaios-scenario-btn-a" onclick="window.selectEaiosScenario('scenario_a')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
-              Scenario A: Autonomous
-            </button>
-            <button id="eaios-scenario-btn-b" onclick="window.selectEaiosScenario('scenario_b')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
-              Scenario B: HITL Approval
-            </button>
-            <button id="eaios-scenario-btn-c" onclick="window.selectEaiosScenario('scenario_c')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
-              Scenario C: Rejection & Compensation
-            </button>
-            <button id="eaios-scenario-btn-d" onclick="window.selectEaiosScenario('scenario_d')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
-              Scenario D: Governed Knowledge
-            </button>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div id="eaios-api-preflight-pill" style="font-family: monospace; font-size: 10px; font-weight: 700; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px;">
+              <span id="eaios-api-preflight-dot" style="width: 6px; height: 6px; border-radius: 50%; background: #38bdf8;"></span>
+              <span id="eaios-api-preflight-text">API: CHECKING...</span>
+            </div>
+            <div role="tablist" aria-label="EAIOS Architectural Scenarios" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button id="eaios-scenario-btn-oro" onclick="window.selectEaiosScenario('scenario_oro')" role="tab" aria-selected="true" tabindex="0" class="eaios-scen-btn active" style="border-color: #38bdf8; color: #38bdf8; font-weight: 800;">
+                ⚡ Showcase: ORO Outage
+              </button>
+              <button id="eaios-scenario-btn-a" onclick="window.selectEaiosScenario('scenario_a')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
+                Scenario A: Autonomous
+              </button>
+              <button id="eaios-scenario-btn-b" onclick="window.selectEaiosScenario('scenario_b')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
+                Scenario B: HITL Approval
+              </button>
+              <button id="eaios-scenario-btn-c" onclick="window.selectEaiosScenario('scenario_c')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
+                Scenario C: Rejection & Compensation
+              </button>
+              <button id="eaios-scenario-btn-d" onclick="window.selectEaiosScenario('scenario_d')" role="tab" aria-selected="false" tabindex="0" class="eaios-scen-btn">
+                Scenario D: Governed Knowledge
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1089,10 +1108,16 @@ function generateEaiosHtml() {
         <div id="eaios-active-scenario-card" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
             <div>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                 <span id="eaios-scen-title" style="font-weight: 800; font-size: 14px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
                 <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800;">
                   TEST VERIFIED
+                </span>
+                <span id="eaios-scen-synthetic-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.02em;">
+                  DEMO TELEMETRY: SYNTHESISED
+                </span>
+                <span id="eaios-scen-budget-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 7px; border-radius: 4px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.02em;">
+                  BUDGET: REQUEST-SCOPED IN-MEMORY
                 </span>
               </div>
               <div id="eaios-scen-subtitle" style="font-size: 12px; color: #38bdf8; margin-top: 2px;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.subtitle}</div>
@@ -1117,7 +1142,7 @@ function generateEaiosHtml() {
             </button>
           </div>
           <div style="display: flex; gap: 10px; font-size: 11px; color: #94a3b8; align-items: center; flex-wrap: wrap;">
-            <span>Correlation ID: <code style="color: #38bdf8;">CORR-2026-000741</code></span>
+            <span>Correlation ID: <code id="eaios-active-correlation-id" style="color: #38bdf8;">INITIALIZING</code></span>
             <span>•</span>
             <span>Outbox Coupling: <strong style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</strong></span>
           </div>
@@ -1134,6 +1159,9 @@ function generateEaiosHtml() {
               <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px; line-height: 1.45;">
                 State: <code>PAUSED_PENDING_INPUT</code>. Work Owner: <code style="color: #38bdf8;">alice@enterprise.example</code>.
                 Four-Eyes rule mandates that the work owner cannot approve high-impact actions. Resumption transitions workflow state and requires fresh EAIES execution authorization.
+              </div>
+              <div style="font-size: 11px; color: #fbbf24; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 4px; padding: 6px 10px; margin-top: 8px; line-height: 1.4;">
+                <strong>Showcase disclosure:</strong> This is a simulated UI decision gate. Hardware-backed WebAuthn approval is not integrated in this showcase path.
               </div>
 
               <!-- Interactive Form Inputs -->
@@ -1429,6 +1457,16 @@ function initializeComponents() {
       const pct = (state.budgetState.remaining / state.budgetState.totalBudget) * 100;
       budgetBar.style.width = `${pct}%`;
     }
+
+    // Dynamic Correlation ID update
+    const activeCorrEl = document.getElementById('eaios-active-correlation-id');
+    if (activeCorrEl) {
+      activeCorrEl.textContent = state.correlationId || 'INITIALIZING';
+    }
+    const inspectorCorrEl = document.getElementById('eaios-inspector-correlation-id');
+    if (inspectorCorrEl) {
+      inspectorCorrEl.textContent = state.correlationId || 'INITIALIZING';
+    }
   });
 
   // Handle window resize for dynamic responsive layout rerendering
@@ -1444,6 +1482,9 @@ function initializeComponents() {
   if (initialNodes && initialNodes[0]) {
     updateInspector(initialNodes[0]);
   }
+
+  // Non-blocking, point-in-time preflight health check
+  checkApiPreflight();
 
   // Modal ESC key listener
   window.addEventListener('keydown', (e) => {
@@ -1513,7 +1554,55 @@ function updateInspector(node) {
       <div style="font-size: 11px; color: #94a3b8;">Worker Lease: <span style="color: #cbd5e1;">${status === 'EXECUTING' ? (node.workerBadge || 'worker [ACTIVE]') : 'Released / Unclaimed'}</span></div>
       <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">OCC Entity Version: <code style="color: #38bdf8;">v${node.version || 1}</code></div>
       <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Outbox Coupling: <code style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</code></div>
-      <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Correlation: <code style="color: #38bdf8;">CORR-2026-000741</code></div>
+      <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Correlation: <code id="eaios-inspector-correlation-id" style="color: #38bdf8;">${simManager?.correlationId || 'INITIALIZING'}</code></div>
     </div>
   `;
+}
+
+/**
+ * Non-intrusive, point-in-time preflight check to established live health endpoint.
+ * Does not block rendering, does not mutate state, does not auto-retry.
+ */
+async function checkApiPreflight() {
+  const pill = document.getElementById('eaios-api-preflight-pill');
+  const dot = document.getElementById('eaios-api-preflight-dot');
+  const text = document.getElementById('eaios-api-preflight-text');
+  if (!pill || !dot || !text) return;
+
+  const healthUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.healthEndpoint}`;
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timeoutId = setTimeout(() => {
+    if (controller) controller.abort();
+  }, 4000);
+
+  try {
+    const startTime = Date.now();
+    const resp = await fetch(healthUrl, {
+      method: 'GET',
+      signal: controller ? controller.signal : undefined
+    });
+    clearTimeout(timeoutId);
+    const elapsed = Date.now() - startTime;
+
+    if (resp.ok) {
+      dot.style.background = '#10b981';
+      pill.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+      pill.style.background = 'rgba(16, 185, 129, 0.1)';
+      pill.style.color = '#34d399';
+      text.textContent = `API: REACHABLE (${elapsed}ms)`;
+    } else {
+      dot.style.background = '#f59e0b';
+      pill.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+      pill.style.background = 'rgba(245, 158, 11, 0.1)';
+      pill.style.color = '#fbbf24';
+      text.textContent = `API: HTTP ${resp.status} (FALLBACK READY)`;
+    }
+  } catch (err) {
+    clearTimeout(timeoutId);
+    dot.style.background = '#ef4444';
+    pill.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+    pill.style.background = 'rgba(239, 68, 68, 0.1)';
+    pill.style.color = '#f87171';
+    text.textContent = 'API: UNREACHABLE (FALLBACK READY)';
+  }
 }
