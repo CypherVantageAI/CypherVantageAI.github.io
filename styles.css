@@ -617,6 +617,60 @@ body.light-mode .btn-reset-db:hover {
   font-weight: 500;
 }
 
+.docs-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.docs-nav-link:hover {
+  background-color: rgba(56, 189, 248, 0.08);
+  color: #7dd3fc;
+}
+
+.docs-nav-link .docs-nav-icon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.docs-nav-link .docs-nav-arrow {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  margin-left: auto;
+}
+
+.app-sidebar.collapsed .docs-nav-link {
+  justify-content: center;
+  padding: 6px 0;
+  border-top: none;
+}
+
+.app-sidebar.collapsed .docs-nav-link span {
+  display: none !important;
+}
+
+.app-sidebar.collapsed:hover .docs-nav-link {
+  justify-content: flex-start;
+  padding: 4px 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-sidebar.collapsed:hover .docs-nav-link span {
+  display: inline !important;
+}
+
 .app-content {
   flex: 1;
   padding: 30px;
