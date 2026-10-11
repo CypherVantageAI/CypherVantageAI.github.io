@@ -238,6 +238,11 @@ window.submitEaiosDecision = function(decision) {
   simManager.submitHumanDecision(decision, email, rationale);
 };
 
+window.retryEaiosSynthesis = function() {
+  if (!simManager) return;
+  simManager.retrySynthesis();
+};
+
 window.switchEaiosTenant = function(tenantId) {
   if (!simManager) return;
   const btnRlsGwm = document.getElementById('eaios-btn-rls-gwm');
@@ -1667,6 +1672,7 @@ function initializeComponents() {
   });
 
   // Initial render
+  window.simManager = simManager;
   simManager.reset();
   const initialNodes = simManager.getCurrentNodes();
   if (initialNodes && initialNodes[0]) {
@@ -1818,7 +1824,7 @@ function updateExecutiveDecisionRecord() {
         <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">2. Backend Advisory Assessment</span>
-            <span style="font-size: 9.5px; font-weight: 700; color: #34d399;">${rec.assessment.status}</span>
+            <span style="font-size: 9.5px; font-weight: 700; color: ${rec.assessment.status === 'SYNTHESIS_VERIFIED' ? '#34d399' : (rec.assessment.status.startsWith('FAILED') || rec.assessment.status.startsWith('UNAVAILABLE') ? '#f87171' : '#38bdf8')};">${rec.assessment.status}</span>
           </div>
           <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
             <div>Advisory Action: <code style="color: #a78bfa;">${rec.assessment.action || 'PENDING_DISPATCH'}</code></div>
@@ -1826,6 +1832,22 @@ function updateExecutiveDecisionRecord() {
             <div style="margin-top: 6px; font-size: 10px; color: #64748b;">
               Settled Tokens: <strong style="color: #10b981;">${rec.assessment.tokensSettled !== null ? rec.assessment.tokensSettled : '0 (Not billed)'}</strong>
             </div>
+            ${rec.assessment.isRetryable ? `
+              <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <div style="font-size: 10px; color: #fbbf24; margin-bottom: 6px;">
+                  ⚠️ Fail-Closed Isolation: ${rec.assessment.retryableReason || 'Transient failure detected.'}
+                </div>
+                <button
+                  id="eaios-btn-retry-synthesis"
+                  onclick="window.retryEaiosSynthesis()"
+                  aria-label="Retry recommendation synthesis with backend"
+                  ${simManager?.isRetrying ? 'disabled' : ''}
+                  style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; background: ${simManager?.isRetrying ? 'rgba(56, 189, 248, 0.15)' : 'linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(59, 130, 246, 0.25))'}; border: 1px solid ${simManager?.isRetrying ? 'rgba(56, 189, 248, 0.3)' : 'rgba(56, 189, 248, 0.6)'}; color: ${simManager?.isRetrying ? '#94a3b8' : '#38bdf8'}; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: ${simManager?.isRetrying ? 'not-allowed' : 'pointer'}; transition: all 0.15s ease;"
+                >
+                  ${simManager?.isRetrying ? '⏳ Retrying Synthesis...' : '🔄 Retry Synthesis'}
+                </button>
+              </div>
+            ` : ''}
           </div>
         </div>
 

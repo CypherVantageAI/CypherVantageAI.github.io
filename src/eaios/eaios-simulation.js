@@ -49,6 +49,9 @@ export class EaiosSimulationManager {
     // Monotonic Run Generation Counter (Prevents Stale Asynchronous Response Contamination)
     this.runGeneration = 0;
 
+    // Retry in flight flag
+    this.isRetrying = false;
+
     // Executive Decision Record (In-Memory Traceability)
     this.executiveDecisionRecord = null;
 
@@ -117,6 +120,7 @@ export class EaiosSimulationManager {
     this.runGeneration++;
 
     this.isRunning = false;
+    this.isRetrying = false;
     this.correlationId = "CORR-2026-000741";
     this.workItemId = "wi-2026-9b4d8c72";
     this.instanceId = "inst-stage26-dag01";
@@ -218,7 +222,7 @@ export class EaiosSimulationManager {
   }
 
   _isRunActive(generation, scenarioId) {
-    return generation === this.runGeneration && this.isRunning && this.activeScenario === scenarioId;
+    return generation === this.runGeneration && (this.isRunning || this.isRetrying) && this.activeScenario === scenarioId;
   }
 
   selectNode(nodeId) {
@@ -556,6 +560,9 @@ export class EaiosSimulationManager {
         this.correlationId = `${requestCorrelationId} (HTTP ${resp.status} ERROR)`;
         this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}]: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
 
+        // Distinguish retryable server/rate errors (5xx, 429) from terminal client errors (400, 403, 404)
+        const isRetryableHttp = resp.status >= 500 || resp.status === 429;
+
         if (this.executiveDecisionRecord) {
           this.executiveDecisionRecord.assessment = {
             status: `FAILED_HTTP_${resp.status}`,
@@ -563,6 +570,8 @@ export class EaiosSimulationManager {
             rationale: `Backend error returned: ${errorText.substring(0, 80)}. Zero advisory action generated.`,
             tokensSettled: 0,
             isAdvisoryOnly: true,
+            isRetryable: isRetryableHttp,
+            retryableReason: isRetryableHttp ? `Transient backend status HTTP ${resp.status}` : null,
             backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
           };
           this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
@@ -581,6 +590,8 @@ export class EaiosSimulationManager {
           rationale: `Backend connection unavailable (${netErr.message}). Fail-closed: Zero recommendations fabricated.`,
           tokensSettled: 0,
           isAdvisoryOnly: true,
+          isRetryable: true,
+          retryableReason: `Transient connectivity failure (${netErr.message})`,
           backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
         };
         this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
@@ -623,6 +634,204 @@ export class EaiosSimulationManager {
     this._showApprovalBanner();
     this.isRunning = false;
     this._render();
+  }
+
+  /**
+   * Retry Synthesis (Fail-Closed, Accessible Recovery Interaction)
+   * Re-evaluates Node 4 recommendation synthesis for the active scenario without re-running prior completed steps.
+   */
+  async retrySynthesis() {
+    if (this.isRunning || this.isRetrying) return;
+    if (!this.executiveDecisionRecord || !this.executiveDecisionRecord.assessment?.isRetryable) return;
+
+    const scenario = this.getActiveOroScenario();
+    if (!scenario) return;
+
+    const node4Id = "node_4_resilience_recommendation";
+    const node5Id = "node_5_hitl_executive_decision";
+
+    const currentGeneration = this.runGeneration;
+    const currentScenarioId = this.activeScenario;
+
+    this.isRetrying = true;
+
+    // Transition Node 4 back to EXECUTING
+    if (this.nodeStates[node4Id]) {
+      this.nodeStates[node4Id].status = "EXECUTING";
+      this.nodeStates[node4Id].workerBadge = "emp-op-resilience-01 [ACTIVE]";
+    }
+
+    const backendUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`;
+    const requestCorrelationId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+      ? crypto.randomUUID()
+      : 'b2c3d4e5-f6a1-4b2c-8d3e-4f5a6b7c8d9e';
+
+    this.correlationId = `${requestCorrelationId} (RETRYING)`;
+    this._addAudit("SYNTHESIS_RETRY_INITIATED", `Retry requested for recommendation synthesis. Correlation ID: ${requestCorrelationId}.`, "SIMULATION_ORCHESTRATOR", "EXECUTING", { nodeId: node4Id });
+    this._render();
+
+    const payloadToSend = scenario?.backendPayload || {
+      incident_id: scenario.incidentId || "INC-2026-CLOUD-9941",
+      provider_name: "ApexCloud EMEA Infrastructure Services",
+      service_impacted: "Multi-Tenant Database Cluster & API Message Router (Primary Availability Zone)",
+      severity: scenario.severity || "CRITICAL",
+      outage_start: "2026-10-07T18:15:00Z",
+      estimated_recovery: "2026-10-07T22:30:00Z",
+      vendor_telemetry: {
+        region: "eu-west-1",
+        affected_tenants_estimate: 1420,
+        underlying_cause: "Power distribution failure and automated failover network partition",
+        service_level: "DEGRADED_FAILOVER_UNAVAILABLE"
+      }
+    };
+
+    let liveBackendSuccess = false;
+
+    try {
+      try {
+        const resp = await fetch(backendUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Correlation-ID": requestCorrelationId
+          },
+          body: JSON.stringify(payloadToSend)
+        });
+
+        if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+
+        let data;
+        if (resp.ok) {
+          try {
+            data = await resp.json();
+          } catch (parseErr) {
+            if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+            this.correlationId = `${requestCorrelationId} (RESPONSE PROCESSING FAILED)`;
+            this._addAudit("BACKEND_ERROR", `Failed to parse backend JSON response on retry (${parseErr.message}). Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
+            data = null;
+          }
+
+          if (data) {
+            if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+            liveBackendSuccess = true;
+
+            const bodyCorrId = data.correlation_id;
+            const headerCorrId = resp.headers ? resp.headers.get("X-Correlation-ID") : null;
+
+            if (bodyCorrId && headerCorrId && bodyCorrId !== headerCorrId) {
+              this.correlationId = `${bodyCorrId} (HEADER/BODY DISAGREEMENT: header ${headerCorrId})`;
+            } else {
+              const returnedCorrId = bodyCorrId || headerCorrId;
+              if (returnedCorrId === requestCorrelationId) {
+                this.correlationId = requestCorrelationId;
+              } else if (returnedCorrId) {
+                this.correlationId = `${returnedCorrId} (MISMATCH: sent ${requestCorrelationId})`;
+              } else {
+                this.correlationId = `${requestCorrelationId} (UNCONFIRMED)`;
+              }
+            }
+
+            this._addAudit("LIVE_BACKEND_ASSESSMENT", `Live Backend Response [HTTP ${resp.status}] on Retry: Synthesis verified. Invariant: Recommendation != Action.`, "LIVE_BACKEND", "SUCCESS", { nodeId: node4Id, correlationId: this.correlationId });
+
+            if (this.executiveDecisionRecord) {
+              this.executiveDecisionRecord.assessment = {
+                status: 'SYNTHESIS_VERIFIED',
+                action: data.recommended_action || data.recommendation?.action || 'FAILOVER_SECONDARY_REGION',
+                rationale: data.assessment?.summary || data.assessment || 'Backend advisory synthesized from multi-service telemetry.',
+                tokensSettled: data.governance_metadata?.cost_governance?.tokens_settled || 150,
+                isAdvisoryOnly: data.is_advisory_only !== undefined ? data.is_advisory_only : true,
+                humanApprovalRequired: data.human_approval_required !== undefined ? data.human_approval_required : true,
+                isRetryable: false,
+                retryableReason: null,
+                backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+              };
+              this.executiveDecisionRecord.traceability.correlationId = this.correlationId;
+              this.executiveDecisionRecord.outcome.workflowState = 'PAUSED_PENDING_INPUT';
+              this.executiveDecisionRecord.outcome.simulatedEffect = 'Advisory plan formulated. Execution halted fail-closed awaiting human gate sign-off.';
+              this.executiveDecisionRecord.outcome.timestamp = new Date().toISOString();
+            }
+          }
+        } else {
+          const errorText = await resp.text();
+          if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+          this.correlationId = `${requestCorrelationId} (HTTP ${resp.status} ERROR)`;
+          this._addAudit("BACKEND_ERROR", `Live Backend Error [HTTP ${resp.status}] on Retry: ${errorText.substring(0, 100)}. Advisory execution halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
+
+          const isRetryableHttp = resp.status >= 500 || resp.status === 429;
+
+          if (this.executiveDecisionRecord) {
+            this.executiveDecisionRecord.assessment = {
+              status: `FAILED_HTTP_${resp.status}`,
+              action: null,
+              rationale: `Backend error returned: ${errorText.substring(0, 80)}. Zero advisory action generated.`,
+              tokensSettled: 0,
+              isAdvisoryOnly: true,
+              isRetryable: isRetryableHttp,
+              retryableReason: isRetryableHttp ? `Transient backend status HTTP ${resp.status}` : null,
+              backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+            };
+            this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
+            this.executiveDecisionRecord.outcome.simulatedEffect = 'Execution halted fail-closed. Zero mutations committed.';
+          }
+        }
+      } catch (netErr) {
+        if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+        this.correlationId = `${requestCorrelationId} (CONNECTION FAILED)`;
+        this._addAudit("BACKEND_UNAVAILABLE", `Live Backend Connection Failed on Retry (${netErr.message}). Endpoint: ${backendUrl}. Bounded demonstration halted.`, "LIVE_BACKEND", "FAILED", { nodeId: node4Id });
+
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.assessment = {
+            status: 'UNAVAILABLE_CONNECTION_FAILED',
+            action: null,
+            rationale: `Backend connection unavailable (${netErr.message}). Fail-closed: Zero recommendations fabricated.`,
+            tokensSettled: 0,
+            isAdvisoryOnly: true,
+            isRetryable: true,
+            retryableReason: `Transient connectivity failure (${netErr.message})`,
+            backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointRecommendation}`
+          };
+          this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
+          this.executiveDecisionRecord.outcome.simulatedEffect = 'Execution halted fail-closed. Zero mutations committed.';
+        }
+      }
+
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+
+      if (!liveBackendSuccess) {
+        if (this.nodeStates[node4Id]) {
+          this.nodeStates[node4Id].status = "FAILED";
+          this.nodeStates[node4Id].workerBadge = "Backend Offline";
+        }
+        this.workflowInstance.status = "FAILED";
+        this._render();
+        return;
+      }
+
+      if (this.nodeStates[node4Id]) {
+        this.nodeStates[node4Id].status = "COMPLETED";
+        this.nodeStates[node4Id].workerBadge = "Lease Released";
+      }
+      this._render();
+      await this._sleep(400);
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+
+      // Transition to Four-Eyes Executive Decision Gate -> PAUSE
+      if (this.nodeStates[node5Id]) {
+        this.nodeStates[node5Id].status = "PAUSED_PENDING_INPUT";
+      }
+      this.workflowInstance.status = "PAUSED_PENDING_INPUT";
+      this.humanApproval.status = "PAUSED_PENDING_INPUT";
+      if (this.executiveDecisionRecord) {
+        this.executiveDecisionRecord.outcome.workflowState = "PAUSED_PENDING_INPUT";
+      }
+      const decisionReq = scenario?.decisionProfile?.requiredDecision || "High-impact remediation requires Four-Eyes executive authorization";
+      this._addAudit("FOUR_EYES_GATE_PAUSED", `${decisionReq}. State transitioned to PAUSED_PENDING_INPUT (ADR-032).`, "HITL_SERVICE", "PAUSED", { nodeId: node5Id, adrRef: "ADR-032" });
+      this._showApprovalBanner();
+      this._render();
+    } finally {
+      this.isRetrying = false;
+      this._render();
+    }
   }
 
   /**
