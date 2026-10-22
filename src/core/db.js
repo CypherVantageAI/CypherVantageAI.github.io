@@ -11,6 +11,9 @@ const DEFAULT_STATE = {
   activeSupplierId: 'aws',  // Supplier portal context
   activeSupplierSubTab: 'all',
   dlpProxyEnabled: true,
+  // Stage 5A: Multi-Agent TPRM Assessment Ledger
+  tprmAssessments: [],
+  tprmEvents: [],
   
   // Relational DORA & Resilience Entities
   services: [
