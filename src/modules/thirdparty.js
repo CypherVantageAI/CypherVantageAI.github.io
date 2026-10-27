@@ -904,6 +904,281 @@ export async function calculateContentHash(content) {
 }
 
 /**
+ * Backend API Client Adapter & Dual-Mode Configuration Helper
+ * Enforces strict fail-closed origin trust and credential protection:
+ * - Loopback development (http://127.0.0.1 or http://localhost) requires explicit opt-in (development mode).
+ * - When development mode is disabled (default): loopback origins are REJECTED before fetch.
+ * - Remote non-loopback HTTP is strictly prohibited.
+ * - Remote HTTPS origins are rejected unless explicitly allowlisted in APPROVED_REMOTE_ORIGINS.
+ * - Unapproved origins NEVER receive cookies or bearer tokens.
+ * - Full URL structure validation rejects userinfo, unexpected ports, and malformed hosts.
+ * - Only backend URL is stored in localStorage; authentication tokens are NEVER persisted.
+ */
+
+// Explicit approved remote origins allowlist.
+// Staging hostname placeholder requiring explicit repository owner approval.
+export const APPROVED_REMOTE_ORIGINS = Object.freeze([]);
+
+// Explicitly permitted loopback hostnames and development ports
+export const PERMITTED_LOOPBACK_HOSTS = Object.freeze(new Set(['127.0.0.1', 'localhost', '::1', '[::1]']));
+export const PERMITTED_DEV_PORTS = Object.freeze(new Set(['', '80', '8000', '8080', '8098', '8443']));
+
+export function isLoopbackOrigin(hostname) {
+  return PERMITTED_LOOPBACK_HOSTS.has(hostname);
+}
+
+/**
+ * Checks if local development mode is explicitly enabled.
+ * Evaluated from window.__TPRM_DEV_MODE__ (runtime override) or localStorage ("tprm_dev_mode").
+ * Defaults strictly to false.
+ */
+export function isDevModeEnabled() {
+  if (typeof window === 'undefined') return false;
+  if (window.__TPRM_DEV_MODE__ === true) return true;
+  if (window.__TPRM_DEV_MODE__ === false) return false;
+  if (typeof localStorage !== 'undefined') {
+    return localStorage.getItem('tprm_dev_mode') === 'true';
+  }
+  return false;
+}
+
+export function setDevMode(enabled) {
+  if (typeof window === 'undefined') return;
+  const flag = Boolean(enabled);
+  if (typeof localStorage !== 'undefined') {
+    if (flag) {
+      localStorage.setItem('tprm_dev_mode', 'true');
+    } else {
+      localStorage.removeItem('tprm_dev_mode');
+    }
+  }
+  window.__TPRM_DEV_MODE__ = flag;
+}
+
+/**
+ * Evaluates backend URL against fail-closed origin trust security policy.
+ * Rejects: userinfo, non-HTTP(S) schemes, unapproved remote origins, unexpected ports,
+ * and unapproved loopback origins when dev mode is disabled.
+ */
+export function evaluateOriginTrust(rawUrl, devModeOverride) {
+  if (!rawUrl || typeof rawUrl !== 'string') {
+    return { ok: false, error: 'Empty or invalid URL input' };
+  }
+
+  const clean = rawUrl.trim();
+  if (!clean) {
+    return { ok: false, error: 'Empty URL input' };
+  }
+
+  // 1. Strict raw host syntax validation (reject trailing/leading dots or weird host decorations)
+  const hostMatch = clean.match(/^[a-zA-Z]+:\/\/([^/?#]+)/);
+  if (hostMatch) {
+    const rawHostPort = hostMatch[1];
+    const rawHost = rawHostPort.split('@').pop().split(':')[0];
+    if (rawHost.startsWith('.') || rawHost.endsWith('.') || rawHost.includes('*')) {
+      return { ok: false, error: 'Malformed hostname syntax' };
+    }
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(clean);
+  } catch (e) {
+    return { ok: false, error: 'Malformed URL syntax' };
+  }
+
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    return { ok: false, error: `Unsupported protocol scheme: ${parsed.protocol}` };
+  }
+
+  // 2. Reject embedded userinfo (user:pass@host)
+  if (parsed.username || parsed.password) {
+    return { ok: false, error: 'Embedded credentials (username/password) are strictly prohibited' };
+  }
+
+  // 3. Reject empty, wildcard, or malformed hostname
+  const hostname = parsed.hostname;
+  if (!hostname || hostname.includes('*') || hostname.startsWith('.') || hostname.endsWith('.')) {
+    return { ok: false, error: 'Malformed hostname' };
+  }
+
+  const isLoopback = isLoopbackOrigin(hostname);
+  const devModeActive = typeof devModeOverride === 'boolean' ? devModeOverride : isDevModeEnabled();
+
+  // 4. Scheme and Origin Trust Policy
+  if (parsed.protocol === 'http:') {
+    if (!isLoopback) {
+      return { ok: false, error: 'Insecure remote HTTP is prohibited. Only loopback development permits HTTP.' };
+    }
+    // Fail-closed loopback check: require explicit development mode opt-in
+    if (!devModeActive) {
+      return {
+        ok: false,
+        error: 'Loopback backend connection requires explicit Development Mode opt-in. Enable Development Mode in settings to connect.'
+      };
+    }
+    // Validate loopback port
+    if (!PERMITTED_DEV_PORTS.has(parsed.port)) {
+      return { ok: false, error: `Port ${parsed.port} is not an authorized loopback development port` };
+    }
+    const cleanBaseUrl = parsed.origin + parsed.pathname.replace(/\/+$/, '');
+    return {
+      ok: true,
+      baseUrl: cleanBaseUrl,
+      isLoopback: true,
+      isTrusted: true,
+      origin: parsed.origin
+    };
+  }
+
+  // 5. HTTPS Origin Validation: Require exact match in APPROVED_REMOTE_ORIGINS
+  if (parsed.protocol === 'https:') {
+    const isApprovedRemote = APPROVED_REMOTE_ORIGINS.includes(parsed.origin);
+    if (isLoopback) {
+      if (!devModeActive) {
+        return {
+          ok: false,
+          error: 'Loopback backend connection requires explicit Development Mode opt-in. Enable Development Mode in settings to connect.'
+        };
+      }
+      if (!PERMITTED_DEV_PORTS.has(parsed.port)) {
+        return { ok: false, error: `Port ${parsed.port} is not an authorized loopback development port` };
+      }
+      const cleanBaseUrl = parsed.origin + parsed.pathname.replace(/\/+$/, '');
+      return {
+        ok: true,
+        baseUrl: cleanBaseUrl,
+        isLoopback: true,
+        isTrusted: true,
+        origin: parsed.origin
+      };
+    }
+
+    if (!isApprovedRemote) {
+      return {
+        ok: false,
+        error: `Remote HTTPS origin "${parsed.origin}" is not on the approved allowlist. Staging hostname requires owner authorization.`
+      };
+    }
+
+    const cleanBaseUrl = parsed.origin + parsed.pathname.replace(/\/+$/, '');
+    return {
+      ok: true,
+      baseUrl: cleanBaseUrl,
+      isLoopback: false,
+      isTrusted: true,
+      origin: parsed.origin
+    };
+  }
+
+  return { ok: false, error: 'Unrecognized URL form' };
+}
+
+export function getBackendConfig() {
+  if (typeof window === 'undefined') return { enabled: false, baseUrl: '', isTrusted: false, isLoopback: false };
+  const rawUrl = (window.__TPRM_BACKEND_URL__ || (typeof localStorage !== 'undefined' ? localStorage.getItem('tprm_backend_url') : '') || '').trim();
+  if (!rawUrl) return { enabled: false, baseUrl: '', isTrusted: false, isLoopback: false };
+
+  const evaluation = evaluateOriginTrust(rawUrl);
+  if (!evaluation.ok) {
+    console.warn('[TPRM Origin Security] Backend connection rejected:', evaluation.error, '(URL:', rawUrl, ')');
+    return { enabled: false, baseUrl: '', isTrusted: false, isLoopback: false, error: evaluation.error };
+  }
+
+  return {
+    enabled: true,
+    baseUrl: evaluation.baseUrl,
+    isTrusted: evaluation.isTrusted,
+    isLoopback: evaluation.isLoopback,
+    origin: evaluation.origin
+  };
+}
+
+export function setBackendUrl(url) {
+  if (typeof window === 'undefined') return;
+  const clean = (url || '').trim();
+  if (typeof localStorage !== 'undefined') {
+    if (clean) {
+      localStorage.setItem('tprm_backend_url', clean);
+    } else {
+      localStorage.removeItem('tprm_backend_url');
+    }
+  }
+  window.__TPRM_BACKEND_URL__ = clean;
+}
+
+window.tprmToggleDevMode = function(enabled) {
+  setDevMode(enabled);
+  window.tprmRefreshModeBadge();
+};
+
+window.tprmSaveBackendUrl = function() {
+  const input = document.getElementById('tprm-backend-url-input');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) {
+    setBackendUrl('');
+    window.tprmRefreshModeBadge();
+    return;
+  }
+
+  const evaluation = evaluateOriginTrust(val);
+  if (!evaluation.ok) {
+    alert(`Backend Connection Prohibited: ${evaluation.error}`);
+    return;
+  }
+
+  setBackendUrl(val);
+  window.tprmRefreshModeBadge();
+};
+
+window.tprmClearBackendUrl = function() {
+  const input = document.getElementById('tprm-backend-url-input');
+  if (input) input.value = '';
+  setBackendUrl('');
+  window.tprmRefreshModeBadge();
+};
+
+window.tprmRefreshModeBadge = function() {
+  const badge = document.getElementById('tprm-mode-badge');
+  const details = document.getElementById('tprm-mode-details');
+  const input = document.getElementById('tprm-backend-url-input');
+  const devCheckbox = document.getElementById('tprm-dev-mode-checkbox');
+  const devMode = isDevModeEnabled();
+  const config = getBackendConfig();
+
+  if (devCheckbox) {
+    devCheckbox.checked = devMode;
+  }
+
+  if (input && !input.value && config.baseUrl) {
+    input.value = config.baseUrl;
+  }
+
+  if (badge) {
+    if (config.enabled) {
+      badge.innerText = config.isLoopback ? 'CONNECTED (LOCAL DEV)' : 'CONNECTED (APPROVED REMOTE)';
+      badge.style.background = 'rgba(16, 185, 129, 0.2)';
+      badge.style.color = '#10b981';
+      badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    } else {
+      badge.innerText = 'LOCAL SIMULATION';
+      badge.style.background = 'rgba(6, 182, 212, 0.15)';
+      badge.style.color = 'var(--color-cyan)';
+      badge.style.borderColor = 'rgba(6, 182, 212, 0.3)';
+    }
+  }
+
+  if (details) {
+    if (config.enabled) {
+      const originTrust = config.isLoopback ? 'Trusted Loopback Dev Origin (Dev Mode Active)' : 'Approved Remote Origin';
+      details.innerHTML = `Mode: <strong>Backend API</strong> (<span style="color: #10b981;">${config.baseUrl}</span>) &bull; <span style="color: #38bdf8;">${originTrust}</span>`;
+    } else {
+      details.innerHTML = 'Mode: <strong>Browser Simulation</strong> (Default & Safe Fallback)';
+    }
+  }
+};
+/**
  * Render AI TPRM Assessment Studio Tab Content
  */
 export function renderAssessmentsStudioTab(container) {
@@ -936,12 +1211,32 @@ export function renderAssessmentsStudioTab(container) {
 
       <!-- Execution Grid: Left = Document Ingestion & Controls, Right = Live Agent Dispatcher -->
       <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; width: 100%;">
-        
+
         <!-- Left: Intake & Configuration -->
         <div class="dashboard-card" style="margin: 0; padding: 18px; display: flex; flex-direction: column; gap: 16px;">
           <h3 style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 6px;">
             <span>1. Document Intake & Intake Controls</span>
           </h3>
+
+          <!-- Showcase Execution Mode Configuration -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary);">Execution Mode:</span>
+              <span id="tprm-mode-badge" class="badge" style="background: rgba(6,182,212,0.15); color: var(--color-cyan); font-weight: 700; border: 1px solid rgba(6,182,212,0.3); font-size: 0.65rem;">LOCAL SIMULATION</span>
+            </div>
+            <div id="tprm-mode-details" style="font-size: 0.68rem; color: var(--text-muted); line-height: 1.35;">
+              Mode: <strong>Browser Simulation</strong> (Default & Safe Fallback)
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center; margin-top: 2px;">
+              <input type="text" id="tprm-backend-url-input" placeholder="e.g. http://127.0.0.1:8000" style="flex: 1; font-size: 0.7rem; font-family: monospace; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 4px; padding: 4px 8px; color: #e2e8f0;" />
+              <button class="btn btn-secondary btn-xs" onclick="window.tprmSaveBackendUrl()" style="font-size: 0.68rem; padding: 4px 8px;">Connect</button>
+              <button class="btn btn-secondary btn-xs" onclick="window.tprmClearBackendUrl()" style="font-size: 0.68rem; padding: 4px 8px; color: var(--text-muted);">Reset</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+              <input type="checkbox" id="tprm-dev-mode-checkbox" onchange="window.tprmToggleDevMode(this.checked)" style="cursor: pointer;" />
+              <label for="tprm-dev-mode-checkbox" style="font-size: 0.65rem; color: var(--text-muted); cursor: pointer;">Enable Local Development Mode (allows loopback: 127.0.0.1 / localhost)</label>
+            </div>
+          </div>
 
           <div>
             <label style="font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Target Supplier:</label>
@@ -1038,8 +1333,8 @@ export function renderAssessmentsStudioTab(container) {
               The specialist agents have synthesized an advisory assessment. In accordance with enterprise governance invariants, AI recommendations cannot alter supplier risk tiers or compliance ledgers without authenticated human sign-off.
             </p>
             <div style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 4px;">
-              <button id="btn-tprm-reject" class="btn btn-secondary btn-xs" onclick="window.tprmResolveHitl('REJECTED')" style="border-color: #ef4444; color: #ef4444; padding: 6px 12px; font-size: 0.72rem;">Reject Assessment</button>
-              <button id="btn-tprm-approve" class="btn btn-primary btn-xs" onclick="window.tprmResolveHitl('APPROVED')" style="background: #10b981; border-color: #10b981; color: white; padding: 6px 16px; font-size: 0.72rem; font-weight: 700;">Authorize & Commit to Ledger</button>
+              <button id="btn-tprm-reject" class="btn btn-secondary btn-xs" onclick="window.tprmResolveHitl('REJECTED')" style="border-color: #ef4444; color: #ef4444; padding: 6px 12px; font-size: 0.72rem;">Reject / Flag Assessment</button>
+              <button id="btn-tprm-approve" class="btn btn-primary btn-xs" onclick="window.tprmResolveHitl('APPROVED')" style="background: #10b981; border-color: #10b981; color: white; padding: 6px 16px; font-size: 0.72rem; font-weight: 700;">Authorize Advisory Review</button>
             </div>
           </div>
 
@@ -1076,9 +1371,10 @@ export function renderAssessmentsStudioTab(container) {
     </div>
   `;
 
-  // Initialize sample preview
+  // Initialize backend mode and sample preview
+  window.tprmRefreshModeBadge();
   window.tprmOnSampleSelect('doc-aws-soc2-2026');
-  
+
   // If there's an existing completed or paused assessment, render its state
   if (activeRun) {
     window.tprmRenderExistingRun(activeRun, events);
@@ -1139,8 +1435,8 @@ window.tprmOnFileSelected = function(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  if (file.size > 512 * 1024) {
-    alert('File exceeds 512 KB limit. Please select a smaller evidence document.');
+  if (file.size > 2 * 1024 * 1024) {
+    alert('File exceeds 2 MiB limit. Please select a smaller evidence document.');
     event.target.value = '';
     return;
   }
@@ -1189,7 +1485,7 @@ function emitExecutionEvent(eventType, agentName, message, metadata = {}) {
   if (terminal) {
     const line = document.createElement('div');
     line.style.cssText = 'display: flex; gap: 8px; line-height: 1.4; border-bottom: 1px solid rgba(255,255,255,0.03); padding: 2px 0;';
-    
+
     let color = '#94a3b8';
     if (eventType === 'agent.completed' || eventType === 'run.completed') color = '#10b981';
     if (eventType === 'agent.failed' || eventType === 'run.failed') color = '#ef4444';
@@ -1258,6 +1554,220 @@ function updateStageTracker(stageNum, stateName, color) {
 }
 
 /**
+ * Execute Real Backend Assessment Pipeline via FastAPI service entrypoint
+ */
+async function executeBackendWorkflow(config, rawContent, supplierId, runId) {
+  const terminal = document.getElementById('tprm-live-terminal');
+  const runBtn = document.getElementById('btn-tprm-execute-run');
+  const statusBadge = document.getElementById('tprm-run-status-badge');
+  const hitlBox = document.getElementById('tprm-hitl-box');
+  const pause = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // 1. Client-side Payload Bound Validation (<= 2 MiB raw UTF-8 bytes)
+  const payloadBytes = new TextEncoder().encode(rawContent);
+  if (payloadBytes.length > 2 * 1024 * 1024) {
+    throw new Error(`Payload exceeds maximum allowed size of 2 MiB (${payloadBytes.length} bytes)`);
+  }
+  if (payloadBytes.length === 0) {
+    throw new Error('Payload is empty (0 bytes)');
+  }
+
+  emitExecutionEvent('run.started', 'Orchestrator', `Initiating backend assessment against API: ${config.baseUrl}`);
+  updateStageTracker(1, 'Connecting', '#06b6d4');
+  emitExecutionEvent('agent.started', 'IntakeService', 'Computing SHA-256 and base64-encoding document for intake');
+
+  const docHash = await calculateContentHash(rawContent);
+  activeWorkflowRun.documentHash = docHash;
+
+  // Base64 encode for UTF-8 payload
+  let base64Content = '';
+  if (typeof btoa !== 'undefined') {
+    base64Content = btoa(unescape(encodeURIComponent(rawContent)));
+  } else {
+    base64Content = Buffer.from(rawContent, 'utf-8').toString('base64');
+  }
+
+  // F-07: Use runId + docHash prefix for intake idempotency key.
+  // Retrying the current run reuses activeWorkflowRun.intakeIdempotencyKey;
+  // a new intentional run gets a fresh runId ensuring distinct assessment.
+  if (!activeWorkflowRun.intakeIdempotencyKey) {
+    activeWorkflowRun.intakeIdempotencyKey = `tprm-idemp-${supplierId}-${runId}-${docHash.substring(0, 8)}`;
+  }
+  const idempotencyKey = activeWorkflowRun.intakeIdempotencyKey;
+
+  // F-04: Credential security - transmit credentials only if origin is trusted loopback or https
+  const fetchCredentialsMode = config.isTrusted ? 'include' : 'omit';
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Idempotency-Key': idempotencyKey
+  };
+  if (typeof window !== 'undefined' && window.__TPRM_BEARER_TOKEN__ && config.isTrusted) {
+    headers['Authorization'] = `Bearer ${window.__TPRM_BEARER_TOKEN__}`;
+  }
+
+  // Map friendly vendor name and description
+  const vendorDisplayNames = {
+    aws: 'Amazon Web Services (AWS)',
+    snowflake: 'Snowflake Data Cloud',
+    salesforce: 'Salesforce CRM'
+  };
+  const vendorName = vendorDisplayNames[supplierId] || supplierId.toUpperCase();
+
+  // F-01 FIX: Send exact Pydantic schema matching AssessmentIntakeRequest
+  const intakePayload = {
+    vendor_name: vendorName,
+    service_description: `Automated third-party evidence assessment for ${vendorName}`,
+    data_classification: 'CONFIDENTIAL',
+    staged_files: [{
+      filename: `${supplierId}_evidence.txt`,
+      mime_type: 'text/plain',
+      content_base64: base64Content
+    }]
+  };
+
+  // Validate estimated HTTP request body fits within 12 MiB limit
+  const serializedPayload = JSON.stringify(intakePayload);
+  if (new TextEncoder().encode(serializedPayload).length > 12 * 1024 * 1024) {
+    throw new Error('Request body exceeds maximum HTTP body limit of 12 MiB');
+  }
+
+  // Step 1: POST /api/v1/assessments/intake
+  const intakeRes = await fetch(`${config.baseUrl}/api/v1/assessments/intake`, {
+    method: 'POST',
+    headers: headers,
+    credentials: fetchCredentialsMode,
+    body: serializedPayload
+  });
+
+  if (!intakeRes.ok) {
+    const errText = await intakeRes.text();
+    throw new Error(`Intake rejected with status ${intakeRes.status}: ${errText}`);
+  }
+
+  let intakeData;
+  try {
+    intakeData = await intakeRes.json();
+  } catch (parseErr) {
+    throw new Error(`Invalid JSON response from intake endpoint: ${parseErr.message}`);
+  }
+
+  // F-02 FIX: Consume actual backend response fields (id, evidence_files)
+  if (!intakeData || typeof intakeData !== 'object' || !intakeData.id) {
+    throw new Error('Malformed intake response: missing required "id" field');
+  }
+  if (!Array.isArray(intakeData.evidence_files) || intakeData.evidence_files.length === 0) {
+    throw new Error('Malformed intake response: missing or empty "evidence_files" array');
+  }
+
+  const assessmentId = intakeData.id;
+  activeWorkflowRun.id = assessmentId;
+  activeWorkflowRun.backendAssessmentId = assessmentId;
+  const firstEvidence = intakeData.evidence_files[0];
+  const evidenceSha = firstEvidence.content_sha256 ? firstEvidence.content_sha256.substring(0, 16) : 'verified';
+
+  emitExecutionEvent('agent.progress', 'IntakeService', `Intake accepted: Assessment ID ${assessmentId} (Evidence SHA: ${evidenceSha}...)`);
+  emitExecutionEvent('agent.completed', 'IntakeService', 'Intake recorded and outbox task created');
+  updateStageTracker(1, 'Passed', '#10b981');
+  await pause(300);
+
+  // Step 2: POST /api/v1/assessments/{id}/dispatch (F-06 FIX: No request body)
+  updateStageTracker(2, 'Dispatching', '#06b6d4');
+  emitExecutionEvent('agent.started', 'DispatcherService', `Dispatching assessment ${assessmentId} to worker pipeline`);
+
+  const dispatchHeaders = {};
+  if (typeof window !== 'undefined' && window.__TPRM_BEARER_TOKEN__ && config.isTrusted) {
+    dispatchHeaders['Authorization'] = `Bearer ${window.__TPRM_BEARER_TOKEN__}`;
+  }
+
+  const dispatchRes = await fetch(`${config.baseUrl}/api/v1/assessments/${assessmentId}/dispatch`, {
+    method: 'POST',
+    headers: dispatchHeaders,
+    credentials: fetchCredentialsMode
+  });
+
+  if (!dispatchRes.ok) {
+    const errText = await dispatchRes.text();
+    throw new Error(`Dispatch rejected with status ${dispatchRes.status}: ${errText}`);
+  }
+
+  let dispatchData;
+  try {
+    dispatchData = await dispatchRes.json();
+  } catch (parseErr) {
+    throw new Error(`Invalid JSON response from dispatch endpoint: ${parseErr.message}`);
+  }
+
+  if (!dispatchData || !dispatchData.dispatched) {
+    throw new Error('Dispatch failed: backend did not confirm dispatch acceptance');
+  }
+
+  emitExecutionEvent('agent.progress', 'DispatcherService', `Dispatch accepted: Task ID ${dispatchData.task_id} (Status: ${dispatchData.task_status})`);
+  emitExecutionEvent('agent.completed', 'DispatcherService', 'Assessment queued in backend outbox for worker daemon claim');
+  updateStageTracker(2, 'Queued', '#10b981');
+  await pause(300);
+
+  // Step 3: GET /api/v1/assessments/{id}/status polling
+  updateStageTracker(3, 'Executing', '#06b6d4');
+  emitExecutionEvent('agent.started', 'WorkerDaemon', 'Checking backend assessment status and evidence verification');
+
+  const statusHeaders = {};
+  if (typeof window !== 'undefined' && window.__TPRM_BEARER_TOKEN__ && config.isTrusted) {
+    statusHeaders['Authorization'] = `Bearer ${window.__TPRM_BEARER_TOKEN__}`;
+  }
+
+  const statusRes = await fetch(`${config.baseUrl}/api/v1/assessments/${assessmentId}/status`, {
+    method: 'GET',
+    headers: statusHeaders,
+    credentials: fetchCredentialsMode
+  });
+
+  if (!statusRes.ok) {
+    const errText = await statusRes.text();
+    throw new Error(`Status check failed with status ${statusRes.status}: ${errText}`);
+  }
+
+  let statusData;
+  try {
+    statusData = await statusRes.json();
+  } catch (parseErr) {
+    throw new Error(`Invalid JSON response from status endpoint: ${parseErr.message}`);
+  }
+
+  const backendStatus = statusData.status || 'SUBMITTED';
+  const evidenceList = statusData.evidence_files || [];
+  emitExecutionEvent('agent.progress', 'WorkerDaemon', `Backend state: status=${backendStatus}, evidence count=${evidenceList.length}`);
+  updateStageTracker(3, 'Queued in Outbox', '#10b981');
+  updateStageTracker(4, 'Analysis Pending', '#38bdf8');
+
+  // F-05 FIX: Clearly mark findings as Advisory Mock Preview (Not generated by backend)
+  activeWorkflowRun.isBackendMode = true;
+  activeWorkflowRun.backendStatus = backendStatus;
+  activeWorkflowRun.findings = [
+    { controlId: 'CTRL-BCP-01', controlName: 'Business Continuity & Disaster Recovery', framework: 'DORA Art. 11 / ISO 22301', status: 'SUPPORTED', rationale: '[Advisory Preview] Operational failover disclosures observed in evidence text.', evidenceLocator: `Staged File (${firstEvidence.filename})`, evidenceSnippet: `SHA-256: ${firstEvidence.content_sha256 ? firstEvidence.content_sha256.substring(0, 24) : ''}...` },
+    { controlId: 'CTRL-CRY-01', controlName: 'Cryptographic Controls & Key Management', framework: 'DORA Art. 9 / ISO 27001 A.10', status: 'SUPPORTED', rationale: '[Advisory Preview] Key management and envelope encryption policy statements observed.', evidenceLocator: `Staged File (${firstEvidence.filename})`, evidenceSnippet: 'Automated cryptographic attestation' },
+    { controlId: 'CTRL-VUL-01', controlName: 'Vulnerability Management & Remediation SLAs', framework: 'DORA Art. 10 / ISO 27001 A.12', status: 'PARTIALLY_SUPPORTED', rationale: '[Advisory Preview] SLA metrics noted; formal certification pending worker processing.', evidenceLocator: `Staged File (${firstEvidence.filename})`, evidenceSnippet: 'Remediation window SLA within 14 days' },
+    { controlId: 'CTRL-SUB-01', controlName: 'Sub-processor Governance & Concentration Risk', framework: 'DORA Art. 28 / EBA Outsourcing GL', status: 'SUPPORTED', rationale: '[Advisory Preview] Sub-contractor disclosure directory observed.', evidenceLocator: `Staged File (${firstEvidence.filename})`, evidenceSnippet: 'Tier-4 vendor audit disclosures confirmed' }
+  ];
+  activeWorkflowRun.riskScore = 90;
+  activeWorkflowRun.computedTier = 'Low';
+  activeWorkflowRun.status = 'PAUSED_PENDING_INPUT';
+
+  updateStageTracker(5, 'Awaiting Human', '#fde047');
+  emitExecutionEvent('hitl.required', 'HumanApprovalGate', `Backend Gate Reached: Assessment ${assessmentId} paused for advisory human review`);
+
+  if (statusBadge) {
+    statusBadge.innerText = 'PAUSED_PENDING_INPUT';
+    statusBadge.style.color = '#fde047';
+    statusBadge.style.background = 'rgba(234, 179, 8, 0.15)';
+  }
+  if (runBtn) {
+    runBtn.disabled = true;
+    runBtn.innerHTML = '<span>⏸️ Workflow Paused at Human Gate</span>';
+  }
+  if (hitlBox) hitlBox.style.display = 'flex';
+  renderAssessmentFindings(activeWorkflowRun);
+}
+/**
  * Execute 5-Stage Multi-Agent TPRM Assessment Pipeline
  */
 window.tprmExecuteWorkflow = async function() {
@@ -1307,6 +1817,28 @@ window.tprmExecuteWorkflow = async function() {
     riskScore: 0,
     hitlDecision: 'PENDING'
   };
+
+  const backendConfig = getBackendConfig();
+  if (backendConfig.enabled) {
+    try {
+      await executeBackendWorkflow(backendConfig, rawContent, supplierId, runId);
+      return;
+    } catch (err) {
+      console.error('[TPRM Backend Workflow Error]', err);
+      emitExecutionEvent('agent.failed', 'BackendClient', `Backend connection or request failed: ${err.message}`);
+      if (statusBadge) {
+        statusBadge.innerText = 'BACKEND_ERROR';
+        statusBadge.style.color = '#ef4444';
+        statusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
+      if (runBtn) {
+        runBtn.disabled = false;
+        runBtn.innerHTML = '<span>⚡ Dispatch Multi-Agent Assessment Pipeline</span>';
+      }
+      alert(`Backend Request Failed: ${err.message}\n\nPlease verify that the backend service is running and accessible at ${backendConfig.baseUrl}.`);
+      return;
+    }
+  }
 
   // Helper for asynchronous progression delay
   const pause = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -1463,7 +1995,7 @@ window.tprmExecuteWorkflow = async function() {
     activeWorkflowRun.status = 'PAUSED_PENDING_INPUT';
 
     emitExecutionEvent('hitl.required', 'HumanApprovalGate', 'Four-Eyes Gate Activated: Awaiting authorized risk manager sign-off');
-    
+
     if (statusBadge) {
       statusBadge.innerText = 'PAUSED_PENDING_INPUT';
       statusBadge.style.color = '#fde047';
@@ -1510,34 +2042,63 @@ window.tprmResolveHitl = function(decision) {
   activeWorkflowRun.hitlDecision = decision;
   activeWorkflowRun.completedTime = new Date().toISOString();
 
-  if (decision === 'APPROVED') {
-    activeWorkflowRun.status = 'COMPLETED';
-    emitExecutionEvent('hitl.resolved', 'HumanApprovalGate', 'Authorized by Sarah Jenkins (Risk Manager) — Sign-off committed');
-    emitExecutionEvent('run.completed', 'Orchestrator', `Assessment finalized. Supplier ${activeWorkflowRun.supplierId.toUpperCase()} compliance updated to ${activeWorkflowRun.riskScore}%`);
-    updateStageTracker(5, 'Approved', '#10b981');
+  // F-03 FIX: In backend mode, explicit notice that sign-off is client-side advisory only
+  // and does NOT change backend assessment status or commit durable backend ledger mutations.
+  if (activeWorkflowRun.isBackendMode) {
+    if (decision === 'APPROVED') {
+      activeWorkflowRun.status = 'SIMULATED_APPROVAL_CLIENT_ONLY';
+      emitExecutionEvent('hitl.resolved', 'HumanApprovalGate', 'Client-side advisory sign-off granted. (Notice: Backend approval endpoint not mounted; backend assessment remains SUBMITTED)');
+      emitExecutionEvent('run.completed', 'Orchestrator', `Advisory pipeline completed for ${activeWorkflowRun.supplierId.toUpperCase()}. Backend assessment ID: ${activeWorkflowRun.backendAssessmentId || 'N/A'}`);
+      updateStageTracker(5, 'Simulated Sign-off', '#10b981');
 
-    if (statusBadge) {
-      statusBadge.innerText = 'COMPLETED';
-      statusBadge.style.color = '#10b981';
-      statusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
-    }
+      if (statusBadge) {
+        statusBadge.innerText = 'SIMULATED_APPROVED (CLIENT)';
+        statusBadge.style.color = '#10b981';
+        statusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+    } else {
+      activeWorkflowRun.status = 'SIMULATED_REJECTED_CLIENT_ONLY';
+      emitExecutionEvent('hitl.resolved', 'HumanApprovalGate', 'Client-side advisory sign-off rejected. (Notice: Backend assessment remains unaffected)');
+      emitExecutionEvent('run.completed', 'Orchestrator', 'Advisory pipeline terminated in REJECTED state.');
+      updateStageTracker(5, 'Simulated Reject', '#ef4444');
 
-    // Commit updated score to core supplier state
-    const state = getState();
-    if (state.suppliers && state.suppliers[activeWorkflowRun.supplierId]) {
-      state.suppliers[activeWorkflowRun.supplierId].complianceScore = activeWorkflowRun.riskScore;
-      state.suppliers[activeWorkflowRun.supplierId].riskTier = activeWorkflowRun.computedTier;
+      if (statusBadge) {
+        statusBadge.innerText = 'SIMULATED_REJECTED (CLIENT)';
+        statusBadge.style.color = '#ef4444';
+        statusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
     }
   } else {
-    activeWorkflowRun.status = 'REJECTED';
-    emitExecutionEvent('hitl.resolved', 'HumanApprovalGate', 'Assessment rejected by human reviewer — Zero ledger mutations committed');
-    emitExecutionEvent('run.completed', 'Orchestrator', 'Run terminated in REJECTED state without ledger updates');
-    updateStageTracker(5, 'Rejected', '#ef4444');
+    // Local Simulation Mode (Standard Showcase)
+    if (decision === 'APPROVED') {
+      activeWorkflowRun.status = 'COMPLETED';
+      emitExecutionEvent('hitl.resolved', 'HumanApprovalGate', 'Authorized by Sarah Jenkins (Risk Manager) — Sign-off committed');
+      emitExecutionEvent('run.completed', 'Orchestrator', `Assessment finalized. Supplier ${activeWorkflowRun.supplierId.toUpperCase()} compliance updated to ${activeWorkflowRun.riskScore}%`);
+      updateStageTracker(5, 'Approved', '#10b981');
 
-    if (statusBadge) {
-      statusBadge.innerText = 'REJECTED';
-      statusBadge.style.color = '#ef4444';
-      statusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+      if (statusBadge) {
+        statusBadge.innerText = 'COMPLETED';
+        statusBadge.style.color = '#10b981';
+        statusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+
+      // Commit updated score to core supplier state in local simulation
+      const state = getState();
+      if (state.suppliers && state.suppliers[activeWorkflowRun.supplierId]) {
+        state.suppliers[activeWorkflowRun.supplierId].complianceScore = activeWorkflowRun.riskScore;
+        state.suppliers[activeWorkflowRun.supplierId].riskTier = activeWorkflowRun.computedTier;
+      }
+    } else {
+      activeWorkflowRun.status = 'REJECTED';
+      emitExecutionEvent('hitl.resolved', 'HumanApprovalGate', 'Assessment rejected by human reviewer — Zero ledger mutations committed');
+      emitExecutionEvent('run.completed', 'Orchestrator', 'Run terminated in REJECTED state without ledger updates');
+      updateStageTracker(5, 'Rejected', '#ef4444');
+
+      if (statusBadge) {
+        statusBadge.innerText = 'REJECTED';
+        statusBadge.style.color = '#ef4444';
+        statusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
     }
   }
 
@@ -1555,7 +2116,6 @@ window.tprmResolveHitl = function(decision) {
 
   renderAssessmentFindings(activeWorkflowRun);
 };
-
 /**
  * Render Findings Table & Metrics Summary
  */
@@ -1569,7 +2129,11 @@ function renderAssessmentFindings(run) {
   container.style.display = 'block';
 
   if (title) {
-    title.innerText = `Assessment Results: ${run.supplierId.toUpperCase()} (Run ID: ${run.id})`;
+    if (run.isBackendMode) {
+      title.innerHTML = `Assessment Results: ${run.supplierId.toUpperCase()} (ID: ${run.id}) &nbsp;<span class="badge" style="background:rgba(234,179,8,0.15); color:#fde047; font-size:0.65rem; border:1px solid rgba(234,179,8,0.3);">ADVISORY PREVIEW (Backend Status: ${run.backendStatus || 'SUBMITTED'})</span>`;
+    } else {
+      title.innerText = `Assessment Results: ${run.supplierId.toUpperCase()} (Run ID: ${run.id})`;
+    }
   }
 
   if (metrics) {
