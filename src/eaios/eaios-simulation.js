@@ -61,9 +61,11 @@ export class EaiosSimulationManager {
     this.isLiveExecution = false;
     this.pollingTimer = null;
     this.isPolling = false;
+    this.isSubmittingDecision = false;
     this.sessionStorageKey = "eaios_active_async_execution";
 
-    this.reset();
+    // Initialize state without clearing persisted reload session
+    this.reset(false);
     this._tryRecoverExecutionFromSession();
   }
 
@@ -124,7 +126,7 @@ export class EaiosSimulationManager {
     }
   }
 
-  reset() {
+  reset(clearSession = true) {
     // Increment generation to invalidate any in-flight asynchronous operations
     this.runGeneration++;
 
@@ -134,6 +136,9 @@ export class EaiosSimulationManager {
     this._stopPolling();
     this.activeExecutionId = null;
     this.activeIdempotencyKey = null;
+    if (clearSession) {
+      this._clearExecutionSession();
+    }
     this.correlationId = "CORR-2026-000741";
     this.workItemId = "wi-2026-9b4d8c72";
     this.instanceId = "inst-stage26-dag01";
@@ -482,12 +487,30 @@ export class EaiosSimulationManager {
       const raw = sessionStorage.getItem(this.sessionStorageKey);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      if (!parsed || !parsed.executionId || !parsed.idempotencyKey) {
+      if (
+        !parsed ||
+        typeof parsed !== 'object' ||
+        typeof parsed.executionId !== 'string' ||
+        !parsed.executionId.trim() ||
+        typeof parsed.idempotencyKey !== 'string' ||
+        !parsed.idempotencyKey.trim() ||
+        typeof parsed.scenarioId !== 'string' ||
+        !parsed.scenarioId.trim()
+      ) {
         this._clearExecutionSession();
         return null;
       }
-      // Maximum validity 2 hours for in-flight recovery
-      if (Date.now() - parsed.createdAt > 2 * 60 * 60 * 1000) {
+
+      // Robust finite plausible timestamp validation
+      const now = Date.now();
+      const createdAt = parsed.createdAt;
+      if (
+        typeof createdAt !== 'number' ||
+        !Number.isFinite(createdAt) ||
+        createdAt <= 0 ||
+        createdAt > now + 60000 || // Future timestamp past 1 min clock skew
+        now - createdAt > 2 * 60 * 60 * 1000 // Expired past 2 hours
+      ) {
         this._clearExecutionSession();
         return null;
       }
@@ -502,9 +525,10 @@ export class EaiosSimulationManager {
     const saved = this._getSavedExecutionSession();
     if (!saved) return;
 
+    // Evaluate latest auth token before recovery attempt
     const auth = this._getAuthSession();
-    if (!auth.isAuthenticated) {
-      // Cannot recover live execution without active authenticated session
+    if (!auth.isAuthenticated || auth.isExpired) {
+      // Cannot recover live execution without active, unexpired authenticated session
       return;
     }
 
@@ -538,7 +562,10 @@ export class EaiosSimulationManager {
         }
       });
 
-      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+      // Strict stale response check: verify run is still current for this recovery attempt
+      if (currentGeneration !== this.runGeneration || this.activeScenario !== currentScenarioId) {
+        return;
+      }
 
       if (resp.status === 404 || resp.status === 401 || resp.status === 403) {
         this._clearExecutionSession();
@@ -551,6 +578,10 @@ export class EaiosSimulationManager {
         this._addAudit("RECOVERY_TRANSIENT_WAIT", `Backend returned HTTP ${resp.status} during recovery check. Retaining session for poll.`, "RECOVERY_MANAGER", "SUSPECT");
       } else {
         const data = await resp.json();
+        if (currentGeneration !== this.runGeneration || this.activeScenario !== currentScenarioId) {
+          return;
+        }
+
         this._applyBackendExecutionState(data, currentGeneration, currentScenarioId);
         this._addAudit("EXECUTION_RECOVERED", `Successfully reconnected to execution '${saved.executionId}'. State synchronized: ${data.status}.`, "RECOVERY_MANAGER", "SUCCESS");
 
@@ -567,8 +598,8 @@ export class EaiosSimulationManager {
       // If still running, resume polling
       await this._startExecutionPolling(saved.executionId, auth, currentGeneration, currentScenarioId);
     } catch (err) {
-      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
-      this._addAudit("RECOVERY_NETWORK_ERROR", `Failed to reach backend during recovery: ${err.message}.`, "RECOVERY_MANAGER", "SUSPECT");
+      if (currentGeneration !== this.runGeneration || this.activeScenario !== currentScenarioId) return;
+      this._addAudit("RECOVERY_NETWORK_ERROR", `Failed to reach backend during recovery: ${err.message}. Retaining session for retry.`, "RECOVERY_MANAGER", "SUSPECT");
     }
   }
 
@@ -722,10 +753,10 @@ export class EaiosSimulationManager {
         return;
       }
 
-      // Check auth expiry prior to poll (SEC-01)
+      // Re-evaluate latest available authentication token before each poll request (SEC-01)
       const currentAuth = this._getAuthSession();
-      if (currentAuth.isExpired) {
-        this._addAudit("POLL_AUTH_EXPIRED", `Session expired during active polling (${currentAuth.reason}). Halting fail-closed.`, "AUTH_GUARD", "FAILED");
+      if (!currentAuth.isAuthenticated || currentAuth.isExpired) {
+        this._addAudit("POLL_AUTH_EXPIRED", `Session expired or absent during active polling (${currentAuth.reason}). Halting fail-closed.`, "AUTH_GUARD", "FAILED");
         this._handleLiveFailure(null, "Authentication session expired during polling");
         return;
       }
@@ -735,7 +766,7 @@ export class EaiosSimulationManager {
           method: "GET",
           headers: {
             "Accept": "application/json",
-            "Authorization": `Bearer ${auth.token}`,
+            "Authorization": `Bearer ${currentAuth.token}`,
             "X-Correlation-ID": this.correlationId
           }
         });
@@ -789,8 +820,9 @@ export class EaiosSimulationManager {
     const node3Id = currentNodes[2]?.id || "node_3_dora_pillar_synthesis";
     const node4Id = currentNodes[3]?.id || "node_4_resilience_recommendation";
     const node5Id = currentNodes[4]?.id || "node_5_hitl_executive_decision";
+    const node6Id = currentNodes[5]?.id || "node_6_governed_failover_execution";
 
-    this.workflowInstance.status = data.status;
+    this.workflowInstance.status = data.status || "RUNNING";
 
     if (data.cost_governance || data.governance_metadata?.cost_governance) {
       const cg = data.cost_governance || data.governance_metadata.cost_governance;
@@ -799,24 +831,54 @@ export class EaiosSimulationManager {
       if (cg.tokens_remaining !== undefined) this.budgetState.remaining = cg.tokens_remaining;
     }
 
-    if (this.nodeStates[node2Id] && this.nodeStates[node2Id].status === "PENDING") {
-      this.nodeStates[node2Id].status = "COMPLETED";
-      this.nodeStates[node2Id].workerBadge = "emp-op-resilience-01 [LIVE]";
-      this._addAudit("LIVE_SPECIALIST_COMPLETED", "ICT Risk & IBS Impact Analysis completed by emp-op-resilience-01.", "EAIOS_AGENT", "SUCCESS", { nodeId: node2Id });
-    }
+    // Inspect authoritative backend specialist findings or events before marking individual nodes complete
+    const specialistFindings = data.specialist_findings || {};
+    const events = Array.isArray(data.events) ? data.events : [];
 
-    if (this.nodeStates[node3Id] && this.nodeStates[node3Id].status === "PENDING") {
-      this.nodeStates[node3Id].status = "COMPLETED";
-      this.nodeStates[node3Id].workerBadge = "emp-op-resilience-01 [LIVE]";
-      this._addAudit("LIVE_DORA_COMPLETED", "DORA RTS Art 19 reporting assessment completed by emp-op-resilience-01.", "EAIOS_AGENT", "SUCCESS", { nodeId: node3Id });
-    }
+    // Helper: checks if finding or event exists for given agent ID or task
+    const hasAgentFinding = (agentId, taskPattern) => {
+      if (specialistFindings[agentId]) return true;
+      return events.some(e => e.agent_id === agentId || (taskPattern && (e.message || "").toLowerCase().includes(taskPattern.toLowerCase())));
+    };
 
-    if (data.status === "PAUSED_PENDING_INPUT" || data.recommendation || data.assessment) {
-      if (this.nodeStates[node4Id]) {
-        this.nodeStates[node4Id].status = "COMPLETED";
-        this.nodeStates[node4Id].workerBadge = "ORO Synthesis [LIVE]";
+    // Node 2: IBS Impact Mapping
+    if (this.nodeStates[node2Id]) {
+      const isNode2Done = hasAgentFinding("emp-service-impact-01", "impact") || Boolean(data.impact_mapping);
+      if (isNode2Done) {
+        this.nodeStates[node2Id].status = "COMPLETED";
+        this.nodeStates[node2Id].workerBadge = "emp-service-impact-01 [LIVE]";
+        this._addAudit("LIVE_SPECIALIST_COMPLETED", "ICT Risk & IBS Impact Analysis confirmed by backend specialist.", "EAIOS_AGENT", "SUCCESS", { nodeId: node2Id });
+      } else if (data.status === "RUNNING") {
+        this.nodeStates[node2Id].status = "IN_PROGRESS";
+        this.nodeStates[node2Id].workerBadge = "BACKEND_STATE_CONFIRMED";
       }
+    }
 
+    // Node 3: DORA Pillar Synthesis
+    if (this.nodeStates[node3Id]) {
+      const isNode3Done = hasAgentFinding("emp-tprm-specialist-01", "dora") || Boolean(data.dora_synthesis);
+      if (isNode3Done) {
+        this.nodeStates[node3Id].status = "COMPLETED";
+        this.nodeStates[node3Id].workerBadge = "emp-tprm-specialist-01 [LIVE]";
+        this._addAudit("LIVE_DORA_COMPLETED", "DORA RTS compliance synthesis confirmed by backend specialist.", "EAIOS_AGENT", "SUCCESS", { nodeId: node3Id });
+      } else if (data.status === "RUNNING") {
+        this.nodeStates[node3Id].status = "IN_PROGRESS";
+        this.nodeStates[node3Id].workerBadge = "BACKEND_STATE_CONFIRMED";
+      }
+    }
+
+    // Node 4: Resilience Recommendation (Advisory Only)
+    const hasRecommendation = Boolean(data.recommendation || data.recommended_action || data.assessment);
+    if (hasRecommendation && this.nodeStates[node4Id]) {
+      this.nodeStates[node4Id].status = "COMPLETED";
+      this.nodeStates[node4Id].workerBadge = "ORO Recommendation [ADVISORY]";
+    } else if (data.status === "RUNNING" && this.nodeStates[node4Id] && this.nodeStates[node4Id].status === "PENDING") {
+      this.nodeStates[node4Id].status = "IN_PROGRESS";
+      this.nodeStates[node4Id].workerBadge = "BACKEND_STATE_CONFIRMED";
+    }
+
+    // Node 5 & Four-Eyes Decision Gate
+    if (data.status === "PAUSED_PENDING_INPUT" || (data.human_approval_required && data.status !== "COMPLETED")) {
       if (this.nodeStates[node5Id]) {
         this.nodeStates[node5Id].status = "PAUSED_PENDING_INPUT";
       }
@@ -840,9 +902,41 @@ export class EaiosSimulationManager {
         this.executiveDecisionRecord.outcome.timestamp = new Date().toISOString();
       }
 
-      this._addAudit("FOUR_EYES_GATE_PAUSED", `Live EAIOS workflow reached decision gate. Awaiting Four-Eyes sign-off for execution '${this.activeExecutionId}'.`, "HITL_SERVICE", "PAUSED", { nodeId: node5Id });
+      this._addAudit("FOUR_EYES_GATE_PAUSED", `Live EAIOS workflow reached decision gate. Awaiting Four-Eyes sign-off for execution '${this.activeExecutionId}'.`, "HITL_SERVICE", "PAUSED", { nodeId: node5Id, correlationId: this.correlationId });
       this._showApprovalBanner();
       this.isRunning = false;
+    } else if (data.status === "COMPLETED") {
+      if (this.nodeStates[node5Id] && this.humanApproval.decision === "APPROVE") {
+        this.nodeStates[node5Id].status = "COMPLETED";
+      }
+      this.workflowInstance.status = "COMPLETED";
+
+      // Node 6 (Action Execution): ONLY marks complete if backend provides authoritative proof of action execution
+      const isActionExecuted = Boolean(data.action_executed === true);
+      const isExecutionAuthorized = Boolean(data.execution_authorized === true);
+      if (this.nodeStates[node6Id]) {
+        if (isActionExecuted) {
+          this.nodeStates[node6Id].status = "COMPLETED";
+          this.nodeStates[node6Id].workerBadge = "Action Executed [LIVE]";
+        } else if (isExecutionAuthorized) {
+          this.nodeStates[node6Id].status = "PENDING";
+          this.nodeStates[node6Id].workerBadge = "Authorized — Awaiting Execution";
+        } else {
+          this.nodeStates[node6Id].status = "PENDING";
+          this.nodeStates[node6Id].workerBadge = "Awaiting Action Execution";
+        }
+      }
+      this.isRunning = false;
+    } else if (data.status === "FAILED") {
+      this.workflowInstance.status = "FAILED";
+      if (this.nodeStates[node5Id] && this.humanApproval.decision === "REJECT") {
+        this.nodeStates[node5Id].status = "REJECTED";
+      }
+      if (this.nodeStates[node6Id]) {
+        this.nodeStates[node6Id].status = "SKIPPED";
+      }
+      this.isRunning = false;
+      this._clearExecutionSession();
     }
 
     this._render();
@@ -1781,13 +1875,15 @@ Please refresh your bearer token.`);
   }
 
   async _submitLiveHumanDecision(decision, approverEmail, rationaleText, auth, gateNodeId, node6Id) {
-    // Proactive check of approver token expiry (SEC-01)
+    if (this.isSubmittingDecision) return;
+    this.isSubmittingDecision = true;
+
+    // Proactive check of approver token expiry using fresh session (SEC-01)
     const freshAuth = this._getAuthSession();
-    if (freshAuth.isExpired) {
-      this._addAudit("DECISION_AUTH_EXPIRED", `Approver session expired prior to decision submission (${freshAuth.reason}).`, "AUTH_GUARD", "DENIED", { nodeId: gateNodeId });
-      alert(`[401 - Approver Session Expired]
-${freshAuth.reason}
-Please provide a valid unexpired approver token.`);
+    if (!freshAuth.isAuthenticated || freshAuth.isExpired) {
+      this.isSubmittingDecision = false;
+      this._addAudit("DECISION_AUTH_EXPIRED", `Approver session expired or missing prior to decision submission (${freshAuth.reason}).`, "AUTH_GUARD", "DENIED", { nodeId: gateNodeId });
+      alert(`[401 - Approver Session Expired]\n${freshAuth.reason}\nPlease provide a valid unexpired approver token.`);
       this._showApprovalBanner();
       this.isRunning = false;
       this._render();
@@ -1803,7 +1899,7 @@ Please provide a valid unexpired approver token.`);
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${auth.token}`,
+          "Authorization": `Bearer ${freshAuth.token}`,
           "X-Correlation-ID": this.correlationId
         },
         body: JSON.stringify({
@@ -1824,46 +1920,59 @@ Please provide a valid unexpired approver token.`);
       }
 
       const resData = await resp.json();
-      this._addAudit("LIVE_DECISION_COMMITTED", `Human decision recorded upstream. Status: ${resData.status}. Approved by: ${resData.approved_by || approverEmail}.`, "HITL_SERVICE", "SUCCESS", { nodeId: gateNodeId });
+      const authoritativeApprover = resData.approved_by || resData.approver || approverEmail;
+      this._addAudit("LIVE_DECISION_COMMITTED", `Human decision recorded upstream. Status: ${resData.status}. Approved by: ${authoritativeApprover}.`, "HITL_SERVICE", "SUCCESS", { nodeId: gateNodeId });
 
       if (decision === 'APPROVE') {
         this.humanApproval.status = "APPROVED";
         this.humanApproval.decision = "APPROVE";
-        this.humanApproval.approver = approverEmail;
+        this.humanApproval.approver = authoritativeApprover;
         this.humanApproval.rationale = rationaleText;
         if (this.nodeStates[gateNodeId]) this.nodeStates[gateNodeId].status = "COMPLETED";
 
         if (this.executiveDecisionRecord) {
           this.executiveDecisionRecord.humanDecision = {
             state: 'APPROVED',
-            approver: resData.approved_by || approverEmail,
+            approver: authoritativeApprover,
             rationale: rationaleText,
             simulatedDisclosure: 'AUTHENTICATED LIVE DECISION (RFC 8693 Human Token Recorded in EAIOS Ledger)'
           };
           this.executiveDecisionRecord.outcome = {
-            workflowState: 'COMPLETED',
-            simulatedEffect: 'Remediation approved and attested. Upstream state committed.',
+            workflowState: 'DECISION_APPROVED',
+            simulatedEffect: 'Remediation approved upstream. Downstream operational execution dispatches under independent authorization.',
             timestamp: new Date().toISOString()
           };
         }
 
+        // Downstream Action Node (Node 6) strictly requires authoritative execution evidence
+        // Invariant: AUTHORIZATION != EXECUTION
+        const isActionExecuted = Boolean(resData.action_executed === true);
+        const isExecutionAuthorized = Boolean(resData.execution_authorized === true || decision === 'APPROVE');
         if (this.nodeStates[node6Id]) {
-          this.nodeStates[node6Id].status = "COMPLETED";
-          this.nodeStates[node6Id].workerBadge = "Action Authorized [LIVE]";
+          if (isActionExecuted) {
+            this.nodeStates[node6Id].status = "COMPLETED";
+            this.nodeStates[node6Id].workerBadge = "Action Executed [LIVE]";
+          } else if (isExecutionAuthorized) {
+            this.nodeStates[node6Id].status = "PENDING";
+            this.nodeStates[node6Id].workerBadge = "Authorized — Awaiting Execution";
+          } else {
+            this.nodeStates[node6Id].status = "PENDING";
+            this.nodeStates[node6Id].workerBadge = "Awaiting Action Execution";
+          }
         }
-        this.workflowInstance.status = "COMPLETED";
+        this.workflowInstance.status = resData.status || "COMPLETED";
         this._clearExecutionSession();
       } else {
         this.humanApproval.status = "REJECTED";
         this.humanApproval.decision = "REJECT";
-        this.humanApproval.approver = approverEmail;
+        this.humanApproval.approver = authoritativeApprover;
         this.humanApproval.rationale = rationaleText;
         if (this.nodeStates[gateNodeId]) this.nodeStates[gateNodeId].status = "REJECTED";
 
         if (this.executiveDecisionRecord) {
           this.executiveDecisionRecord.humanDecision = {
             state: 'REJECTED',
-            approver: resData.approved_by || approverEmail,
+            approver: authoritativeApprover,
             rationale: rationaleText,
             simulatedDisclosure: 'AUTHENTICATED LIVE REJECTION (RFC 8693 Human Token Recorded in EAIOS Ledger)'
           };
@@ -1881,6 +1990,7 @@ Please provide a valid unexpired approver token.`);
       alert(`Decision submission failed due to connection error: ${netErr.message}`);
       this._showApprovalBanner();
     } finally {
+      this.isSubmittingDecision = false;
       this.isRunning = false;
       this._render();
     }
