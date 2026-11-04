@@ -55,7 +55,18 @@ export class EaiosSimulationManager {
     // Executive Decision Record (In-Memory Traceability)
     this.executiveDecisionRecord = null;
 
-    this.reset();
+    // Asynchronous Live Execution State (Sprint 7.3B & 7.3C.1)
+    this.activeExecutionId = null;
+    this.activeIdempotencyKey = null;
+    this.isLiveExecution = false;
+    this.pollingTimer = null;
+    this.isPolling = false;
+    this.isSubmittingDecision = false;
+    this.sessionStorageKey = "eaios_active_async_execution";
+
+    // Initialize state without clearing persisted reload session
+    this.reset(false);
+    this._tryRecoverExecutionFromSession();
   }
 
   setScenario(scenarioKey) {
@@ -115,12 +126,19 @@ export class EaiosSimulationManager {
     }
   }
 
-  reset() {
+  reset(clearSession = true) {
     // Increment generation to invalidate any in-flight asynchronous operations
     this.runGeneration++;
 
     this.isRunning = false;
     this.isRetrying = false;
+    this.isLiveExecution = false;
+    this._stopPolling();
+    this.activeExecutionId = null;
+    this.activeIdempotencyKey = null;
+    if (clearSession) {
+      this._clearExecutionSession();
+    }
     this.correlationId = "CORR-2026-000741";
     this.workItemId = "wi-2026-9b4d8c72";
     this.instanceId = "inst-stage26-dag01";
@@ -343,11 +361,13 @@ export class EaiosSimulationManager {
   }
 
   _showApprovalBanner() {
+    if (typeof document === 'undefined') return;
     const el = document.getElementById('eaios-approval-banner');
     if (el) el.style.display = 'block';
   }
 
   _hideApprovalBanner() {
+    if (typeof document === 'undefined') return;
     const el = document.getElementById('eaios-approval-banner');
     if (el) el.style.display = 'none';
   }
@@ -357,13 +377,249 @@ export class EaiosSimulationManager {
   }
 
   // =========================================================================
+  // ASYNCHRONOUS LIVE EXECUTION HELPERS (Sprint 7.3B & 7.3C.1)
+  // =========================================================================
+
+  /**
+   * Evaluates authentication presence and proactive client-side JWT expiry (SEC-01).
+   * Note: Client-side decoding is an early-expiry check only, NOT cryptographic validation.
+   * Authoritative validation of signature, issuer, audience, and tenant is enforced by backend.
+   */
+  _getAuthSession(clockSkewSeconds = 30) {
+    if (typeof window === 'undefined') {
+      return { isAuthenticated: false, token: null, approverRole: null, isExpired: false, reason: 'NO_WINDOW' };
+    }
+    const token = window.__TPRM_BEARER_TOKEN__ || (typeof localStorage !== 'undefined' ? localStorage.getItem('tprm_bearer_token') : null) || null;
+    const role = window.__TPRM_USER_ROLE__ || (typeof localStorage !== 'undefined' ? localStorage.getItem('tprm_user_role') : null) || 'ROLE_HUMAN_APPROVER';
+
+    if (!token) {
+      return { isAuthenticated: false, token: null, approverRole: null, isExpired: false, reason: 'NO_TOKEN' };
+    }
+
+    // Proactive JWT expiry inspection (SEC-01)
+    const expiryCheck = this._inspectTokenExpiry(token, clockSkewSeconds);
+    if (expiryCheck.isExpired) {
+      return {
+        isAuthenticated: false,
+        token: null,
+        approverRole: role,
+        isExpired: true,
+        reason: expiryCheck.reason,
+        rawExpiredToken: token
+      };
+    }
+
+    return {
+      isAuthenticated: true,
+      token,
+      approverRole: role,
+      isExpired: false,
+      reason: 'VALID_OR_OPAQUE'
+    };
+  }
+
+  _inspectTokenExpiry(token, clockSkewSeconds = 30) {
+    if (typeof token !== 'string' || !token.includes('.')) {
+      // Non-JWT opaque token (e.g., test-token:... in dev/test harnesses)
+      return { isExpired: false, reason: 'OPAQUE_TOKEN' };
+    }
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return { isExpired: false, reason: 'NON_STANDARD_FORMAT' };
+    }
+    try {
+      const payloadBase64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const jsonStr = (typeof atob === 'function')
+        ? atob(payloadBase64)
+        : (typeof Buffer !== 'undefined' ? Buffer.from(payloadBase64, 'base64').toString('utf8') : null);
+      if (!jsonStr) return { isExpired: false, reason: 'DECODE_UNAVAILABLE' };
+      const payload = JSON.parse(jsonStr);
+      if (typeof payload.exp === 'number') {
+        const nowSec = Math.floor(Date.now() / 1000);
+        if (payload.exp - clockSkewSeconds <= nowSec) {
+          return { isExpired: true, reason: `TOKEN_EXPIRED (exp: ${payload.exp}, now: ${nowSec}, skew: ${clockSkewSeconds}s)` };
+        }
+      }
+      return { isExpired: false, reason: 'NOT_EXPIRED' };
+    } catch (err) {
+      return { isExpired: false, reason: 'PARSE_ERROR' };
+    }
+  }
+
+  _stopPolling() {
+    if (this.pollingTimer) {
+      clearTimeout(this.pollingTimer);
+      this.pollingTimer = null;
+    }
+    this.isPolling = false;
+  }
+
+  // -------------------------------------------------------------------------
+  // SESSION STORAGE EXECUTION RECOVERY HELPERS (LIFECYCLE-01)
+  // -------------------------------------------------------------------------
+
+  _saveExecutionSession(executionId, idempotencyKey, scenarioId, correlationId) {
+    if (typeof sessionStorage === 'undefined') return;
+    try {
+      const meta = {
+        executionId,
+        idempotencyKey,
+        scenarioId,
+        correlationId,
+        createdAt: Date.now()
+      };
+      sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(meta));
+    } catch (e) {
+      // Non-blocking quota or security error
+    }
+  }
+
+  _clearExecutionSession() {
+    if (typeof sessionStorage === 'undefined') return;
+    try {
+      sessionStorage.removeItem(this.sessionStorageKey);
+    } catch (e) {}
+  }
+
+  _getSavedExecutionSession() {
+    if (typeof sessionStorage === 'undefined') return null;
+    try {
+      const raw = sessionStorage.getItem(this.sessionStorageKey);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (
+        !parsed ||
+        typeof parsed !== 'object' ||
+        typeof parsed.executionId !== 'string' ||
+        !parsed.executionId.trim() ||
+        typeof parsed.idempotencyKey !== 'string' ||
+        !parsed.idempotencyKey.trim() ||
+        typeof parsed.scenarioId !== 'string' ||
+        !parsed.scenarioId.trim()
+      ) {
+        this._clearExecutionSession();
+        return null;
+      }
+
+      // Robust finite plausible timestamp validation
+      const now = Date.now();
+      const createdAt = parsed.createdAt;
+      if (
+        typeof createdAt !== 'number' ||
+        !Number.isFinite(createdAt) ||
+        createdAt <= 0 ||
+        createdAt > now + 60000 || // Future timestamp past 1 min clock skew
+        now - createdAt > 2 * 60 * 60 * 1000 // Expired past 2 hours
+      ) {
+        this._clearExecutionSession();
+        return null;
+      }
+      return parsed;
+    } catch (e) {
+      this._clearExecutionSession();
+      return null;
+    }
+  }
+
+  async _tryRecoverExecutionFromSession() {
+    const saved = this._getSavedExecutionSession();
+    if (!saved) return;
+
+    // Evaluate latest auth token before recovery attempt
+    const auth = this._getAuthSession();
+    if (!auth.isAuthenticated || auth.isExpired) {
+      // Cannot recover live execution without active, unexpired authenticated session
+      return;
+    }
+
+    // Set scenario context if available
+    if (saved.scenarioId && ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[saved.scenarioId]) {
+      this.activeScenario = saved.scenarioId;
+      this.activeOroScenarioId = saved.scenarioId;
+    }
+
+    this.activeExecutionId = saved.executionId;
+    this.activeIdempotencyKey = saved.idempotencyKey;
+    this.correlationId = saved.correlationId || "CORR-RECOVERY";
+    this.isLiveExecution = true;
+    this.workflowInstance.status = "RECONNECTING";
+
+    this._addAudit("EXECUTION_RECOVERY_ATTEMPT", `Detected active session for execution '${saved.executionId}'. Attempting state recovery via Core Platform BFF.`, "RECOVERY_MANAGER", "PENDING");
+    this._render();
+
+    // Query backend to verify execution still exists and sync state
+    const currentGeneration = this.runGeneration;
+    const currentScenarioId = this.activeScenario;
+    const pollUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecutions}/${saved.executionId}`;
+
+    try {
+      const resp = await fetch(pollUrl, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${auth.token}`,
+          "X-Correlation-ID": this.correlationId
+        }
+      });
+
+      // Strict stale response check: verify run is still current for this recovery attempt
+      if (currentGeneration !== this.runGeneration || this.activeScenario !== currentScenarioId) {
+        return;
+      }
+
+      if (resp.status === 404 || resp.status === 401 || resp.status === 403) {
+        this._clearExecutionSession();
+        this._addAudit("RECOVERY_DISCARDED", `Saved execution '${saved.executionId}' returned HTTP ${resp.status}. Discarding stale session reference.`, "RECOVERY_MANAGER", "FAILED");
+        this.reset();
+        return;
+      }
+
+      if (!resp.ok) {
+        this._addAudit("RECOVERY_TRANSIENT_WAIT", `Backend returned HTTP ${resp.status} during recovery check. Retaining session for poll.`, "RECOVERY_MANAGER", "SUSPECT");
+      } else {
+        const data = await resp.json();
+        if (currentGeneration !== this.runGeneration || this.activeScenario !== currentScenarioId) {
+          return;
+        }
+
+        this._applyBackendExecutionState(data, currentGeneration, currentScenarioId);
+        this._addAudit("EXECUTION_RECOVERED", `Successfully reconnected to execution '${saved.executionId}'. State synchronized: ${data.status}.`, "RECOVERY_MANAGER", "SUCCESS");
+
+        if (data.status === "COMPLETED" || data.status === "FAILED") {
+          this._clearExecutionSession();
+          return;
+        }
+        if (data.status === "PAUSED_PENDING_INPUT") {
+          // Awaiting decision, session remains intact until decided
+          return;
+        }
+      }
+
+      // If still running, resume polling
+      await this._startExecutionPolling(saved.executionId, auth, currentGeneration, currentScenarioId);
+    } catch (err) {
+      if (currentGeneration !== this.runGeneration || this.activeScenario !== currentScenarioId) return;
+      this._addAudit("RECOVERY_NETWORK_ERROR", `Failed to reach backend during recovery: ${err.message}. Retaining session for retry.`, "RECOVERY_MANAGER", "SUSPECT");
+    }
+  }
+
+  // =========================================================================
   // SCENARIO RUNNERS
   // =========================================================================
 
   async runActiveScenario() {
     if (this.isRunning) return;
     if (ORO_SCENARIO_CATALOGUE && ORO_SCENARIO_CATALOGUE[this.activeScenario]) {
-      await this.runScenarioORO();
+      const auth = this._getAuthSession();
+      if (auth.isExpired) {
+        this._handleAuthExpired(auth.reason);
+        return;
+      }
+      if (auth.isAuthenticated) {
+        await this.runScenarioOROLiveAsync(auth);
+      } else {
+        await this.runScenarioORO();
+      }
     } else if (this.activeScenario === 'scenario_a') {
       await this.runScenarioA();
     } else if (this.activeScenario === 'scenario_b' || this.activeScenario === 'scenario_c') {
@@ -371,6 +627,369 @@ export class EaiosSimulationManager {
     } else if (this.activeScenario === 'scenario_d') {
       await this.runScenarioD();
     }
+  }
+
+  /**
+   * LIVE AUTHENTICATED ASYNCHRONOUS SCENARIO: Operational Resilience Officer (ORO)
+   * Dispatches genuine multi-agent execution to EAIOS via Core Platform BFF,
+   * captures execution_id, and polls asynchronous status to update the DAG.
+   */
+  async runScenarioOROLiveAsync(auth) {
+    this.reset();
+    this.isRunning = true;
+    this.isLiveExecution = true;
+
+    const currentGeneration = this.runGeneration;
+    const currentScenarioId = this.activeScenario;
+    const scenario = this.getActiveOroScenario();
+    const currentNodes = this.getCurrentNodes();
+    const node1Id = currentNodes[0]?.id || "node_1_outage_intake";
+    const node2Id = currentNodes[1]?.id || "node_2_ibs_impact_mapping";
+    const node3Id = currentNodes[2]?.id || "node_3_dora_pillar_synthesis";
+    const node4Id = currentNodes[3]?.id || "node_4_resilience_recommendation";
+    const node5Id = currentNodes[4]?.id || "node_5_hitl_executive_decision";
+
+    this.workflowInstance.status = "DISPATCHING";
+    const requestCorrelationId = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+      ? crypto.randomUUID()
+      : 'corr-' + Math.random().toString(36).substring(2, 10);
+    this.correlationId = `${requestCorrelationId} (LIVE_DISPATCHING)`;
+
+    const idempotencyKey = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+      ? crypto.randomUUID()
+      : 'idemp-' + Math.random().toString(36).substring(2, 10);
+    this.activeIdempotencyKey = idempotencyKey;
+
+    this._addAudit("LIVE_EXECUTION_DISPATCH", `Dispatching authentic multi-agent ORO execution to ${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecute}. Mode: AUTHENTICATED_LIVE.`, "INGRESS_GATEWAY", "PENDING", { nodeId: node1Id });
+
+    if (this.nodeStates[node1Id]) {
+      this.nodeStates[node1Id].status = "EXECUTING";
+      this.nodeStates[node1Id].workerBadge = "ingress-worker [LIVE]";
+    }
+    this._render();
+
+    const payloadToSend = scenario?.backendPayload || {
+      incident_id: scenario?.incidentId || "INC-2026-CLOUD-9941",
+      provider_name: "ApexCloud EMEA Infrastructure Services",
+      service_impacted: "Multi-Tenant Database Cluster & API Message Router",
+      severity: "CRITICAL",
+      outage_start: "2026-10-07T18:15:00Z",
+      estimated_recovery: "2026-10-07T22:30:00Z"
+    };
+
+    const dispatchUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecute}`;
+    let execData = null;
+
+    try {
+      const resp = await fetch(dispatchUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Correlation-ID": requestCorrelationId,
+          "Idempotency-Key": idempotencyKey,
+          "Authorization": `Bearer ${auth.token}`
+        },
+        body: JSON.stringify(payloadToSend)
+      });
+
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+
+      if (!resp.ok) {
+        const errText = await resp.text();
+        this.correlationId = `${requestCorrelationId} (DISPATCH FAILED: HTTP ${resp.status})`;
+        this._addAudit("DISPATCH_FAILED", `Live execution dispatch rejected by BFF (HTTP ${resp.status}): ${errText.substring(0, 100)}`, "LIVE_BACKEND", "FAILED", { nodeId: node1Id });
+        this._handleLiveFailure(node1Id, `HTTP ${resp.status} Dispatch Error`);
+        return;
+      }
+
+      execData = await resp.json();
+    } catch (netErr) {
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+      this.correlationId = `${requestCorrelationId} (DISPATCH CONNECTION FAILED)`;
+      this._addAudit("DISPATCH_CONNECTION_FAILED", `Connection to BFF dispatch endpoint failed: ${netErr.message}. Execution halted fail-closed.`, "LIVE_BACKEND", "FAILED", { nodeId: node1Id });
+      this._handleLiveFailure(node1Id, `Connection Error (${netErr.message})`);
+      return;
+    }
+
+    if (!execData || !execData.execution_id) {
+      this._handleLiveFailure(node1Id, "Invalid execution response (missing execution_id)");
+      return;
+    }
+
+    this.activeExecutionId = execData.execution_id;
+    this.correlationId = requestCorrelationId;
+    this._saveExecutionSession(this.activeExecutionId, this.activeIdempotencyKey, currentScenarioId, this.correlationId);
+    this._addAudit("EXECUTION_ACCEPTED", `EAIOS accepted execution '${this.activeExecutionId}'. Dual-control Four-Eyes lifecycle active.`, "EAIOS_ORCHESTRATOR", "SUCCESS", { nodeId: node1Id, correlationId: this.correlationId });
+
+    if (this.nodeStates[node1Id]) {
+      this.nodeStates[node1Id].status = "COMPLETED";
+      this.nodeStates[node1Id].workerBadge = "Lease Released";
+    }
+    this.workflowInstance.status = execData.status || "RUNNING";
+    this._render();
+
+    // Begin Asynchronous Polling Loop
+    await this._startExecutionPolling(this.activeExecutionId, auth, currentGeneration, currentScenarioId);
+  }
+
+  async _startExecutionPolling(executionId, auth, currentGeneration, currentScenarioId) {
+    const pollIntervalMs = 1500;
+    const maxPollAttempts = 40;
+    let attempts = 0;
+    this.isPolling = true;
+
+    const pollUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecutions}/${executionId}`;
+
+    while (this.isPolling && attempts < maxPollAttempts) {
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) {
+        this._stopPolling();
+        return;
+      }
+
+      attempts++;
+      await this._sleep(pollIntervalMs);
+      if (!this._isRunActive(currentGeneration, currentScenarioId)) {
+        this._stopPolling();
+        return;
+      }
+
+      // Re-evaluate latest available authentication token before each poll request (SEC-01)
+      const currentAuth = this._getAuthSession();
+      if (!currentAuth.isAuthenticated || currentAuth.isExpired) {
+        this._addAudit("POLL_AUTH_EXPIRED", `Session expired or absent during active polling (${currentAuth.reason}). Halting fail-closed.`, "AUTH_GUARD", "FAILED");
+        this._handleLiveFailure(null, "Authentication session expired during polling");
+        return;
+      }
+
+      try {
+        const resp = await fetch(pollUrl, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${currentAuth.token}`,
+            "X-Correlation-ID": this.correlationId
+          }
+        });
+
+        if (!this._isRunActive(currentGeneration, currentScenarioId)) {
+          this._stopPolling();
+          return;
+        }
+
+        if (resp.status === 404) {
+          this._addAudit("POLL_NOT_FOUND", `Execution '${executionId}' not found on backend (HTTP 404).`, "LIVE_BACKEND", "FAILED");
+          this._handleLiveFailure(null, "Execution not found");
+          return;
+        }
+
+        if (!resp.ok) {
+          this._addAudit("POLL_TRANSIENT_ERROR", `Polling execution received HTTP ${resp.status}. Retrying...`, "LIVE_BACKEND", "SUSPECT");
+          continue;
+        }
+
+        const data = await resp.json();
+        this._applyBackendExecutionState(data, currentGeneration, currentScenarioId);
+
+        if (data.status === "PAUSED_PENDING_INPUT" || data.status === "COMPLETED" || data.status === "FAILED") {
+          this._stopPolling();
+          if (data.status === "COMPLETED" || data.status === "FAILED") {
+            this._clearExecutionSession();
+          }
+          return;
+        }
+      } catch (pollErr) {
+        if (!this._isRunActive(currentGeneration, currentScenarioId)) {
+          this._stopPolling();
+          return;
+        }
+        this._addAudit("POLL_NETWORK_ERROR", `Transient poll connection error: ${pollErr.message}`, "LIVE_BACKEND", "SUSPECT");
+      }
+    }
+
+    if (attempts >= maxPollAttempts && this.workflowInstance.status === "RUNNING") {
+      this._addAudit("POLL_TIMEOUT", `Execution polling reached bound (60s). Retaining last confirmed state.`, "LIVE_BACKEND", "SUSPECT");
+      this.isPolling = false;
+    }
+  }
+
+  _applyBackendExecutionState(data, currentGeneration, currentScenarioId) {
+    if (!this._isRunActive(currentGeneration, currentScenarioId)) return;
+
+    const currentNodes = this.getCurrentNodes();
+    const node2Id = currentNodes[1]?.id || "node_2_ibs_impact_mapping";
+    const node3Id = currentNodes[2]?.id || "node_3_dora_pillar_synthesis";
+    const node4Id = currentNodes[3]?.id || "node_4_resilience_recommendation";
+    const node5Id = currentNodes[4]?.id || "node_5_hitl_executive_decision";
+    const node6Id = currentNodes[5]?.id || "node_6_governed_failover_execution";
+
+    this.workflowInstance.status = data.status || "RUNNING";
+
+    if (data.cost_governance || data.governance_metadata?.cost_governance) {
+      const cg = data.cost_governance || data.governance_metadata.cost_governance;
+      if (cg.tokens_reserved !== undefined) this.budgetState.reserved = cg.tokens_reserved;
+      if (cg.tokens_settled !== undefined) this.budgetState.settled = cg.tokens_settled;
+      if (cg.tokens_remaining !== undefined) this.budgetState.remaining = cg.tokens_remaining;
+    }
+
+    // Inspect authoritative backend specialist findings or events before marking individual nodes complete
+    const specialistFindings = data.specialist_findings || {};
+    const events = Array.isArray(data.events) ? data.events : [];
+
+    // Helper: checks if finding or event exists for given agent ID or task
+    const hasAgentFinding = (agentId, taskPattern) => {
+      if (specialistFindings[agentId]) return true;
+      return events.some(e => e.agent_id === agentId || (taskPattern && (e.message || "").toLowerCase().includes(taskPattern.toLowerCase())));
+    };
+
+    // Node 2: IBS Impact Mapping
+    if (this.nodeStates[node2Id]) {
+      const isNode2Done = hasAgentFinding("emp-service-impact-01", "impact") || Boolean(data.impact_mapping);
+      if (isNode2Done) {
+        this.nodeStates[node2Id].status = "COMPLETED";
+        this.nodeStates[node2Id].workerBadge = "emp-service-impact-01 [LIVE]";
+        this._addAudit("LIVE_SPECIALIST_COMPLETED", "ICT Risk & IBS Impact Analysis confirmed by backend specialist.", "EAIOS_AGENT", "SUCCESS", { nodeId: node2Id });
+      } else if (data.status === "RUNNING") {
+        this.nodeStates[node2Id].status = "IN_PROGRESS";
+        this.nodeStates[node2Id].workerBadge = "BACKEND_STATE_CONFIRMED";
+      }
+    }
+
+    // Node 3: DORA Pillar Synthesis
+    if (this.nodeStates[node3Id]) {
+      const isNode3Done = hasAgentFinding("emp-tprm-specialist-01", "dora") || Boolean(data.dora_synthesis);
+      if (isNode3Done) {
+        this.nodeStates[node3Id].status = "COMPLETED";
+        this.nodeStates[node3Id].workerBadge = "emp-tprm-specialist-01 [LIVE]";
+        this._addAudit("LIVE_DORA_COMPLETED", "DORA RTS compliance synthesis confirmed by backend specialist.", "EAIOS_AGENT", "SUCCESS", { nodeId: node3Id });
+      } else if (data.status === "RUNNING") {
+        this.nodeStates[node3Id].status = "IN_PROGRESS";
+        this.nodeStates[node3Id].workerBadge = "BACKEND_STATE_CONFIRMED";
+      }
+    }
+
+    // Node 4: Resilience Recommendation (Advisory Only)
+    const hasRecommendation = Boolean(data.recommendation || data.recommended_action || data.assessment);
+    if (hasRecommendation && this.nodeStates[node4Id]) {
+      this.nodeStates[node4Id].status = "COMPLETED";
+      this.nodeStates[node4Id].workerBadge = "ORO Recommendation [ADVISORY]";
+    } else if (data.status === "RUNNING" && this.nodeStates[node4Id] && this.nodeStates[node4Id].status === "PENDING") {
+      this.nodeStates[node4Id].status = "IN_PROGRESS";
+      this.nodeStates[node4Id].workerBadge = "BACKEND_STATE_CONFIRMED";
+    }
+
+    // Node 5 & Four-Eyes Decision Gate
+    if (data.status === "PAUSED_PENDING_INPUT" || (data.human_approval_required && data.status !== "COMPLETED")) {
+      if (this.nodeStates[node5Id]) {
+        this.nodeStates[node5Id].status = "PAUSED_PENDING_INPUT";
+      }
+
+      this.humanApproval.status = "PAUSED_PENDING_INPUT";
+
+      if (this.executiveDecisionRecord) {
+        this.executiveDecisionRecord.assessment = {
+          status: 'SYNTHESIS_VERIFIED',
+          action: data.recommendation?.action || data.recommended_action?.action || data.recommended_action || 'OUT_OF_REGION_FAILOVER',
+          rationale: data.assessment?.summary || data.assessment || 'Multi-agent DORA resilience synthesis verified by EAIOS.',
+          tokensSettled: this.budgetState.settled || 150,
+          isAdvisoryOnly: true,
+          humanApprovalRequired: true,
+          backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecutions}/${this.activeExecutionId}`,
+          liveExecutionId: this.activeExecutionId
+        };
+        this.executiveDecisionRecord.traceability.correlationId = this.correlationId;
+        this.executiveDecisionRecord.outcome.workflowState = 'PAUSED_PENDING_INPUT';
+        this.executiveDecisionRecord.outcome.simulatedEffect = 'Live advisory synthesis complete. Halted fail-closed awaiting human Four-Eyes sign-off.';
+        this.executiveDecisionRecord.outcome.timestamp = new Date().toISOString();
+      }
+
+      this._addAudit("FOUR_EYES_GATE_PAUSED", `Live EAIOS workflow reached decision gate. Awaiting Four-Eyes sign-off for execution '${this.activeExecutionId}'.`, "HITL_SERVICE", "PAUSED", { nodeId: node5Id, correlationId: this.correlationId });
+      this._showApprovalBanner();
+      this.isRunning = false;
+    } else if (data.status === "COMPLETED") {
+      if (this.nodeStates[node5Id] && this.humanApproval.decision === "APPROVE") {
+        this.nodeStates[node5Id].status = "COMPLETED";
+      }
+      this.workflowInstance.status = "COMPLETED";
+
+      // Node 6 (Action Execution): ONLY marks complete if backend provides authoritative proof of action execution
+      const isActionExecuted = Boolean(data.action_executed === true);
+      const isExecutionAuthorized = Boolean(data.execution_authorized === true);
+      if (this.nodeStates[node6Id]) {
+        if (isActionExecuted) {
+          this.nodeStates[node6Id].status = "COMPLETED";
+          this.nodeStates[node6Id].workerBadge = "Action Executed [LIVE]";
+        } else if (isExecutionAuthorized) {
+          this.nodeStates[node6Id].status = "PENDING";
+          this.nodeStates[node6Id].workerBadge = "Authorized — Awaiting Execution";
+        } else {
+          this.nodeStates[node6Id].status = "PENDING";
+          this.nodeStates[node6Id].workerBadge = "Awaiting Action Execution";
+        }
+      }
+      this.isRunning = false;
+    } else if (data.status === "FAILED") {
+      this.workflowInstance.status = "FAILED";
+      if (this.nodeStates[node5Id] && this.humanApproval.decision === "REJECT") {
+        this.nodeStates[node5Id].status = "REJECTED";
+      }
+      if (this.nodeStates[node6Id]) {
+        this.nodeStates[node6Id].status = "SKIPPED";
+      }
+      this.isRunning = false;
+      this._clearExecutionSession();
+    }
+
+    this._render();
+  }
+
+  _handleAuthExpired(reason) {
+    this.isRunning = false;
+    this.isLiveExecution = false;
+    this._stopPolling();
+    this._addAudit("AUTH_TOKEN_EXPIRED", `Authentication token has expired (${reason}). Please renew bearer credentials.`, "AUTH_GUARD", "DENIED");
+    alert(`[401 - Authentication Expired]
+${reason}
+Please refresh your bearer token.`);
+    if (this.executiveDecisionRecord) {
+      this.executiveDecisionRecord.assessment = {
+        status: 'AUTHENTICATION_EXPIRED',
+        action: null,
+        rationale: `Authentication token expired (${reason}). Execution blocked fail-closed.`,
+        tokensSettled: 0,
+        isAdvisoryOnly: true,
+        isRetryable: true,
+        retryableReason: 'Token Expired — Re-authentication Required'
+      };
+    }
+    this._render();
+  }
+
+  _handleLiveFailure(nodeId, errorReason) {
+    if (nodeId && this.nodeStates[nodeId]) {
+      this.nodeStates[nodeId].status = "FAILED";
+      this.nodeStates[nodeId].workerBadge = "Live Execution Error";
+    }
+    this.workflowInstance.status = "FAILED";
+    this.isRunning = false;
+    this._stopPolling();
+    this._clearExecutionSession();
+
+    if (this.executiveDecisionRecord) {
+      this.executiveDecisionRecord.assessment = {
+        status: 'FAILED_LIVE_EXECUTION',
+        action: null,
+        rationale: `Live execution failure: ${errorReason}. Zero mutations committed.`,
+        tokensSettled: 0,
+        isAdvisoryOnly: true,
+        isRetryable: true,
+        retryableReason: errorReason,
+        backendEndpoint: `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecute}`
+      };
+      this.executiveDecisionRecord.outcome.workflowState = 'FAILED';
+      this.executiveDecisionRecord.outcome.simulatedEffect = 'Execution halted fail-closed. Zero mutations committed.';
+    }
+
+    this._render();
   }
 
   /**
@@ -973,6 +1592,13 @@ export class EaiosSimulationManager {
     this._hideApprovalBanner();
     this.isRunning = true;
 
+    // In live mode with active backend execution, submit decision through Core Platform BFF
+    const auth = this._getAuthSession();
+    if (this.isLiveExecution && this.activeExecutionId && auth.isAuthenticated) {
+      await this._submitLiveHumanDecision(decision, approverEmail, rationaleText, auth, gateNodeId, node6Id);
+      return;
+    }
+
     if (isOroGate) {
       const scenario = this.getActiveOroScenario();
 
@@ -1246,6 +1872,128 @@ export class EaiosSimulationManager {
       this._addAudit("PROVIDER_TIMEOUT_UNKNOWN", "Socket timeout after 30,000ms. Provider outcome UNCONFIRMED. Conservative governance applied: Budget NOT assumed zero.", "PROVIDER_GATEWAY", "FAILED", { adrRef: "ADR-022", evidenceClass: "TEST_VERIFIED" });
       this._render();
     }, 600);
+  }
+
+  async _submitLiveHumanDecision(decision, approverEmail, rationaleText, auth, gateNodeId, node6Id) {
+    if (this.isSubmittingDecision) return;
+    this.isSubmittingDecision = true;
+
+    // Proactive check of approver token expiry using fresh session (SEC-01)
+    const freshAuth = this._getAuthSession();
+    if (!freshAuth.isAuthenticated || freshAuth.isExpired) {
+      this.isSubmittingDecision = false;
+      this._addAudit("DECISION_AUTH_EXPIRED", `Approver session expired or missing prior to decision submission (${freshAuth.reason}).`, "AUTH_GUARD", "DENIED", { nodeId: gateNodeId });
+      alert(`[401 - Approver Session Expired]\n${freshAuth.reason}\nPlease provide a valid unexpired approver token.`);
+      this._showApprovalBanner();
+      this.isRunning = false;
+      this._render();
+      return;
+    }
+    const decisionUrl = `${EAIOS_BACKEND_CONFIG.baseUrl}${EAIOS_BACKEND_CONFIG.endpointExecutions}/${this.activeExecutionId}/decision`;
+    const backendDecision = decision === 'APPROVE' ? 'APPROVED' : 'REJECTED';
+
+    this._addAudit("LIVE_DECISION_SUBMITTING", `Submitting human Four-Eyes decision '${backendDecision}' for execution '${this.activeExecutionId}' via Core Platform BFF.`, "HITL_SERVICE", "PENDING", { nodeId: gateNodeId });
+
+    try {
+      const resp = await fetch(decisionUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${freshAuth.token}`,
+          "X-Correlation-ID": this.correlationId
+        },
+        body: JSON.stringify({
+          decision: backendDecision,
+          notes: rationaleText
+        })
+      });
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({ detail: "Unknown error" }));
+        const errMsg = errData.detail || `HTTP ${resp.status}`;
+        this._addAudit("LIVE_DECISION_REJECTED", `Decision rejected by backend (${errMsg}): Four-Eyes policy strictly enforced.`, "HITL_SERVICE", "DENIED", { nodeId: gateNodeId });
+        alert(`[${resp.status} - Four-Eyes Rejection]\n${errMsg}`);
+        this.isRunning = false;
+        this._showApprovalBanner();
+        this._render();
+        return;
+      }
+
+      const resData = await resp.json();
+      const authoritativeApprover = resData.approved_by || resData.approver || approverEmail;
+      this._addAudit("LIVE_DECISION_COMMITTED", `Human decision recorded upstream. Status: ${resData.status}. Approved by: ${authoritativeApprover}.`, "HITL_SERVICE", "SUCCESS", { nodeId: gateNodeId });
+
+      if (decision === 'APPROVE') {
+        this.humanApproval.status = "APPROVED";
+        this.humanApproval.decision = "APPROVE";
+        this.humanApproval.approver = authoritativeApprover;
+        this.humanApproval.rationale = rationaleText;
+        if (this.nodeStates[gateNodeId]) this.nodeStates[gateNodeId].status = "COMPLETED";
+
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.humanDecision = {
+            state: 'APPROVED',
+            approver: authoritativeApprover,
+            rationale: rationaleText,
+            simulatedDisclosure: 'AUTHENTICATED LIVE DECISION (RFC 8693 Human Token Recorded in EAIOS Ledger)'
+          };
+          this.executiveDecisionRecord.outcome = {
+            workflowState: 'DECISION_APPROVED',
+            simulatedEffect: 'Remediation approved upstream. Downstream operational execution dispatches under independent authorization.',
+            timestamp: new Date().toISOString()
+          };
+        }
+
+        // Downstream Action Node (Node 6) strictly requires authoritative execution evidence
+        // Invariant: AUTHORIZATION != EXECUTION
+        const isActionExecuted = Boolean(resData.action_executed === true);
+        const isExecutionAuthorized = Boolean(resData.execution_authorized === true || decision === 'APPROVE');
+        if (this.nodeStates[node6Id]) {
+          if (isActionExecuted) {
+            this.nodeStates[node6Id].status = "COMPLETED";
+            this.nodeStates[node6Id].workerBadge = "Action Executed [LIVE]";
+          } else if (isExecutionAuthorized) {
+            this.nodeStates[node6Id].status = "PENDING";
+            this.nodeStates[node6Id].workerBadge = "Authorized — Awaiting Execution";
+          } else {
+            this.nodeStates[node6Id].status = "PENDING";
+            this.nodeStates[node6Id].workerBadge = "Awaiting Action Execution";
+          }
+        }
+        this.workflowInstance.status = resData.status || "COMPLETED";
+        this._clearExecutionSession();
+      } else {
+        this.humanApproval.status = "REJECTED";
+        this.humanApproval.decision = "REJECT";
+        this.humanApproval.approver = authoritativeApprover;
+        this.humanApproval.rationale = rationaleText;
+        if (this.nodeStates[gateNodeId]) this.nodeStates[gateNodeId].status = "REJECTED";
+
+        if (this.executiveDecisionRecord) {
+          this.executiveDecisionRecord.humanDecision = {
+            state: 'REJECTED',
+            approver: authoritativeApprover,
+            rationale: rationaleText,
+            simulatedDisclosure: 'AUTHENTICATED LIVE REJECTION (RFC 8693 Human Token Recorded in EAIOS Ledger)'
+          };
+          this.executiveDecisionRecord.outcome = {
+            workflowState: 'FAILED_REJECTED',
+            simulatedEffect: 'Remediation rejected. Downstream execution pruned.',
+            timestamp: new Date().toISOString()
+          };
+        }
+        if (this.nodeStates[node6Id]) this.nodeStates[node6Id].status = "SKIPPED";
+        this.workflowInstance.status = "FAILED";
+      }
+    } catch (netErr) {
+      this._addAudit("LIVE_DECISION_CONNECTION_FAILED", `Failed to reach decision endpoint: ${netErr.message}`, "HITL_SERVICE", "FAILED", { nodeId: gateNodeId });
+      alert(`Decision submission failed due to connection error: ${netErr.message}`);
+      this._showApprovalBanner();
+    } finally {
+      this.isSubmittingDecision = false;
+      this.isRunning = false;
+      this._render();
+    }
   }
 }
 
