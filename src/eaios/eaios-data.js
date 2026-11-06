@@ -207,7 +207,7 @@ export const EAIOS_BACKEND_CONFIG = {
   endpointExecute: "/api/v1/eaios/oro/execute",
   endpointTprmExecute: "/api/v1/eaios/tprm/execute",
   endpointExecutions: "/api/v1/eaios/executions",
-  healthEndpoint: "/health/live"
+  healthEndpoint: "/health"
 };
 
 export const SHOWCASE_SCENARIOS = {
