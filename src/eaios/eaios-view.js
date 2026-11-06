@@ -1229,6 +1229,33 @@ function generateEaiosHtml() {
           </div>
         </div>
 
+        <!-- ARCHITECTURAL DEMARCATION & SOVEREIGN GATE DISCLOSURE (SPRINT 7.4K-BU) -->
+        <div id="eaios-demarcation-banner" class="eaios-info-card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85)); border: 1px solid rgba(56, 189, 248, 0.4); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+            <div style="flex: 1; min-width: 280px;">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(56, 189, 248, 0.15); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                  SOVEREIGN EAIES GATE
+                </span>
+                <span style="font-size: 11.5px; font-weight: 800; color: #f8fafc;">
+                  AI RECOMMENDATION DOES NOT CONSTITUTE AUTHORISATION OR EXECUTION
+                </span>
+              </div>
+              <div style="font-size: 11px; color: #cbd5e1; margin-top: 5px; line-height: 1.45;">
+                <strong>Execution Authority Boundary:</strong> Specialist AI Employees produce analytical findings; ORO synthesises evidence and proposes advisory decisions. All capability execution is mediated and governed by the host <strong>Enterprise AI Execution Sandbox (EAIES)</strong>. Human executive approval is an independent Four-Eyes governance event. Approval does not constitute physical execution.
+              </div>
+            </div>
+            <div style="text-align: right; min-width: 240px; font-size: 10.5px; color: #94a3b8; line-height: 1.4;">
+              <div style="font-weight: 800; color: #fbbf24; background: rgba(245, 158, 11, 0.12); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.3); display: inline-block;">
+                SIMULATED UI PREVIEW — PHYSICAL MUTATIONS REQUIRE RFC 8693 MTLS TOKEN EXCHANGE
+              </div>
+              <div style="margin-top: 4px; font-size: 9.5px; color: #64748b;">
+                Live Keycloak OIDC Code Flow active • Backend RFC 8693 token exchange unlinked • In-Memory state
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Compact Active Scenario Card with Integrated Execution Controls -->
         <div id="eaios-active-scenario-card" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -1347,10 +1374,12 @@ function generateEaiosHtml() {
               </div>
               <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px; line-height: 1.45;">
                 State: <code>PAUSED_PENDING_INPUT</code>. Work Owner: <code style="color: #38bdf8;">alice@enterprise.example</code>.
-                Four-Eyes rule mandates that the work owner cannot approve high-impact actions. Resumption transitions workflow state and requires fresh EAIES execution authorization.
+                Four-Eyes rule mandates that the work owner cannot approve high-impact actions. Resumption transitions workflow state and requires fresh host-enforced EAIES execution authorization. An approval or recommendation never constitutes completed execution.
               </div>
               <div style="font-size: 11px; color: #fbbf24; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 4px; padding: 6px 10px; margin-top: 8px; line-height: 1.4;">
-                <strong>Showcase disclosure:</strong> This is a simulated UI decision gate. Hardware-backed WebAuthn approval is not integrated in this showcase path.
+                <strong>Showcase Governance Disclosure:</strong> This is a simulated UI decision gate under the <strong>Sovereign EAIES Gate</strong>.
+                AI RECOMMENDATION DOES NOT CONSTITUTE AUTHORISATION OR EXECUTION.
+                Physical mutations require an RFC 8693 mTLS delegated actor token. Keycloak OIDC Code Flow is active for browser sessions; backend token exchange is simulated in-memory.
               </div>
 
               <!-- Interactive Form Inputs -->

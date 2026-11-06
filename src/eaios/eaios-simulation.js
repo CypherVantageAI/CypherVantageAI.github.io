@@ -218,7 +218,7 @@ export class EaiosSimulationManager {
           state: 'PENDING',
           approver: null,
           rationale: null,
-          simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+          simulatedDisclosure: 'SIMULATED UI PREVIEW — PHYSICAL MUTATIONS REQUIRE RFC 8693 MTLS TOKEN EXCHANGE'
         },
         outcome: {
           workflowState: 'INITIALIZED',
@@ -1614,7 +1614,7 @@ Please refresh your bearer token.`);
             state: 'APPROVED',
             approver: approverEmail,
             rationale: rationaleText,
-            simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+            simulatedDisclosure: 'SIMULATED UI PREVIEW — PHYSICAL MUTATIONS REQUIRE RFC 8693 MTLS TOKEN EXCHANGE'
           };
         }
 
@@ -1647,7 +1647,7 @@ Please refresh your bearer token.`);
             state: 'APPROVED',
             approver: approverEmail,
             rationale: rationaleText,
-            simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+            simulatedDisclosure: 'SIMULATED UI PREVIEW — PHYSICAL MUTATIONS REQUIRE RFC 8693 MTLS TOKEN EXCHANGE'
           };
           this.executiveDecisionRecord.outcome = {
             workflowState: 'COMPLETED',
@@ -1686,7 +1686,7 @@ Please refresh your bearer token.`);
             state: 'REJECTED',
             approver: approverEmail,
             rationale: rationaleText,
-            simulatedDisclosure: 'SIMULATED UI STATE (Hardware WebAuthn not bound in showcase path)'
+            simulatedDisclosure: 'SIMULATED UI PREVIEW — PHYSICAL MUTATIONS REQUIRE RFC 8693 MTLS TOKEN EXCHANGE'
           };
           this.executiveDecisionRecord.outcome = {
             workflowState: 'FAILED_REJECTED',
@@ -1935,7 +1935,7 @@ Please refresh your bearer token.`);
             state: 'APPROVED',
             approver: authoritativeApprover,
             rationale: rationaleText,
-            simulatedDisclosure: 'AUTHENTICATED LIVE DECISION (RFC 8693 Human Token Recorded in EAIOS Ledger)'
+            simulatedDisclosure: 'AUTHENTICATED DECISION GATE (Human Approval Recorded — Physical mutations require RFC 8693 MTLS token exchange)'
           };
           this.executiveDecisionRecord.outcome = {
             workflowState: 'DECISION_APPROVED',
@@ -1974,7 +1974,7 @@ Please refresh your bearer token.`);
             state: 'REJECTED',
             approver: authoritativeApprover,
             rationale: rationaleText,
-            simulatedDisclosure: 'AUTHENTICATED LIVE REJECTION (RFC 8693 Human Token Recorded in EAIOS Ledger)'
+            simulatedDisclosure: 'AUTHENTICATED REJECTION GATE (Human Rejection Recorded — Downstream execution pruned)'
           };
           this.executiveDecisionRecord.outcome = {
             workflowState: 'FAILED_REJECTED',
