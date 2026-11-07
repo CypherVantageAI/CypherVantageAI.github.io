@@ -49,6 +49,36 @@ function renderDashboardContent() {
     contentArea.innerHTML = `
       <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
         
+        <!-- Interview Showcase Guided Entry Point (Sprint 7.4K-CC) -->
+        <div id="showcase-guided-entry" class="dashboard-card" style="padding: 14px 16px; margin: 0; background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.85)); border: 1px solid rgba(56, 189, 248, 0.35); border-left: 4px solid #38bdf8; border-radius: 8px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.95rem;">🧭</span>
+              <span style="font-size: 0.82rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.04em; text-transform: uppercase;">Explore the Architecture</span>
+              <span style="font-size: 0.65rem; background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 2px 7px; border-radius: 4px; font-weight: 700;">Showcase Guide</span>
+            </div>
+            <span style="font-size: 0.7rem; color: #94a3b8;">Curated interview demonstration paths</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+            <!-- Entry 1: EAIOS Reference Architecture -->
+            <a href="javascript:void(0)" onclick="window.switchTab('manager-eaios')" id="guided-entry-eaios" style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; text-decoration: none; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.borderColor='#38bdf8'; this.style.background='rgba(56, 189, 248, 0.12)';" onmouseout="this.style.borderColor='rgba(56, 189, 248, 0.25)'; this.style.background='rgba(15, 23, 42, 0.6)';">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #38bdf8;">⚡ EAIOS Reference Architecture &rarr;</span>
+                <span style="font-size: 0.62rem; color: #10b981; font-weight: 700;">GOVERNANCE & GATE</span>
+              </div>
+              <p style="margin: 0; font-size: 0.72rem; color: #cbd5e1; line-height: 1.35;">Explore specialist AI orchestration, governance boundaries and the sovereign execution gate.</p>
+            </a>
+            <!-- Entry 2: Resilience Command Centre -->
+            <a href="javascript:void(0)" onclick="window.switchTab('manager-command-centre')" id="guided-entry-command-centre" style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; text-decoration: none; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.borderColor='#38bdf8'; this.style.background='rgba(56, 189, 248, 0.12)';" onmouseout="this.style.borderColor='rgba(56, 189, 248, 0.25)'; this.style.background='rgba(15, 23, 42, 0.6)';">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #38bdf8;">⚡ Resilience Command Centre &rarr;</span>
+                <span style="font-size: 0.62rem; color: #38bdf8; font-weight: 700;">OPERATIONAL TWIN</span>
+              </div>
+              <p style="margin: 0; font-size: 0.72rem; color: #cbd5e1; line-height: 1.35;">Explore operational resilience scenarios, service dependencies and impact analysis.</p>
+            </a>
+          </div>
+        </div>
+
         <!-- Welcome Briefing Banner -->
         <div class="dashboard-card" style="padding: 15px; margin: 0; background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(0,0,0,0)); border: 1px solid rgba(6, 182, 212, 0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div>

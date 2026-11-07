@@ -1862,21 +1862,28 @@ function updateExecutiveDecisionRecord() {
               Settled Tokens: <strong style="color: #10b981;">${rec.assessment.tokensSettled !== null ? rec.assessment.tokensSettled : '0 (Not billed)'}</strong>
             </div>
             ${rec.assessment.isRetryable ? `
-              <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-                <div style="font-size: 10px; color: #fbbf24; margin-bottom: 6px;">
-                  ⚠️ Fail-Closed Isolation: ${rec.assessment.retryableReason || 'Transient failure detected.'}
+              <div id="eaios-fail-closed-explanation" style="margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-left: 3px solid #ef4444; border-radius: 6px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 10px; font-weight: 800; color: #f87171; letter-spacing: 0.04em; text-transform: uppercase;">🛡️ FAIL-CLOSED SAFEGUARD ACTIVE</span>
+                  <span style="font-size: 9px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1px 6px; border-radius: 3px; font-weight: 700;">FAIL-CLOSED</span>
+                </div>
+                <div style="font-size: 10.5px; color: #fecaca; line-height: 1.4;">
+                  The live ORO advisory integration is unavailable. No recommendation has been fabricated, and no physical mutation has been authorised or executed.
+                </div>
+                <div style="font-size: 9.5px; color: #94a3b8; line-height: 1.35;">
+                  The safeguard demonstrates controlled failure behaviour; it does not establish successful end-to-end live agent execution.
                 </div>
                 <button
                   id="eaios-btn-retry-synthesis"
                   onclick="window.retryEaiosSynthesis()"
                   aria-label="Retry recommendation synthesis with backend"
-                  ${simManager?.isRetrying ? 'disabled' : ''}
-                  style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; background: ${simManager?.isRetrying ? 'rgba(56, 189, 248, 0.15)' : 'linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(59, 130, 246, 0.25))'}; border: 1px solid ${simManager?.isRetrying ? 'rgba(56, 189, 248, 0.3)' : 'rgba(56, 189, 248, 0.6)'}; color: ${simManager?.isRetrying ? '#94a3b8' : '#38bdf8'}; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: ${simManager?.isRetrying ? 'not-allowed' : 'pointer'}; transition: all 0.15s ease;"
+                  ${simManager?.isRetrying ? "disabled" : ""}
+                  style="margin-top: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; background: ${simManager?.isRetrying ? "rgba(56, 189, 248, 0.15)" : "linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(59, 130, 246, 0.25))"}; border: 1px solid ${simManager?.isRetrying ? "rgba(56, 189, 248, 0.3)" : "rgba(56, 189, 248, 0.6)"}; color: ${simManager?.isRetrying ? "#94a3b8" : "#38bdf8"}; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 4px; cursor: ${simManager?.isRetrying ? "not-allowed" : "pointer"}; transition: all 0.15s ease;"
                 >
-                  ${simManager?.isRetrying ? '⏳ Retrying Synthesis...' : '🔄 Retry Synthesis'}
+                  ${simManager?.isRetrying ? "⏳ Retrying Synthesis..." : "🔄 Retry Synthesis"}
                 </button>
               </div>
-            ` : ''}
+            ` : ""}
           </div>
         </div>
 
