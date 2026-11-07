@@ -1758,3 +1758,324 @@ export const STAGE_MATURITY_TIMELINE = [
     status: "FROZEN BASELINE"
   }
 ];
+// =========================================================================
+// SPRINT 7.4K-CK: CAPABILITY IMPLEMENTATION MATURITY MATRIX (28 Capabilities)
+// =========================================================================
+
+export const EAIOS_VERSION_PROVENANCE = {
+  architectureVersion: "EAIOS Architecture v5.0",
+  frozenBaseline: "Stage 32.2 (Commit a2f3600f910e2e37877d35250e2ad4ab836b8d30)",
+  deployedRelease: "Core Platform v5.0 (Release 70be6aee)",
+  assuranceMetrics: "971 Verified Automated Tests  0 Failures  Live Dual-Control Gates"
+};
+
+export const EAIOS_CAPABILITY_MATURITY = [
+  {
+    id: "cap-01",
+    category: "Identity & Access",
+    name: "User OIDC Authentication",
+    location: "core-platform/backend",
+    test: "Backend Integration Tests (Keycloak 24.0.5)",
+    adr: "ADR-033 / ADR-041",
+    level: "4. PARTIALLY INTEGRATED",
+    portalDemo: "No (Mock Session Active)",
+    boundaryDisclosures: "Keycloak 24.0.5 container running server-side; web showcase uses mock identity (bob@enterprise.example) for static evaluation."
+  },
+  {
+    id: "cap-02",
+    category: "Identity & Access",
+    name: "RFC 8693 Token Exchange",
+    location: "core-platform/backend",
+    test: "Container Compose Integration Suite",
+    adr: "ADR-038 / ADR-046",
+    level: "5. DESIGNED / PLANNED",
+    portalDemo: "No (Architecture Disclosure Only)",
+    boundaryDisclosures: "Architectural contract specified; client-side browser cannot perform downstream mTLS token exchange directly."
+  },
+  {
+    id: "cap-03",
+    category: "Identity & Access",
+    name: "AI Employee Identity Lifecycle",
+    location: "eaios/src/lifecycle",
+    test: "test_node6_state_separation.mjs",
+    adr: "ADR-033",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Inspector & State Views)",
+    boundaryDisclosures: "Deterministic 6-state machine (DRAFT -> PROVISIONED -> ACTIVE -> SUSPENDED -> RETIRED -> REVOKED) verified in permanent suites."
+  },
+  {
+    id: "cap-04",
+    category: "Identity & Access",
+    name: "Dual-Control Four-Eyes Gate",
+    location: "eaios/src/hitl",
+    test: "Playwright Test 2 & Node 6 Suite",
+    adr: "ADR-032 / ADR-038",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Interactive Pause & Sign-Off)",
+    boundaryDisclosures: "Interactive simulation pauses DAG; requires dual-control human executive signature before state advancement."
+  },
+  {
+    id: "cap-05",
+    category: "Saga & Causal DAG",
+    name: "Causal DAG Orchestration",
+    location: "eaios/src/engine",
+    test: "Playwright Regression & Node 6 Suite",
+    adr: "ADR-024 / ADR-042",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Interactive 6-Node Graph)",
+    boundaryDisclosures: "Dynamic state-machine transitions across all 6 causal nodes with explicit lease tracking."
+  },
+  {
+    id: "cap-06",
+    category: "Saga & Causal DAG",
+    name: "Stateless Frontier Reconstruction",
+    location: "eaios/src/engine",
+    test: "Playwright Scenario Reset Suite",
+    adr: "ADR-024",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Reset & Switching Controls)",
+    boundaryDisclosures: "Frontier nodes reconstructed deterministically from immutable scenario profiles on reset."
+  },
+  {
+    id: "cap-07",
+    category: "Saga & Causal DAG",
+    name: "Backward Saga Compensation",
+    location: "eaios/src/engine",
+    test: "Playwright Scenario C Suite",
+    adr: "ADR-042",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Scenario C: Compensation)",
+    boundaryDisclosures: "Demonstrates automated reverse compensation and compensating action execution upon downstream failure."
+  },
+  {
+    id: "cap-08",
+    category: "Saga & Causal DAG",
+    name: "Worker Lease Heartbeats & Sweeping",
+    location: "eaios/src/workers",
+    test: "Worker Lease Unit Suite",
+    adr: "ADR-034",
+    level: "2. IMPLEMENTED  PARTIALLY VERIFIED",
+    portalDemo: "Simulated in UI Inspector",
+    boundaryDisclosures: "DOM demonstrates worker lease IDs; server-side Redis TTL sweeper runs in CI Docker stack."
+  },
+  {
+    id: "cap-09",
+    category: "Saga & Causal DAG",
+    name: "F-06 Asynchronous Generation Fencing",
+    location: "core-platform/src/eaios",
+    test: "Playwright Test 4 & Test 6d",
+    adr: "ADR-024 / ADR-032",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Rapid Scenario Switch)",
+    boundaryDisclosures: "Generational correlation fencing discards superseded asynchronous responses during in-flight switching."
+  },
+  {
+    id: "cap-10",
+    category: "Governance & Safeguards",
+    name: "Sovereign EAIES Policy Evaluation",
+    location: "eaios/src/eaies",
+    test: "Playwright Scenarios 15",
+    adr: "ADR-038",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Policy Tags & Decision Record)",
+    boundaryDisclosures: "Sovereign policy matrix evaluation enforces execution boundaries directly in workflow engine."
+  },
+  {
+    id: "cap-11",
+    category: "Governance & Safeguards",
+    name: "Node 6 Execution Boundary Demarcation",
+    location: "core-platform/src/eaios",
+    test: "test_node6_state_separation.mjs (7/7)",
+    adr: "ADR-039 / ADR-046",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Pending Execution Badge)",
+    boundaryDisclosures: "Node 6 remains PENDING (Authorized  Awaiting Execution). Prevents false claims of physical cloud mutation."
+  },
+  {
+    id: "cap-12",
+    category: "Governance & Safeguards",
+    name: "Multi-Tenant PostgreSQL RLS",
+    location: "eaios/src/db",
+    test: "PostgreSQL 15.14 P1P20 Container Suite",
+    adr: "ADR-030",
+    level: "2. IMPLEMENTED  PARTIALLY VERIFIED",
+    portalDemo: "Yes (Interactive Tenant Toggle)",
+    boundaryDisclosures: "UI simulates tenant-scoped view; true PostgreSQL SET LOCAL app.current_tenant isolation verified in CI container suite."
+  },
+  {
+    id: "cap-13",
+    category: "Governance & Safeguards",
+    name: "Token Budget Escrow & Pre-Reservation",
+    location: "eaios/src/cost",
+    test: "Playwright & Node Unit Tests",
+    adr: "ADR-022",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Test Spend Deny Button)",
+    boundaryDisclosures: "Pre-invocation escrow hold (.50); instant rejection and hard fence when 8,500 token limit exceeded."
+  },
+  {
+    id: "cap-14",
+    category: "Governance & Safeguards",
+    name: "Governed Data Lifecycle & Legal Hold",
+    location: "eaios/src/lifecycle",
+    test: "Stage 27 Targeted Suite (17/17)",
+    adr: "ADR-047",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Lifecycle Card in UI)",
+    boundaryDisclosures: "Retention eligibility evaluation, immutable tenant epoch locks, and fail-closed legal hold preservation."
+  },
+  {
+    id: "cap-15",
+    category: "Resilience & Recovery",
+    name: "Fail-Closed Backend Demarcation",
+    location: "core-platform/src/eaios",
+    test: "Playwright Test 5 & 6a",
+    adr: "ADR-032",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Fail-Closed Safeguard Banner)",
+    boundaryDisclosures: "Halts execution on unlinked backend routes (#eaios-fail-closed-explanation); guarantees zero hallucinated recommendations."
+  },
+  {
+    id: "cap-16",
+    category: "Resilience & Recovery",
+    name: "Dynamic Provider Fallback & Circuit Breaker",
+    location: "eaios/src/providers",
+    test: "Provider Fallback Unit Suite",
+    adr: "ADR-020 / ADR-027",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Simulate Timeout Button)",
+    boundaryDisclosures: "Automatic circuit-breaker trip on primary provider timeout with transparent failover to secondary model."
+  },
+  {
+    id: "cap-17",
+    category: "Resilience & Recovery",
+    name: "Transient Retry Synthesis Lifecycle",
+    location: "core-platform/src/eaios",
+    test: "Playwright Test 6c",
+    adr: "ADR-032",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Retry Synthesis Button)",
+    boundaryDisclosures: "Allows manual operator retry after network partition recovery; transitions safely to Four-Eyes decision gate."
+  },
+  {
+    id: "cap-18",
+    category: "Resilience & Recovery",
+    name: "Terminal HTTP 400 Suppression",
+    location: "core-platform/src/eaios",
+    test: "Playwright Test 6b",
+    adr: "ADR-032",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Terminal Error State)",
+    boundaryDisclosures: "Suppresses retry controls on unrecoverable bad-request errors to prevent retry storms."
+  },
+  {
+    id: "cap-19",
+    category: "Resilience & Recovery",
+    name: "5 Operational Resilience Scenarios (ORO)",
+    location: "core-platform/src/eaios",
+    test: "Playwright Test 1 (All 5 Scenarios)",
+    adr: "ADR-045 / ADR-046",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (All 5 Scenario Sub-Buttons)",
+    boundaryDisclosures: "Full interactive workflows for Cloud Outage, Ransomware, Third-Party Outage, Data Corruption, and Compound Incident."
+  },
+  {
+    id: "cap-20",
+    category: "Model & Risk Governance",
+    name: "Governed Foundation Model Registry",
+    location: "eaios/src/models",
+    test: "Model Registry Unit Suite",
+    adr: "ADR-046",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Model Registry Badges)",
+    boundaryDisclosures: "Catalogues model tiers (Minimal, Limited, High risk) and enforces prompt template immutability."
+  },
+  {
+    id: "cap-21",
+    category: "Model & Risk Governance",
+    name: "Ed25519 Four-Eyes Model Attestation",
+    location: "eaios/src/models",
+    test: "Cryptographic Attestation Suite",
+    adr: "ADR-046",
+    level: "2. IMPLEMENTED  PARTIALLY VERIFIED",
+    portalDemo: "Simulated in UI",
+    boundaryDisclosures: "Cryptographic dual-attestation verified in CI unit tests; signature keys referenced in showcase."
+  },
+  {
+    id: "cap-22",
+    category: "Model & Risk Governance",
+    name: "Model Data Residency Fencing",
+    location: "eaios/src/models",
+    test: "Residency Policy Unit Suite",
+    adr: "ADR-046",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Region Tags on Models)",
+    boundaryDisclosures: "Restricts prompt dispatch to designated sovereign geographic boundaries (e.g., EMEA, UK, US)."
+  },
+  {
+    id: "cap-23",
+    category: "Model & Risk Governance",
+    name: "Rogue-AI Authority Containment",
+    location: "eaios/src/governance",
+    test: "Stage 28 Security Audit Baseline",
+    adr: "ADR-001 / ADR-036",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Axiom Banner & Safe Gates)",
+    boundaryDisclosures: "Deterministic prohibition against self-escalation; AI specialists operate strictly as advisory workers with zero mutation rights."
+  },
+  {
+    id: "cap-24",
+    category: "Telemetry, Outbox & Audit",
+    name: "Live Backend Health Telemetry",
+    location: "core-platform/backend",
+    test: "Live HTTP Probe (/health/live)",
+    adr: "ADR-026 / ADR-032",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Pulse Pill in Header)",
+    boundaryDisclosures: "Real-time client-side polling to https://cyphervantageai.duckdns.org/health/live."
+  },
+  {
+    id: "cap-25",
+    category: "Telemetry, Outbox & Audit",
+    name: "Forensic Audit Stream & Correlation",
+    location: "eaios/src/audit",
+    test: "Playwright Test 18",
+    adr: "ADR-026",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Real-Time Audit Console)",
+    boundaryDisclosures: "Real-time, structured append-only audit events tied to correlation IDs and authoritative ADR citations."
+  },
+  {
+    id: "cap-26",
+    category: "Telemetry, Outbox & Audit",
+    name: "Transactional Outbox Pattern",
+    location: "eaios/src/outbox",
+    test: "CI Docker Container Integration",
+    adr: "ADR-039",
+    level: "2. IMPLEMENTED  PARTIALLY VERIFIED",
+    portalDemo: "Referenced in Audit Stream",
+    boundaryDisclosures: "Atomic local database mutation with subsequent asynchronous message relay; validated in backend Docker suite."
+  },
+  {
+    id: "cap-27",
+    category: "Telemetry, Outbox & Audit",
+    name: "Dual-Horizon Cryptographic Hashing",
+    location: "eaios/src/audit",
+    test: "Stage 27 Cryptographic Test Suite",
+    adr: "ADR-047",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (Inspection View)",
+    boundaryDisclosures: "Calculates SHA-256 state and provenance hashes at every lifecycle milestone to prevent record tampering."
+  },
+  {
+    id: "cap-28",
+    category: "Telemetry, Outbox & Audit",
+    name: "DORA Statutory Impact & Reporting Mapping",
+    location: "eaios/src/resilience",
+    test: "Playwright Test 1 (All Scenarios)",
+    adr: "ADR-045",
+    level: "1. IMPLEMENTED & VERIFIED",
+    portalDemo: "Yes (DORA Pills on Scenarios)",
+    boundaryDisclosures: "Maps adverse operational incidents directly to DORA Pillar 1 & 2 statutory reporting classifications."
+  }
+];

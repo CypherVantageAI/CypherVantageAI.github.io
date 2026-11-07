@@ -426,4 +426,171 @@ export class EaiosRenderer {
       </g>
     `;
   }
+
+
+  renderAuthoritativeArchitectureDiagram() {
+    return `
+      <div class="eaios-arch-diagram-wrapper" style="width: 100%; overflow-x: auto; padding: 12px 0;">
+        <svg viewBox="0 0 1100 480" style="width: 100%; min-width: 820px; height: auto; display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+          <defs>
+            <linearGradient id="archBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0b0f19" />
+              <stop offset="100%" stop-color="#111827" />
+            </linearGradient>
+            <linearGradient id="tier1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="rgba(30, 41, 59, 0.8)" />
+              <stop offset="100%" stop-color="rgba(15, 23, 42, 0.95)" />
+            </linearGradient>
+            <linearGradient id="tier2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="rgba(30, 58, 138, 0.4)" />
+              <stop offset="100%" stop-color="rgba(15, 23, 42, 0.95)" />
+            </linearGradient>
+            <linearGradient id="tier3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="rgba(88, 28, 135, 0.4)" />
+              <stop offset="100%" stop-color="rgba(15, 23, 42, 0.95)" />
+            </linearGradient>
+            <linearGradient id="tier4Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="rgba(6, 78, 59, 0.45)" />
+              <stop offset="100%" stop-color="rgba(15, 23, 42, 0.95)" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <marker id="arrowBlue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8" />
+            </marker>
+            <marker id="arrowAmber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 8 5 L 0 9 z" fill="#f59e0b" />
+            </marker>
+            <marker id="arrowEmerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 8 5 L 0 9 z" fill="#10b981" />
+            </marker>
+          </defs>
+
+          <!-- Outer Container Box -->
+          <rect x="10" y="10" width="1080" height="460" rx="12" fill="url(#archBgGrad)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+
+          <!-- TIER 1: Enterprise Client Ingress -->
+          <g transform="translate(30, 30)">
+            <rect x="0" y="0" width="240" height="360" rx="8" fill="url(#tier1Grad)" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.5" />
+            <rect x="0" y="0" width="240" height="36" rx="8" fill="rgba(56, 189, 248, 0.15)" />
+            <text x="16" y="23" fill="#38bdf8" font-size="12" font-weight="800" letter-spacing="0.05em">TIER 1: ENTERPRISE INGRESS</text>
+            <text x="16" y="58" fill="#94a3b8" font-size="11" font-weight="600">OIDC Identity &amp; Context</text>
+
+            <!-- Box 1a: Browser Client -->
+            <rect x="16" y="75" width="208" height="60" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
+            <text x="28" y="98" fill="#f8fafc" font-size="12" font-weight="700">Enterprise Web Portal</text>
+            <text x="28" y="116" fill="#94a3b8" font-size="10">Single-Page Architecture Showcase</text>
+
+            <!-- Box 1b: Core Platform BFF -->
+            <rect x="16" y="155" width="208" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(56, 189, 248, 0.3)" />
+            <text x="28" y="178" fill="#38bdf8" font-size="12" font-weight="700">Core Platform BFF API</text>
+            <text x="28" y="196" fill="#94a3b8" font-size="10">FastAPI Gateway • Session Minting</text>
+            <text x="28" y="212" fill="#cbd5e1" font-size="9" font-family="monospace">POST /api/v1/eaios/oro</text>
+
+            <!-- Box 1c: Security Context -->
+            <rect x="16" y="250" width="208" height="80" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
+            <text x="28" y="273" fill="#f8fafc" font-size="11" font-weight="700">Ingress Security Context</text>
+            <text x="28" y="291" fill="#94a3b8" font-size="10">Correlation ID: CORR-2026-XXXX</text>
+            <text x="28" y="307" fill="#94a3b8" font-size="10">Tenant: GWM / IIB Partitioned</text>
+            <text x="28" y="321" fill="#94a3b8" font-size="10">Caller: bob@enterprise.example</text>
+          </g>
+
+          <!-- TIER 2: EAIOS Orchestration Fabric -->
+          <g transform="translate(295, 30)">
+            <rect x="0" y="0" width="250" height="360" rx="8" fill="url(#tier2Grad)" stroke="rgba(96, 165, 250, 0.35)" stroke-width="1.5" />
+            <rect x="0" y="0" width="250" height="36" rx="8" fill="rgba(96, 165, 250, 0.15)" />
+            <text x="16" y="23" fill="#60a5fa" font-size="12" font-weight="800" letter-spacing="0.05em">TIER 2: ORCHESTRATION FABRIC</text>
+            <text x="16" y="58" fill="#94a3b8" font-size="11" font-weight="600">Causal DAG Sagas &amp; State</text>
+
+            <!-- Box 2a: Causal DAG Engine -->
+            <rect x="16" y="75" width="218" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(96, 165, 250, 0.3)" />
+            <text x="28" y="98" fill="#60a5fa" font-size="12" font-weight="700">Deterministic Causal DAG</text>
+            <text x="28" y="116" fill="#94a3b8" font-size="10">6-Node Strict Dependency Ordering</text>
+            <text x="28" y="132" fill="#cbd5e1" font-size="9" font-family="monospace">ADR-024 / ADR-042 (Compensation)</text>
+
+            <!-- Box 2b: Stateless Frontier -->
+            <rect x="16" y="165" width="218" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
+            <text x="28" y="188" fill="#f8fafc" font-size="12" font-weight="700">Stateless Frontier Manager</text>
+            <text x="28" y="206" fill="#94a3b8" font-size="10">F-06 Generational Fencing</text>
+            <text x="28" y="222" fill="#cbd5e1" font-size="9" font-family="monospace">Discards Stale Async In-Flight</text>
+
+            <!-- Box 2c: Lease Coordinator -->
+            <rect x="16" y="255" width="218" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
+            <text x="28" y="278" fill="#f8fafc" font-size="12" font-weight="700">Worker Lease &amp; Sweeper</text>
+            <text x="28" y="296" fill="#94a3b8" font-size="10">Redis TTL Heartbeats (ADR-034)</text>
+            <text x="28" y="312" fill="#94a3b8" font-size="10">PostgreSQL Multi-Tenant RLS</text>
+          </g>
+
+          <!-- TIER 3: AI Specialist Employees (Zero Execution Authority) -->
+          <g transform="translate(570, 30)">
+            <rect x="0" y="0" width="240" height="360" rx="8" fill="url(#tier3Grad)" stroke="rgba(192, 132, 252, 0.4)" stroke-width="1.5" />
+            <rect x="0" y="0" width="240" height="36" rx="8" fill="rgba(192, 132, 252, 0.15)" />
+            <text x="14" y="23" fill="#c084fc" font-size="11" font-weight="800" letter-spacing="0.05em">TIER 3: AI SPECIALISTS (ORO)</text>
+            <text x="16" y="58" fill="#f43f5e" font-size="11" font-weight="800">ZERO EXECUTION RIGHTS</text>
+
+            <!-- Box 3a: Specialist Pool -->
+            <rect x="16" y="75" width="208" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(192, 132, 252, 0.3)" />
+            <text x="26" y="98" fill="#c084fc" font-size="11" font-weight="700">Specialist AI Workers</text>
+            <text x="26" y="115" fill="#94a3b8" font-size="10">emp-op-resilience-01 (ORO Lead)</text>
+            <text x="26" y="130" fill="#94a3b8" font-size="10">emp-service-impact / emp-tprm</text>
+
+            <!-- Box 3b: Model Registry & Fallback -->
+            <rect x="16" y="165" width="208" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
+            <text x="26" y="188" fill="#f8fafc" font-size="11" font-weight="700">Model Risk &amp; Fallback</text>
+            <text x="26" y="206" fill="#94a3b8" font-size="10">Dynamic Model Substitution</text>
+            <text x="26" y="222" fill="#cbd5e1" font-size="9" font-family="monospace">ADR-020 Circuit Breakers / ADR-046</text>
+
+            <!-- Box 3c: Advisory Output Only -->
+            <rect x="16" y="255" width="208" height="75" rx="6" fill="rgba(244, 63, 94, 0.12)" stroke="rgba(244, 63, 94, 0.4)" stroke-dasharray="3,3" />
+            <text x="26" y="278" fill="#f43f5e" font-size="11" font-weight="800">Advisory Output Only</text>
+            <text x="26" y="296" fill="#fda4af" font-size="10">Proposes Remediation Strategy</text>
+            <text x="26" y="312" fill="#fecdd3" font-size="9" font-weight="700">CONFIDENCE != AUTHORITY</text>
+          </g>
+
+          <!-- TIER 4: Sovereign Execution Gate (EAIES) & Four-Eyes -->
+          <g transform="translate(835, 30)">
+            <rect x="0" y="0" width="235" height="360" rx="8" fill="url(#tier4Grad)" stroke="rgba(52, 211, 153, 0.45)" stroke-width="1.5" />
+            <rect x="0" y="0" width="235" height="36" rx="8" fill="rgba(52, 211, 153, 0.15)" />
+            <text x="14" y="23" fill="#34d399" font-size="11" font-weight="800" letter-spacing="0.05em">TIER 4: SOVEREIGN EAIES GATE</text>
+            <text x="16" y="58" fill="#10b981" font-size="11" font-weight="800">SOLE EXECUTION AUTHORITY</text>
+
+            <!-- Box 4a: Policy Evaluation -->
+            <rect x="14" y="75" width="207" height="65" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(52, 211, 153, 0.3)" />
+            <text x="24" y="98" fill="#34d399" font-size="11" font-weight="700">EAIES Policy Engine</text>
+            <text x="24" y="116" fill="#94a3b8" font-size="10">ADR-038 Matrix Enforcement</text>
+            <text x="24" y="130" fill="#94a3b8" font-size="9">Pre-Invocation Token Escrow ($3.50)</text>
+
+            <!-- Box 4b: Four-Eyes Human Gate -->
+            <rect x="14" y="150" width="207" height="75" rx="6" fill="rgba(245, 158, 11, 0.15)" stroke="rgba(245, 158, 11, 0.5)" />
+            <text x="24" y="173" fill="#fbbf24" font-size="11" font-weight="800">Four-Eyes Human Gate</text>
+            <text x="24" y="191" fill="#fef3c7" font-size="10">Dual Control Executive Sign-Off</text>
+            <text x="24" y="207" fill="#fde68a" font-size="9" font-weight="700">Node 5: PAUSED_PENDING_INPUT</text>
+
+            <!-- Box 4c: Transactional Outbox & Boundary -->
+            <rect x="14" y="235" width="207" height="95" rx="6" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(52, 211, 153, 0.4)" />
+            <text x="24" y="258" fill="#34d399" font-size="11" font-weight="700">Transactional Outbox</text>
+            <text x="24" y="276" fill="#94a3b8" font-size="10">Downstream RFC 8693 Token Exchange</text>
+            <text x="24" y="294" fill="#38bdf8" font-size="9" font-weight="700">Node 6: Awaiting Execution</text>
+            <text x="24" y="310" fill="#f43f5e" font-size="9" font-weight="700">NO INFERRED PHYSICAL MUTATION</text>
+          </g>
+
+          <!-- Connecting Arrows Between Tiers -->
+          <line x1="270" y1="190" x2="293" y2="190" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrowBlue)" />
+          <line x1="545" y1="190" x2="568" y2="190" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowBlue)" />
+          <line x1="810" y1="292" x2="833" y2="292" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowAmber)" />
+
+          <!-- Bottom Invariant Banner within SVG -->
+          <g transform="translate(30, 405)">
+            <rect x="0" y="0" width="1040" height="45" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="rgba(56, 189, 248, 0.4)" />
+            <text x="20" y="28" fill="#38bdf8" font-size="12" font-weight="800" letter-spacing="0.04em">CORE ARCHITECTURAL INVARIANT:</text>
+            <text x="245" y="28" fill="#f8fafc" font-size="12" font-weight="700">COORDINATION MAY PROPAGATE WORK. AUTHORITY MUST NEVER PROPAGATE IMPLICITLY.</text>
+            <text x="840" y="28" fill="#94a3b8" font-size="11" font-family="monospace">RECOMMENDATION != ACTION</text>
+          </g>
+        </svg>
+      </div>
+    `;
+  }
+
 }
