@@ -441,7 +441,7 @@ function generateEaiosHtml() {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
       }
       .eaios-hero-card {
-        background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(10, 15, 28, 0.99));
+        background: var(--bg-card);
         border: 1px solid rgba(56, 189, 248, 0.4);
         border-radius: 14px;
         padding: 28px 32px;
@@ -485,7 +485,7 @@ function generateEaiosHtml() {
         touch-action: manipulation;
       }
       .eaios-scen-btn:hover {
-        background: rgba(30, 41, 59, 0.9);
+        background: var(--bg-secondary);
         color: var(--text-primary);
         border-color: rgba(56, 189, 248, 0.4);
       }
@@ -521,7 +521,7 @@ function generateEaiosHtml() {
         background: linear-gradient(135deg, #059669, #047857);
       }
       .eaios-btn-secondary {
-        background: rgba(30, 41, 59, 0.8);
+        background: var(--bg-secondary);
         color: var(--text-secondary);
         border: 1px solid rgba(255, 255, 255, 0.15);
         padding: 8px 16px;
@@ -553,7 +553,7 @@ function generateEaiosHtml() {
         transition: all 0.2s ease;
       }
       .eaios-sim-action-btn:hover {
-        background: rgba(30, 41, 59, 0.9);
+        background: var(--bg-secondary);
         color: var(--text-primary);
         border-color: rgba(56, 189, 248, 0.3);
       }
@@ -720,7 +720,7 @@ function generateEaiosHtml() {
         </div>
 
         <!-- ARCHITECTURAL DEMARCATION & SOVEREIGN GATE DISCLOSURE (SPRINT 7.4K-BU) -->
-        <div id="eaios-demarcation-banner" class="eaios-info-card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85)); border: 1px solid rgba(56, 189, 248, 0.4); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;">
+        <div id="eaios-demarcation-banner" class="eaios-info-card" style="background: var(--bg-card); border: 1px solid rgba(56, 189, 248, 0.4); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
             <div style="flex: 1; min-width: 280px;">
               <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -775,7 +775,7 @@ function generateEaiosHtml() {
         </div>
 
         <!-- ORO RESILIENCE SCENARIO SUB-SELECTOR -->
-        <fieldset id="eaios-oro-sub-selector" style="margin: 0 0 12px 0; padding: 8px 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 8px;">
+        <fieldset id="eaios-oro-sub-selector" style="margin: 0 0 12px 0; padding: 8px 12px; background: var(--bg-card); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 8px;">
           <legend style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 4px; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
             <span style="font-size: 10.5px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">
               Operational Resilience Incident Catalogue (5 Scenarios)
@@ -1443,7 +1443,7 @@ function updateInspector(node) {
     </div>
 
     <!-- DURABLE STATE & OCC -->
-    <div style="background: rgba(10, 11, 16, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px;">
+    <div style="background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px;">
       <div style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">Durable State & Outbox Intent</div>
       <div style="font-size: 11px; color: var(--text-secondary);">Worker Lease: <span style="color: var(--text-secondary);">${status === 'EXECUTING' ? (node.workerBadge || 'worker [ACTIVE]') : 'Released / Unclaimed'}</span></div>
       <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">OCC Entity Version: <code style="color: #38bdf8;">v${node.version || 1}</code></div>
