@@ -112,7 +112,7 @@ window.selectOroSubScenario = function(subScenarioId) {
   document.querySelectorAll('.eaios-oro-sub-btn').forEach(btn => {
     btn.classList.remove('active');
     btn.setAttribute('aria-pressed', 'false');
-    btn.style.background = 'rgba(15, 23, 42, 0.6)';
+    btn.style.background = 'var(--bg-card)';
     btn.style.borderColor = 'rgba(255, 255, 255, 0.08)';
     btn.style.color = '#94a3b8';
   });
@@ -258,7 +258,7 @@ window.switchEaiosTenant = function(tenantId) {
       btnRlsGwm.style.borderColor = '#38bdf8';
     }
     if (btnRlsIib) {
-      btnRlsIib.style.background = '#0f172a';
+      btnRlsIib.style.background = 'var(--bg-card)';
       btnRlsIib.style.color = '#cbd5e1';
       btnRlsIib.style.borderColor = 'rgba(255,255,255,0.15)';
     }
@@ -269,7 +269,7 @@ window.switchEaiosTenant = function(tenantId) {
       btnRlsIib.style.borderColor = '#a78bfa';
     }
     if (btnRlsGwm) {
-      btnRlsGwm.style.background = '#0f172a';
+      btnRlsGwm.style.background = 'var(--bg-card)';
       btnRlsGwm.style.color = '#cbd5e1';
       btnRlsGwm.style.borderColor = 'rgba(255,255,255,0.15)';
     }
@@ -876,14 +876,14 @@ function generateEaiosHtml() {
               <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 12px;">
                 <div>
                   <label for="eaios-operator-select" style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Approver Identity:</label>
-                  <select id="eaios-operator-select" style="width: 100%; background: #0f172a; color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px; cursor: pointer;">
+                  <select id="eaios-operator-select" style="width: 100%; background: var(--bg-card); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px; cursor: pointer;">
                     <option value="bob@enterprise.example">bob@enterprise.example (Authorized Approver)</option>
                     <option value="alice@enterprise.example">alice@enterprise.example (Work Owner - Test 4-Eyes Deny)</option>
                   </select>
                 </div>
                 <div>
                   <label for="eaios-operator-rationale" style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Decision Rationale (Mandatory):</label>
-                  <input type="text" id="eaios-operator-rationale" value="Approved for production run after secondary audit." style="width: 100%; background: #0f172a; color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px;" />
+                  <input type="text" id="eaios-operator-rationale" value="Approved for production run after secondary audit." style="width: 100%; background: var(--bg-card); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px;" />
                 </div>
               </div>
             </div>
@@ -1076,7 +1076,7 @@ function generateEaiosHtml() {
               <button id="eaios-btn-rls-gwm" onclick="window.switchEaiosTenant('GLOBAL-WEALTH-MANAGEMENT')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; padding: 7px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">
                 Tenant: GLOBAL-WEALTH-MANAGEMENT
               </button>
-              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: #0f172a; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.15); padding: 7px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">
+              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.15); padding: 7px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">
                 Tenant: INSTITUTIONAL-INVESTMENT-BANKING
               </button>
             </div>
@@ -1294,7 +1294,7 @@ function generateEaiosHtml() {
 
       <!-- Global Detail Modal (for Node/ADR inspect fallback) -->
       <div id="eaios-detail-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; max-width: 600px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+        <div style="background: var(--bg-card); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; max-width: 600px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
             <div>
               <span id="eaios-modal-badge" style="font-size: 10px; font-weight: 800; color: #38bdf8; text-transform: uppercase;"></span>
