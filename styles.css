@@ -2818,6 +2818,19 @@ body.light-mode .eaios-mobile-node-card > div:nth-child(4) {
   border-top-color: var(--border-color) !important;
 }
 
+.eaios-view-container {
+  overflow-wrap: anywhere;
+}
+
+body.light-mode .eaios-view-container .card,
+body.light-mode .eaios-view-container table,
+body.light-mode .eaios-view-container th,
+body.light-mode .eaios-view-container td {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
 /* Active simulation fiber flow anim */
 .map-node-pin.active ~ svg .connection-line {
   stroke: var(--color-cyan);
