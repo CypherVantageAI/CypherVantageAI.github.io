@@ -279,10 +279,10 @@ window.switchEaiosTenant = function(tenantId) {
   if (rlsOutput) {
     const color = tenantId === 'GLOBAL-WEALTH-MANAGEMENT' ? '#38bdf8' : '#a78bfa';
     rlsOutput.innerHTML = `
-      <div style="color: #64748b;">// Executed: SET LOCAL app.current_tenant_id = '${tenantId}'</div>
+      <div style="color: var(--text-muted);">// Executed: SET LOCAL app.current_tenant_id = '${tenantId}'</div>
       <div style="color: ${color}; font-weight: 700;">active_tenant_id = '${tenantId}'</div>
       <div style="color: #10b981; margin-top: 4px;">✓ ${res ? res.title : 'No records'} (1 row)</div>
-      <div style="color: #94a3b8; font-size: 9.5px; margin-top: 2px;">${res ? res.content : ''}</div>
+      <div style="color: var(--text-secondary); font-size: 9.5px; margin-top: 2px;">${res ? res.content : ''}</div>
     `;
   }
   const nodes = simManager.getCurrentNodes();
@@ -304,7 +304,7 @@ window.simulateEaiosTimeout = function() {
   if (providerBox) {
     providerBox.style.display = 'block';
     providerBox.innerHTML = `
-      <div style="color: #64748b;">// Provider dispatch status:</div>
+      <div style="color: var(--text-muted);">// Provider dispatch status:</div>
       <div style="color: #ef4444; font-weight: 700;">TIMEOUT (30,000ms) - OUTCOME UNKNOWN</div>
       <div style="color: #f59e0b; margin-top: 4px;">Conservative Governance: Billed as spent until reconciliation</div>
     `;
@@ -328,9 +328,9 @@ window.openEaiosModal = function(type, id) {
     modalTitle.textContent = data.title;
 
     modalBody.innerHTML = `
-      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
         <div style="font-size: 10px; font-weight: 800; color: #38bdf8; text-transform: uppercase; margin-bottom: 4px;">Architectural Decision</div>
-        <div style="font-size: 13px; color: #f8fafc; line-height: 1.5;">${data.decision}</div>
+        <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5;">${data.decision}</div>
       </div>
 
       <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 14px;">
@@ -339,12 +339,12 @@ window.openEaiosModal = function(type, id) {
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div style="background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
-          <div style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase;">Domain Category</div>
-          <div style="font-size: 12px; color: #cbd5e1; font-weight: 600; margin-top: 2px;">${data.category}</div>
+        <div style="background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Domain Category</div>
+          <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-top: 2px;">${data.category}</div>
         </div>
-        <div style="background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
-          <div style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase;">Evidence Classification</div>
+        <div style="background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Evidence Classification</div>
           <div style="font-size: 12px; color: #34d399; font-weight: 600; margin-top: 2px;">${data.evidenceBadge}</div>
         </div>
       </div>
@@ -360,18 +360,18 @@ window.openEaiosModal = function(type, id) {
     modalTitle.textContent = data.title;
 
     modalBody.innerHTML = `
-      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
         <div style="font-size: 10px; font-weight: 800; color: #34d399; text-transform: uppercase; margin-bottom: 4px;">Inviolable Governance Rule</div>
-        <div style="font-size: 13px; color: #f8fafc; line-height: 1.5;">${data.rule}</div>
+        <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5;">${data.rule}</div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div style="background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
-          <div style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase;">Authoritative ADR Reference</div>
+        <div style="background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Authoritative ADR Reference</div>
           <div style="font-size: 12px; color: #38bdf8; font-weight: 600; margin-top: 2px;">${data.adrRef}</div>
         </div>
-        <div style="background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
-          <div style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase;">Evidence Classification</div>
+        <div style="background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Evidence Classification</div>
           <div style="font-size: 12px; color: #a78bfa; font-weight: 600; margin-top: 2px;">${data.evidenceBadge}</div>
         </div>
       </div>
@@ -449,27 +449,27 @@ function generateEaiosHtml() {
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
       }
       .eaios-principle-banner {
-        background: rgba(10, 11, 16, 0.9);
+        background: var(--bg-secondary);
         border-left: 4px solid #38bdf8;
         border-radius: 6px;
         padding: 16px 20px;
         margin: 18px 0;
       }
       .eaios-equation-box {
-        background: rgba(15, 23, 42, 0.9);
+        background: var(--bg-card);
         border: 1px solid rgba(56, 189, 248, 0.3);
         border-radius: 8px;
         padding: 14px 18px;
         font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
         font-size: 11px;
         line-height: 1.6;
-        color: #cbd5e1;
+        color: var(--text-secondary);
         margin-top: 12px;
         overflow-x: auto;
       }
       .eaios-scen-btn {
-        background: rgba(15, 23, 42, 0.75);
-        color: #94a3b8;
+        background: var(--bg-card);
+        color: var(--text-secondary);
         border: 1px solid rgba(255, 255, 255, 0.12);
         padding: 8px 16px;
         border-radius: 6px;
@@ -486,7 +486,7 @@ function generateEaiosHtml() {
       }
       .eaios-scen-btn:hover {
         background: rgba(30, 41, 59, 0.9);
-        color: #f8fafc;
+        color: var(--text-primary);
         border-color: rgba(56, 189, 248, 0.4);
       }
       .eaios-scen-btn:focus-visible {
@@ -522,7 +522,7 @@ function generateEaiosHtml() {
       }
       .eaios-btn-secondary {
         background: rgba(30, 41, 59, 0.8);
-        color: #cbd5e1;
+        color: var(--text-secondary);
         border: 1px solid rgba(255, 255, 255, 0.15);
         padding: 8px 16px;
         border-radius: 6px;
@@ -539,11 +539,11 @@ function generateEaiosHtml() {
       }
       .eaios-btn-secondary:hover {
         background: rgba(51, 65, 85, 0.9);
-        color: #f8fafc;
+        color: var(--text-primary);
       }
       .eaios-sim-action-btn {
-        background: rgba(15, 23, 42, 0.85);
-        color: #94a3b8;
+        background: var(--bg-card);
+        color: var(--text-secondary);
         border: 1px solid rgba(255, 255, 255, 0.12);
         padding: 6px 12px;
         border-radius: 6px;
@@ -554,7 +554,7 @@ function generateEaiosHtml() {
       }
       .eaios-sim-action-btn:hover {
         background: rgba(30, 41, 59, 0.9);
-        color: #f8fafc;
+        color: var(--text-primary);
         border-color: rgba(56, 189, 248, 0.3);
       }
     </style>
@@ -579,7 +579,7 @@ function generateEaiosHtml() {
           </div>
 
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div id="eaios-api-preflight-pill" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); padding: 4px 10px; border-radius: 9999px; font-size: 11px; color: #94a3b8;">
+            <div id="eaios-api-preflight-pill" style="display: inline-flex; align-items: center; gap: 6px; background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.12); padding: 4px 10px; border-radius: 9999px; font-size: 11px; color: var(--text-secondary);">
               <span id="eaios-api-preflight-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #64748b;"></span>
               <span id="eaios-api-preflight-text" style="font-weight: 600;">Backend Live Pulse</span>
             </div>
@@ -592,48 +592,48 @@ function generateEaiosHtml() {
 
         <!-- Headline & Problem/Solution Statement -->
         <div style="margin-bottom: 24px;">
-          <h1 style="font-size: 26px; font-weight: 900; color: #f8fafc; margin: 0 0 10px 0; letter-spacing: -0.02em; line-height: 1.25;">
+          <h1 style="font-size: 26px; font-weight: 900; color: var(--text-primary); margin: 0 0 10px 0; letter-spacing: -0.02em; line-height: 1.25;">
             Enterprise AI Operating System (EAIOS)
           </h1>
           <div style="font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 12px;">
             The Sovereign Execution Sandbox for Regulated Agentic AI
           </div>
-          <p style="font-size: 13.5px; color: #cbd5e1; line-height: 1.6; max-width: 1050px; margin: 0 0 16px 0;">
+          <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; max-width: 1050px; margin: 0 0 16px 0;">
             Autonomous AI models possess pattern generation capabilities but zero legitimate authority. In regulated enterprise environments (such as Tier-1 financial institutions subject to DORA, Solvency II, and OCC/Fed oversight), deploying agentic AI without deterministic host governance invites catastrophic operational, regulatory, and security failures.
           </p>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;">
-            <div style="background: rgba(15, 23, 42, 0.7); border-left: 3px solid #ef4444; border-radius: 0 6px 6px 0; padding: 12px 16px;">
+            <div style="background: var(--bg-card); border-left: 3px solid #ef4444; border-radius: 0 6px 6px 0; padding: 12px 16px;">
               <div style="font-size: 11px; font-weight: 800; color: #f87171; text-transform: uppercase; margin-bottom: 4px;">The Enterprise Problem</div>
-              <div style="font-size: 12.5px; color: #e2e8f0; line-height: 1.45;">Unconstrained LLM agents hallucinate authority, bypass four-eyes controls, lack transactional rollback sagas, and leak confidential multi-tenant state.</div>
+              <div style="font-size: 12.5px; color: var(--text-primary); line-height: 1.45;">Unconstrained LLM agents hallucinate authority, bypass four-eyes controls, lack transactional rollback sagas, and leak confidential multi-tenant state.</div>
             </div>
-            <div style="background: rgba(15, 23, 42, 0.7); border-left: 3px solid #10b981; border-radius: 0 6px 6px 0; padding: 12px 16px;">
+            <div style="background: var(--bg-card); border-left: 3px solid #10b981; border-radius: 0 6px 6px 0; padding: 12px 16px;">
               <div style="font-size: 11px; font-weight: 800; color: #34d399; text-transform: uppercase; margin-bottom: 4px;">The EAIOS Solution</div>
-              <div style="font-size: 12.5px; color: #e2e8f0; line-height: 1.45;">Strict mathematical separation: <code>RECOMMENDATION ≠ ACTION</code>. Causal DAG sagas, four-eyes executive gates, token budget escrow, and transactional outbox egress.</div>
+              <div style="font-size: 12.5px; color: var(--text-primary); line-height: 1.45;">Strict mathematical separation: <code>RECOMMENDATION ≠ ACTION</code>. Causal DAG sagas, four-eyes executive gates, token budget escrow, and transactional outbox egress.</div>
             </div>
           </div>
         </div>
 
         <!-- 30-Second Quick-Start Metric Pills -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px;">
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px;">
-            <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em;">Assurance Rigour</div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 10px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;">Assurance Rigour</div>
             <div style="font-size: 17px; font-weight: 900; color: #10b981; margin: 4px 0 2px 0;">971 / 971 Passed</div>
-            <div style="font-size: 11px; color: #64748b;">Stage 32.2 automated test suite (0 failures)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Stage 32.2 automated test suite (0 failures)</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px;">
-            <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em;">Sovereign Invariants</div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 10px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;">Sovereign Invariants</div>
             <div style="font-size: 17px; font-weight: 900; color: #38bdf8; margin: 4px 0 2px 0;">28 Core Invariants</div>
-            <div style="font-size: 11px; color: #64748b;">Formally verified non-bypassable host gates</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Formally verified non-bypassable host gates</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px;">
-            <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em;">Architectural Records</div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 10px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;">Architectural Records</div>
             <div style="font-size: 17px; font-weight: 900; color: #c084fc; margin: 4px 0 2px 0;">26 Canonical ADRs</div>
-            <div style="font-size: 11px; color: #64748b;">ADR-001 through ADR-047 governance decisions</div>
+            <div style="font-size: 11px; color: var(--text-muted);">ADR-001 through ADR-047 governance decisions</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 16px;">
-            <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em;">Execution Separation</div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 10px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;">Execution Separation</div>
             <div style="font-size: 17px; font-weight: 900; color: #f59e0b; margin: 4px 0 2px 0;">Node 6 Demarcation</div>
-            <div style="font-size: 11px; color: #64748b;">Authorized — Awaiting Execution (Zero false claims)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Authorized — Awaiting Execution (Zero false claims)</div>
           </div>
         </div>
       </div>
@@ -644,10 +644,10 @@ function generateEaiosHtml() {
       <div id="eaios-module-architecture" class="eaios-section-card eaios-info-card" style="border-color: rgba(56, 189, 248, 0.35);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
+            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">
               Authoritative 4-Tier Architecture Overview
             </h2>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 3px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
               Deterministic tier boundaries separating untrusted intelligence from sovereign execution
             </div>
           </div>
@@ -661,21 +661,21 @@ function generateEaiosHtml() {
 
         <!-- Tier Highlights Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 18px;">
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 12px;">
+          <div style="background: var(--bg-card); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 12px;">
             <div style="font-size: 11px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">TIER 1 — INGRESS & BFF</div>
-            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.45;">OIDC authenticated enterprise clients interact via FastAPI BFF. Mint session contexts with correlation IDs and multi-tenant scoping.</div>
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">OIDC authenticated enterprise clients interact via FastAPI BFF. Mint session contexts with correlation IDs and multi-tenant scoping.</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 6px; padding: 12px;">
+          <div style="background: var(--bg-card); border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 6px; padding: 12px;">
             <div style="font-size: 11px; font-weight: 800; color: #60a5fa; margin-bottom: 4px;">TIER 2 — ORCHESTRATION FABRIC</div>
-            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.45;">Deterministic causal DAG state machine (ADR-024). Stateless frontier reconstruction, F-06 async fencing, and Redis TTL worker leases (ADR-034).</div>
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">Deterministic causal DAG state machine (ADR-024). Stateless frontier reconstruction, F-06 async fencing, and Redis TTL worker leases (ADR-034).</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(192, 132, 252, 0.2); border-radius: 6px; padding: 12px;">
+          <div style="background: var(--bg-card); border: 1px solid rgba(192, 132, 252, 0.2); border-radius: 6px; padding: 12px;">
             <div style="font-size: 11px; font-weight: 800; color: #c084fc; margin-bottom: 4px;">TIER 3 — AI SPECIALISTS (ORO)</div>
-            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.45;">Autonomous workers analyze adverse telemetry and propose structured remediation. Strict constraint: Advisory only, zero mutation authority.</div>
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">Autonomous workers analyze adverse telemetry and propose structured remediation. Strict constraint: Advisory only, zero mutation authority.</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 6px; padding: 12px;">
+          <div style="background: var(--bg-card); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 6px; padding: 12px;">
             <div style="font-size: 11px; font-weight: 800; color: #34d399; margin-bottom: 4px;">TIER 4 — SOVEREIGN EAIES GATE</div>
-            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.45;">Evaluates policy matrices, holds token escrow, enforces Four-Eyes human executive approval, and dispatches via Transactional Outbox (ADR-039).</div>
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">Evaluates policy matrices, holds token escrow, enforces Four-Eyes human executive approval, and dispatches via Transactional Outbox (ADR-039).</div>
           </div>
         </div>
       </div>
@@ -687,10 +687,10 @@ function generateEaiosHtml() {
         <!-- Header & Scenario Selector Tabs -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0 0 2px 0;">
+            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0 0 2px 0;">
               Explore the Architecture — Interactive Scenarios
             </h2>
-            <div style="font-size: 11.5px; color: #94a3b8;">
+            <div style="font-size: 11.5px; color: var(--text-secondary);">
               Live simulation of autonomous orchestration, Four-Eyes human authorization, DAG sagas, and real-time forensic auditing.
             </div>
           </div>
@@ -727,19 +727,19 @@ function generateEaiosHtml() {
                 <span style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(56, 189, 248, 0.15); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);">
                   SOVEREIGN EAIES GATE
                 </span>
-                <span style="font-size: 11.5px; font-weight: 800; color: #f8fafc;">
+                <span style="font-size: 11.5px; font-weight: 800; color: var(--text-primary);">
                   AI RECOMMENDATION DOES NOT CONSTITUTE AUTHORISATION OR EXECUTION
                 </span>
               </div>
-              <div style="font-size: 11px; color: #cbd5e1; margin-top: 5px; line-height: 1.45;">
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px; line-height: 1.45;">
                 <strong>Execution Authority Boundary:</strong> Specialist AI Employees produce analytical findings; ORO synthesises evidence and proposes advisory decisions. All capability execution is mediated and governed by the host <strong>Enterprise AI Execution Sandbox (EAIES)</strong>. Human executive approval is an independent Four-Eyes governance event. Approval does not constitute physical execution.
               </div>
             </div>
-            <div style="text-align: right; min-width: 240px; font-size: 10.5px; color: #94a3b8; line-height: 1.4;">
+            <div style="text-align: right; min-width: 240px; font-size: 10.5px; color: var(--text-secondary); line-height: 1.4;">
               <div style="font-weight: 800; color: #fbbf24; background: rgba(245, 158, 11, 0.12); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.3); display: inline-block;">
                 SIMULATED UI PREVIEW — PHYSICAL MUTATIONS REQUIRE RFC 8693 MTLS TOKEN EXCHANGE
               </div>
-              <div style="margin-top: 4px; font-size: 9.5px; color: #64748b;">
+              <div style="margin-top: 4px; font-size: 9.5px; color: var(--text-muted);">
                 Live Keycloak OIDC Code Flow active • Backend RFC 8693 token exchange unlinked • In-Memory state
               </div>
             </div>
@@ -747,16 +747,16 @@ function generateEaiosHtml() {
         </div>
 
         <!-- Compact Active Scenario Card with Integrated Execution Controls -->
-        <div id="eaios-active-scenario-card" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+        <div id="eaios-active-scenario-card" class="eaios-info-card" style="background: var(--bg-secondary); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div style="flex: 1; min-width: 260px;">
               <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span id="eaios-scen-title" style="font-weight: 800; font-size: 13.5px; color: #f8fafc;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
+                <span id="eaios-scen-title" style="font-weight: 800; font-size: 13.5px; color: var(--text-primary);">${SHOWCASE_SCENARIOS.SCENARIO_ORO.name}</span>
                 <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 9.5px; font-weight: 800;">TEST VERIFIED</span>
                 <span id="eaios-scen-synthetic-badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">DEMO TELEMETRY</span>
                 <span id="eaios-scen-budget-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">BUDGET: IN-MEMORY</span>
               </div>
-              <div id="eaios-scen-desc" style="font-size: 11.5px; color: #cbd5e1; margin-top: 3px; line-height: 1.4;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
+              <div id="eaios-scen-desc" style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4;">${SHOWCASE_SCENARIOS.SCENARIO_ORO.description}</div>
             </div>
 
             <!-- Action Controls directly embedded in scenario card -->
@@ -780,7 +780,7 @@ function generateEaiosHtml() {
             <span style="font-size: 10.5px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">
               Operational Resilience Incident Catalogue (5 Scenarios)
             </span>
-            <div style="display: flex; gap: 10px; font-size: 10px; color: #94a3b8; align-items: center;">
+            <div style="display: flex; gap: 10px; font-size: 10px; color: var(--text-secondary); align-items: center;">
               <span>Correlation: <code id="eaios-active-correlation-id" style="color: #38bdf8;">INITIALIZING</code></span>
               <span>•</span>
               <span>Outbox: <strong style="color: #10b981;">ADR-039</strong></span>
@@ -791,19 +791,19 @@ function generateEaiosHtml() {
               <div style="font-size: 10.5px; font-weight: 800;">1. Cloud Outage</div>
               <div style="font-size: 9px; opacity: 0.8;">AZ Partition & Failover</div>
             </button>
-            <button id="eaios-sub-btn-oro_cyber_ransomware" type="button" onclick="window.selectOroSubScenario('oro_cyber_ransomware')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+            <button id="eaios-sub-btn-oro_cyber_ransomware" type="button" onclick="window.selectOroSubScenario('oro_cyber_ransomware')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; transition: all 0.15s;">
               <div style="font-size: 10.5px; font-weight: 800;">2. Ransomware</div>
               <div style="font-size: 9px; opacity: 0.8;">Subnet Isolation WORM</div>
             </button>
-            <button id="eaios-sub-btn-oro_third_party_outage" type="button" onclick="window.selectOroSubScenario('oro_third_party_outage')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+            <button id="eaios-sub-btn-oro_third_party_outage" type="button" onclick="window.selectOroSubScenario('oro_third_party_outage')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; transition: all 0.15s;">
               <div style="font-size: 10.5px; font-weight: 800;">3. Third-Party Failure</div>
               <div style="font-size: 9px; opacity: 0.8;">SaaS RTO Backup Rail</div>
             </button>
-            <button id="eaios-sub-btn-oro_data_corruption" type="button" onclick="window.selectOroSubScenario('oro_data_corruption')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+            <button id="eaios-sub-btn-oro_data_corruption" type="button" onclick="window.selectOroSubScenario('oro_data_corruption')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; transition: all 0.15s;">
               <div style="font-size: 10.5px; font-weight: 800;">4. Data Integrity</div>
               <div style="font-size: 9px; opacity: 0.8;">Checksum Replay</div>
             </button>
-            <button id="eaios-sub-btn-oro_compound_incident" type="button" onclick="window.selectOroSubScenario('oro_compound_incident')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.6); color: #94a3b8; cursor: pointer; transition: all 0.15s;">
+            <button id="eaios-sub-btn-oro_compound_incident" type="button" onclick="window.selectOroSubScenario('oro_compound_incident')" aria-pressed="false" class="eaios-oro-sub-btn" style="text-align: left; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; transition: all 0.15s;">
               <div style="font-size: 10.5px; font-weight: 800;">5. Compound Incident</div>
               <div style="font-size: 9px; opacity: 0.8;">Vendor Outage + DDoS</div>
             </button>
@@ -811,45 +811,45 @@ function generateEaiosHtml() {
         </fieldset>
 
         <!-- ORO CONTEXTUAL RESILIENCE PANEL (COMPACT DETAILS TOGGLE) -->
-        <details id="eaios-oro-context-card" style="margin-bottom: 12px; background: rgba(10, 11, 16, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 8px 14px; font-size: 11px;">
+        <details id="eaios-oro-context-card" style="margin-bottom: 12px; background: var(--bg-secondary); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 8px 14px; font-size: 11px;">
           <summary style="cursor: pointer; color: #38bdf8; font-weight: 700; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
             <span>📋 Inspect DORA Regulatory Profile & Incident Targets (IBS, RTO, RPO)</span>
-            <span style="font-size: 10px; color: #94a3b8;">Click to expand</span>
+            <span style="font-size: 10px; color: var(--text-secondary);">Click to expand</span>
           </summary>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);">
             <div>
-              <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Impacted Important Business Services (IBS)</div>
-              <div id="eaios-oro-ctx-ibs" style="color: #f8fafc; font-weight: 600; margin-top: 2px;">Payment Clearing Core • Wholesale Liquidity • Client Portal</div>
+              <div style="color: var(--text-muted); font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Impacted Important Business Services (IBS)</div>
+              <div id="eaios-oro-ctx-ibs" style="color: var(--text-primary); font-weight: 600; margin-top: 2px;">Payment Clearing Core • Wholesale Liquidity • Client Portal</div>
 
-              <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">DORA Dimension & Supervisory Mandates</div>
+              <div style="color: var(--text-muted); font-size: 9.5px; font-weight: 800; text-transform: uppercase; margin-top: 6px;">DORA Dimension & Supervisory Mandates</div>
               <div id="eaios-oro-ctx-dora" style="color: #38bdf8; font-size: 10.5px; margin-top: 2px;">Pillar 1: ICT Risk | Pillar 2: RTS Art. 19 | Pillar 5: Third-Party Risk</div>
             </div>
             <div>
               <div style="display: flex; gap: 14px;">
                 <div>
-                  <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Recovery Target (RTO)</div>
+                  <div style="color: var(--text-muted); font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Recovery Target (RTO)</div>
                   <div id="eaios-oro-ctx-rto" style="color: #34d399; font-weight: 700; margin-top: 2px;">2 Hours</div>
                 </div>
                 <div>
-                  <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Data Loss Limit (RPO)</div>
+                  <div style="color: var(--text-muted); font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Data Loss Limit (RPO)</div>
                   <div id="eaios-oro-ctx-rpo" style="color: #34d399; font-weight: 700; margin-top: 2px;">0 (Zero Data Loss)</div>
                 </div>
                 <div>
-                  <div style="color: #64748b; font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Evidence Status</div>
+                  <div style="color: var(--text-muted); font-size: 9.5px; font-weight: 800; text-transform: uppercase;">Evidence Status</div>
                   <span id="eaios-oro-ctx-evidence-status" style="display: inline-block; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 3px; border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; margin-top: 2px;">CONFLICTING</span>
                 </div>
               </div>
-              <div style="color: #94a3b8; font-size: 10px; margin-top: 4px; line-height: 1.3;" id="eaios-oro-ctx-evidence-note">
+              <div style="color: var(--text-secondary); font-size: 10px; margin-top: 4px; line-height: 1.3;" id="eaios-oro-ctx-evidence-note">
                 Provider status claims monitoring; internal telemetry probes measure 100% loss.
               </div>
             </div>
           </div>
           <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 10px;">
             <div>
-              <span style="color: #64748b;">Required Decision:</span> <strong id="eaios-oro-ctx-decision" style="color: #cbd5e1;">Authorize live production DNS switchover to UK-South</strong>
+              <span style="color: var(--text-muted);">Required Decision:</span> <strong id="eaios-oro-ctx-decision" style="color: var(--text-secondary);">Authorize live production DNS switchover to UK-South</strong>
             </div>
-            <div style="color: #64748b;">
-              Consequence: <span id="eaios-oro-ctx-consequence" style="color: #94a3b8;">Traffic diverted to secondary standby</span>
+            <div style="color: var(--text-muted);">
+              Consequence: <span id="eaios-oro-ctx-consequence" style="color: var(--text-secondary);">Traffic diverted to secondary standby</span>
             </div>
           </div>
         </details>
@@ -862,7 +862,7 @@ function generateEaiosHtml() {
                 <span>⚠️</span>
                 <span>WORKFLOW PAUSED: Human Governance Decision Gate (ADR-032 / PG Test P1)</span>
               </div>
-              <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px; line-height: 1.45;">
+              <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.45;">
                 State: <code>PAUSED_PENDING_INPUT</code>. Work Owner: <code style="color: #38bdf8;">alice@enterprise.example</code>.
                 Four-Eyes rule mandates that the work owner cannot approve high-impact actions. Resumption transitions workflow state and requires fresh host-enforced EAIES execution authorization. An approval or recommendation never constitutes completed execution.
               </div>
@@ -875,15 +875,15 @@ function generateEaiosHtml() {
               <!-- Interactive Form Inputs -->
               <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 12px;">
                 <div>
-                  <label for="eaios-operator-select" style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Approver Identity:</label>
-                  <select id="eaios-operator-select" style="width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px; cursor: pointer;">
+                  <label for="eaios-operator-select" style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Approver Identity:</label>
+                  <select id="eaios-operator-select" style="width: 100%; background: #0f172a; color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px; cursor: pointer;">
                     <option value="bob@enterprise.example">bob@enterprise.example (Authorized Approver)</option>
                     <option value="alice@enterprise.example">alice@enterprise.example (Work Owner - Test 4-Eyes Deny)</option>
                   </select>
                 </div>
                 <div>
-                  <label for="eaios-operator-rationale" style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Decision Rationale (Mandatory):</label>
-                  <input type="text" id="eaios-operator-rationale" value="Approved for production run after secondary audit." style="width: 100%; background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px;" />
+                  <label for="eaios-operator-rationale" style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Decision Rationale (Mandatory):</label>
+                  <input type="text" id="eaios-operator-rationale" value="Approved for production run after secondary audit." style="width: 100%; background: #0f172a; color: var(--text-primary); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 7px 10px; font-size: 11px; margin-top: 3px;" />
                 </div>
               </div>
             </div>
@@ -905,7 +905,7 @@ function generateEaiosHtml() {
           <!-- LEFT COLUMN: DAG TOPOLOGY VIEWER -->
           <div style="display: flex; flex-direction: column;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-              <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Governed DAG Execution Frontier</div>
+              <div style="font-size: 14px; font-weight: 800; color: var(--text-primary);">Governed DAG Execution Frontier</div>
               <div class="eaios-info-card" style="display: flex; gap: 6px; font-size: 10px; align-items: center; flex-wrap: wrap;">
                 <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #64748b;"></span> PENDING</span>
                 <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #8b5cf6;"></span> EXECUTING</span>
@@ -916,7 +916,7 @@ function generateEaiosHtml() {
               </div>
             </div>
 
-            <div id="eaios-dag-container" style="flex: 1; min-height: 480px; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; position: relative;">
+            <div id="eaios-dag-container" style="flex: 1; min-height: 480px; background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden; position: relative;">
               <!-- SVG / Mobile DOM DAG rendered dynamically by EaiosRenderer -->
             </div>
           </div>
@@ -926,12 +926,12 @@ function generateEaiosHtml() {
             <!-- LIVE STATE, EAIES & GOVERNANCE INSPECTOR -->
             <div class="eaios-info-card" style="display: flex; flex-direction: column;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <div style="font-size: 14px; font-weight: 800; color: #f8fafc;">Sovereign Node & Authority Inspector</div>
+                <div style="font-size: 14px; font-weight: 800; color: var(--text-primary);">Sovereign Node & Authority Inspector</div>
                 <span style="font-size: 10px; color: #38bdf8; font-family: monospace; background: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">
                   H-01 SOVEREIGN
                 </span>
               </div>
-              <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Real-time inspection of active worker leases and EAIES policy decisions</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px;">Real-time inspection of active worker leases and EAIES policy decisions</div>
 
               <div id="eaios-inspector-content" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- Dynamically populated in updateInspector() -->
@@ -941,14 +941,14 @@ function generateEaiosHtml() {
             <!-- ENTERPRISE FORENSIC AUDIT STREAM -->
             <div class="eaios-info-card" style="display: flex; flex-direction: column; flex: 1;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                <div style="font-size: 13px; font-weight: 800; color: #f8fafc;">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-046)</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-primary);">Enterprise Forensic Audit Stream (ADR-026 / ADR-039 / ADR-046)</div>
                 <span style="font-size: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
                   Causal Root: CORR-2026-000741
                 </span>
               </div>
 
-              <div id="eaios-audit-log" style="height: 240px; overflow-y: auto; background: rgba(10, 11, 16, 0.9); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
-                <div style="color: #64748b; text-align: center; padding-top: 100px;">Awaiting workflow execution event stream...</div>
+              <div id="eaios-audit-log" style="height: 240px; overflow-y: auto; background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="color: var(--text-muted); text-align: center; padding-top: 100px;">Awaiting workflow execution event stream...</div>
               </div>
             </div>
           </div>
@@ -966,10 +966,10 @@ function generateEaiosHtml() {
       <div id="eaios-module-safeguards" class="eaios-section-card eaios-info-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
+            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">
               Enterprise Engineering Safeguards
             </h2>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 3px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
               In-depth technical architecture across five critical enterprise control domains
             </div>
           </div>
@@ -999,41 +999,41 @@ function generateEaiosHtml() {
 
         <!-- Safeguard Panel 1: Identity & Lifecycle -->
         <div id="safeguard-panel-identity" class="safeguard-panel" style="display: block;" role="tabpanel">
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 20px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <h3 style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">AI Employee Deterministic Lifecycle (ADR-033)</h3>
+              <h3 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 0;">AI Employee Deterministic Lifecycle (ADR-033)</h3>
               <span style="font-size: 10px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px;">
                 VERIFIED IN TEST SUITE
               </span>
             </div>
-            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 16px 0;">
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 16px 0;">
               AI Employees within EAIOS are strictly governed computational entities. They possess verifiable cryptographic identities, scoped lease certificates, and operate within a deterministic 6-state finite state machine. An AI Employee's state dictates capability eligibility; suspension revokes active worker leases in under 500 milliseconds.
             </p>
             <!-- 6 Lifecycle States Grid -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
-              <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
-                <div style="font-size: 11px; font-weight: 800; color: #94a3b8;">1. DRAFT</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Specification created; zero execution privileges.</div>
+              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-secondary);">1. DRAFT</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Specification created; zero execution privileges.</div>
               </div>
-              <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
+              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
                 <div style="font-size: 11px; font-weight: 800; color: #38bdf8;">2. PROVISIONED</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Identity minted & key attested; awaiting lease.</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Identity minted & key attested; awaiting lease.</div>
               </div>
-              <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 10px;">
+              <div style="background: var(--bg-secondary); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 10px;">
                 <div style="font-size: 11px; font-weight: 800; color: #34d399;">3. ACTIVE</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Valid heartbeat; executing bounded advisory tasks.</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Valid heartbeat; executing bounded advisory tasks.</div>
               </div>
-              <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 10px;">
+              <div style="background: var(--bg-secondary); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 10px;">
                 <div style="font-size: 11px; font-weight: 800; color: #fbbf24;">4. SUSPENDED</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Leases instantly revoked; telemetry contained.</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Leases instantly revoked; telemetry contained.</div>
               </div>
-              <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
-                <div style="font-size: 11px; font-weight: 800; color: #64748b;">5. RETIRED</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Decommissioned gracefully; historical logs locked.</div>
+              <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-muted);">5. RETIRED</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Decommissioned gracefully; historical logs locked.</div>
               </div>
-              <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 10px;">
+              <div style="background: var(--bg-secondary); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 10px;">
                 <div style="font-size: 11px; font-weight: 800; color: #f87171;">6. REVOKED</div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Security fence triggered; forensic freeze enacted.</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Security fence triggered; forensic freeze enacted.</div>
               </div>
             </div>
           </div>
@@ -1041,19 +1041,19 @@ function generateEaiosHtml() {
 
         <!-- Safeguard Panel 2: Sovereign Gate & Four-Eyes -->
         <div id="safeguard-panel-sovereign" class="safeguard-panel" style="display: none;" role="tabpanel">
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 20px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <h3 style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">Sovereign Gate & Dual-Control Oversight (ADR-032 / ADR-038)</h3>
+              <h3 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 0;">Sovereign Gate & Dual-Control Oversight (ADR-032 / ADR-038)</h3>
               <span style="font-size: 10px; font-weight: 800; color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 3px 8px; border-radius: 4px;">
                 NON-BYPASSABLE EXECUTION BOUNDARY
               </span>
             </div>
-            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 16px 0;">
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 16px 0;">
               Under EAIOS, no AI model, worker, or orchestrator possesses execution authority. When an AI specialist proposes high-impact remediation (e.g. DNS failover, infrastructure quarantine, or customer notification), the causal DAG pauses at Node 5 (<code>PAUSED_PENDING_INPUT</code>). Advancement requires an authenticated human executive signature with role verification (Four-Eyes dual control).
             </p>
-            <div style="background: rgba(10, 11, 16, 0.7); border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 12px 16px;">
+            <div style="background: var(--bg-secondary); border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 12px 16px;">
               <div style="font-size: 11px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">AUTHORITY DECOMPOSITION PRINCIPLE</div>
-              <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; font-family: monospace;">
+              <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; font-family: monospace;">
                 MODEL ≠ AUTHORITY | WORKER ≠ AUTHORITY | ORCHESTRATOR ≠ AUTHORITY | HUMAN APPROVAL ≠ CAPABILITY AUTHORITY | EAIES = EXECUTION AUTHORITY
               </div>
             </div>
@@ -1062,26 +1062,26 @@ function generateEaiosHtml() {
 
         <!-- Safeguard Panel 3: Multi-Tenant PostgreSQL RLS -->
         <div id="safeguard-panel-rls" class="safeguard-panel" style="display: none;" role="tabpanel">
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 20px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <h3 style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">Multi-Tenant PostgreSQL Row-Level Security (ADR-030)</h3>
+              <h3 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 0;">Multi-Tenant PostgreSQL Row-Level Security (ADR-030)</h3>
               <span style="font-size: 10px; font-weight: 800; color: #a78bfa; background: rgba(167, 139, 250, 0.15); padding: 3px 8px; border-radius: 4px;">
                 VERIFIED IN POSTGRESQL CONTAINER SUITE
               </span>
             </div>
-            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 16px 0;">
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 16px 0;">
               PostgreSQL provides the durable transactional substrate for state consistency and OCC. PostgreSQL RLS enforces strict tenant isolation using transaction-scoped tenant context (<code>SET LOCAL app.current_tenant_id</code>). Data from <code>GLOBAL-WEALTH-MANAGEMENT</code> is mathematically inaccessible to <code>INSTITUTIONAL-INVESTMENT-BANKING</code>.
             </p>
             <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
               <button id="eaios-btn-rls-gwm" onclick="window.switchEaiosTenant('GLOBAL-WEALTH-MANAGEMENT')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; padding: 7px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">
                 Tenant: GLOBAL-WEALTH-MANAGEMENT
               </button>
-              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: #0f172a; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); padding: 7px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">
+              <button id="eaios-btn-rls-iib" onclick="window.switchEaiosTenant('INSTITUTIONAL-INVESTMENT-BANKING')" class="eaios-sim-action-btn" style="flex: 1; min-width: 140px; background: #0f172a; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.15); padding: 7px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">
                 Tenant: INSTITUTIONAL-INVESTMENT-BANKING
               </button>
             </div>
-            <div id="eaios-rls-output" class="eaios-info-card" style="background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: #cbd5e1;">
-              <div style="color: #64748b;">// Active session tenant:</div>
+            <div id="eaios-rls-output" class="eaios-info-card" style="background: var(--bg-secondary); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: var(--text-secondary);">
+              <div style="color: var(--text-muted);">// Active session tenant:</div>
               <div style="color: #38bdf8; font-weight: 700;">app.current_tenant_id = 'GLOBAL-WEALTH-MANAGEMENT'</div>
               <div style="color: #10b981; margin-top: 4px;">✓ Returned: "Q3 Statutory Solvency & Capital Reserves" (1 row)</div>
             </div>
@@ -1090,18 +1090,18 @@ function generateEaiosHtml() {
 
         <!-- Safeguard Panel 4: Token Budget Escrow -->
         <div id="safeguard-panel-cost" class="safeguard-panel" style="display: none;" role="tabpanel">
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 20px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <h3 style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">Token Budget Escrow & Cost Governance (ADR-022)</h3>
+              <h3 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 0;">Token Budget Escrow & Cost Governance (ADR-022)</h3>
               <span style="font-size: 10px; font-weight: 800; color: #34d399; background: rgba(16, 185, 129, 0.15); padding: 3px 8px; border-radius: 4px;">
                 AUTOMATED ESCROW RESERVATION
               </span>
             </div>
-            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 16px 0;">
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 16px 0;">
               Policy → Reservation → Provider Invocation → Usage / Outcome → Settlement → Audit. Mandatory pre-invocation token escrow prevents financial exhaustion or denial-of-wallet attacks. If requested tokens exceed quota, invocation is aborted instantly before contacting providers.
             </p>
             <div class="eaios-info-card" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px;">
-              <span>Total Quota: <strong style="color: #f8fafc;">10,000 Tokens</strong></span>
+              <span>Total Quota: <strong style="color: var(--text-primary);">10,000 Tokens</strong></span>
               <span id="eaios-budget-remaining">Available: <strong style="color: #34d399;">7,150</strong></span>
             </div>
             <div class="eaios-info-card" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 12px;">
@@ -1117,14 +1117,14 @@ function generateEaiosHtml() {
 
         <!-- Safeguard Panel 5: Fail-Closed Resilience -->
         <div id="safeguard-panel-resilience" class="safeguard-panel" style="display: none;" role="tabpanel">
-          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 20px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <h3 style="font-size: 15px; font-weight: 800; color: #f8fafc; margin: 0;">Fail-Closed Resilience & Dynamic Provider Fallback (ADR-020 / ADR-027)</h3>
+              <h3 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 0;">Fail-Closed Resilience & Dynamic Provider Fallback (ADR-020 / ADR-027)</h3>
               <span style="font-size: 10px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 4px;">
                 CIRCUIT BREAKER PROTECTED
               </span>
             </div>
-            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin: 0 0 16px 0;">
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 16px 0;">
               When external foundation model providers experience latencies, rate limits, or outages, EAIOS dynamically activates host circuit breakers and falls back to secondary registered models. If all external advisory channels fail, EAIOS defaults to fail-closed state: zero fabricated recommendations, zero unverified executions.
             </p>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
@@ -1132,7 +1132,7 @@ function generateEaiosHtml() {
                 Simulate Provider Timeout & Circuit Breaker
               </button>
             </div>
-            <div id="eaios-provider-timeout-box" style="display: none; background: rgba(10, 11, 16, 0.8); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 12px; font-size: 11px; color: #fde68a;"></div>
+            <div id="eaios-provider-timeout-box" style="display: none; background: var(--bg-secondary); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 12px; font-size: 11px; color: #fde68a;"></div>
           </div>
         </div>
       </div>
@@ -1143,17 +1143,17 @@ function generateEaiosHtml() {
       <div id="eaios-module-maturity" class="eaios-section-card eaios-info-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
+            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">
               Capability Implementation Maturity Matrix
             </h2>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 3px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
               Honest architectural status across 28 system capabilities (Distinguishing Live vs CI vs Showcase)
             </div>
           </div>
           <!-- Filter Controls -->
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <input type="text" id="eaios-maturity-search" placeholder="Search capabilities..." oninput="window.filterMaturityTable()" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 12px; color: #f8fafc; font-size: 12px; width: 180px;">
-            <select id="eaios-maturity-filter-level" onchange="window.filterMaturityTable()" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 10px; color: #cbd5e1; font-size: 12px;">
+            <input type="text" id="eaios-maturity-search" placeholder="Search capabilities..." oninput="window.filterMaturityTable()" style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 12px; color: var(--text-primary); font-size: 12px; width: 180px;">
+            <select id="eaios-maturity-filter-level" onchange="window.filterMaturityTable()" style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 10px; color: var(--text-secondary); font-size: 12px;">
               <option value="ALL">All Maturity Levels</option>
               <option value="1. IMPLEMENTED & VERIFIED">1. Implemented & Verified</option>
               <option value="2. IMPLEMENTED — PARTIALLY VERIFIED">2. Implemented — Partially Verified</option>
@@ -1167,7 +1167,7 @@ function generateEaiosHtml() {
         <div style="overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
             <thead>
-              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.12); color: #94a3b8; font-size: 11px; text-transform: uppercase;">
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-secondary); font-size: 11px; text-transform: uppercase;">
                 <th style="padding: 10px 12px;">Category</th>
                 <th style="padding: 10px 12px;">Capability Name</th>
                 <th style="padding: 10px 12px;">Repository Location</th>
@@ -1186,18 +1186,18 @@ function generateEaiosHtml() {
 
                 return `
                   <tr class="eaios-maturity-row" data-category="${cap.category}" data-level="${cap.level}" data-name="${cap.name.toLowerCase()}" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                    <td style="padding: 10px 12px; font-weight: 700; color: #cbd5e1;">${cap.category}</td>
-                    <td style="padding: 10px 12px; font-weight: 700; color: #f8fafc;">
+                    <td style="padding: 10px 12px; font-weight: 700; color: var(--text-secondary);">${cap.category}</td>
+                    <td style="padding: 10px 12px; font-weight: 700; color: var(--text-primary);">
                       ${cap.name}
-                      <div style="font-size: 10px; color: #94a3b8; font-weight: 400; margin-top: 2px;">${cap.boundaryDisclosures}</div>
+                      <div style="font-size: 10px; color: var(--text-secondary); font-weight: 400; margin-top: 2px;">${cap.boundaryDisclosures}</div>
                     </td>
-                    <td style="padding: 10px 12px; font-family: monospace; color: #94a3b8; font-size: 11px;">${cap.location}</td>
-                    <td style="padding: 10px 12px; color: #cbd5e1; font-size: 11px;">${cap.test}</td>
+                    <td style="padding: 10px 12px; font-family: monospace; color: var(--text-secondary); font-size: 11px;">${cap.location}</td>
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 11px;">${cap.test}</td>
                     <td style="padding: 10px 12px; font-family: monospace; color: #38bdf8; font-size: 11px;">${cap.adr}</td>
                     <td style="padding: 10px 12px;">
                       <span class="${badgeClass}">${cap.level}</span>
                     </td>
-                    <td style="padding: 10px 12px; font-size: 11px; color: #94a3b8;">${cap.portalDemo}</td>
+                    <td style="padding: 10px 12px; font-size: 11px; color: var(--text-secondary);">${cap.portalDemo}</td>
                   </tr>
                 `;
               }).join('')}
@@ -1212,17 +1212,17 @@ function generateEaiosHtml() {
       <div id="eaios-module-evidence" class="eaios-section-card eaios-info-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 0;">
+            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">
               Architectural Decisions & Evidence Vault
             </h2>
-            <div style="font-size: 12px; color: #94a3b8; margin-top: 3px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">
               26 Canonical ADRs, 28 Core Invariants, and automated verification suite provenance
             </div>
           </div>
           <!-- Filter Controls -->
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <input type="text" id="eaios-adr-search" placeholder="Search ADRs or Invariants..." oninput="window.filterAdrGrid()" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 12px; color: #f8fafc; font-size: 12px; width: 200px;">
-            <select id="eaios-adr-category-filter" onchange="window.filterAdrGrid()" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 10px; color: #cbd5e1; font-size: 12px;">
+            <input type="text" id="eaios-adr-search" placeholder="Search ADRs or Invariants..." oninput="window.filterAdrGrid()" style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 12px; color: var(--text-primary); font-size: 12px; width: 200px;">
+            <select id="eaios-adr-category-filter" onchange="window.filterAdrGrid()" style="background: var(--bg-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 10px; color: var(--text-secondary); font-size: 12px;">
               <option value="ALL">All Categories</option>
               <option value="Authority">Authority & Governance</option>
               <option value="Orchestration">Orchestration & Sagas</option>
@@ -1235,13 +1235,13 @@ function generateEaiosHtml() {
         <!-- ADR Grid Container -->
         <div id="eaios-adr-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; max-height: 480px; overflow-y: auto; padding: 4px;">
           ${ADR_EXPLORER_CATALOG.map(adr => `
-            <div class="eaios-adr-card" data-adr="${adr.id}" data-category="${adr.category || ''}" data-title="${adr.title.toLowerCase()}" onclick="window.openAdrDrawer('${adr.id}')" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s ease;">
+            <div class="eaios-adr-card" data-adr="${adr.id}" data-category="${adr.category || ''}" data-title="${adr.title.toLowerCase()}" onclick="window.openAdrDrawer('${adr.id}')" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s ease;">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
                 <span style="font-size: 11px; font-weight: 800; color: #38bdf8; font-family: monospace;">${adr.id}</span>
                 <span style="font-size: 10px; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.12); padding: 2px 6px; border-radius: 3px;">${adr.status || 'ACCEPTED'}</span>
               </div>
-              <div style="font-size: 13px; font-weight: 700; color: #f8fafc; margin-bottom: 6px; line-height: 1.35;">${adr.title}</div>
-              <div style="font-size: 11px; color: #94a3b8; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${adr.decision || adr.context || ''}</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; line-height: 1.35;">${adr.title}</div>
+              <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${adr.decision || adr.context || ''}</div>
               <div style="margin-top: 10px; font-size: 10px; color: #60a5fa; font-weight: 600; display: flex; align-items: center; gap: 4px;">
                 <span>Inspect Architectural Record</span>
                 <span>→</span>
@@ -1251,14 +1251,14 @@ function generateEaiosHtml() {
         </div>
 
         <!-- Verification Suite Provenance Summary -->
-        <div style="margin-top: 20px; background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div style="margin-top: 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
           <div>
             <div style="font-size: 12px; font-weight: 800; color: #38bdf8; text-transform: uppercase;">Automated Verification Provenance</div>
-            <div style="font-size: 12.5px; color: #cbd5e1; margin-top: 2px;">
+            <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">
               All 28 invariants verified via automated Playwright, Node.js state machines, and Docker PostgreSQL container integration.
             </div>
           </div>
-          <div style="font-family: monospace; font-size: 11px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); padding: 6px 12px; border-radius: 6px; color: #34d399;">
+          <div style="font-family: monospace; font-size: 11px; background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.12); padding: 6px 12px; border-radius: 6px; color: #34d399;">
             node tests/test_node6_state_separation.mjs (7/7 Pass)
           </div>
         </div>
@@ -1272,11 +1272,11 @@ function generateEaiosHtml() {
               <span id="eaios-drawer-badge" style="font-size: 10px; font-weight: 800; color: #38bdf8; font-family: monospace; background: rgba(56, 189, 248, 0.15); padding: 2px 8px; border-radius: 3px;">
                 ADR RECORD
               </span>
-              <h3 id="eaios-drawer-title" style="font-size: 16px; font-weight: 800; color: #f8fafc; margin: 4px 0 0 0;">
+              <h3 id="eaios-drawer-title" style="font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 4px 0 0 0;">
                 ADR Details
               </h3>
             </div>
-            <button id="eaios-drawer-close-btn" onclick="window.closeAdrDrawer()" style="background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 4px 8px;">
+            <button id="eaios-drawer-close-btn" onclick="window.closeAdrDrawer()" style="background: transparent; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer; padding: 4px 8px;">
               ✕
             </button>
           </div>
@@ -1298,11 +1298,11 @@ function generateEaiosHtml() {
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
             <div>
               <span id="eaios-modal-badge" style="font-size: 10px; font-weight: 800; color: #38bdf8; text-transform: uppercase;"></span>
-              <h3 id="eaios-modal-title" style="font-size: 18px; font-weight: 800; color: #f8fafc; margin: 4px 0 0 0;"></h3>
+              <h3 id="eaios-modal-title" style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 4px 0 0 0;"></h3>
             </div>
-            <button id="eaios-modal-close-btn" onclick="window.closeEaiosModal()" style="background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 4px 8px;">✕</button>
+            <button id="eaios-modal-close-btn" onclick="window.closeEaiosModal()" style="background: transparent; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer; padding: 4px 8px;">✕</button>
           </div>
-          <div id="eaios-modal-body" style="font-size: 13px; color: #cbd5e1; line-height: 1.6;"></div>
+          <div id="eaios-modal-body" style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;"></div>
           <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
             <button id="eaios-modal-footer-close" onclick="window.closeEaiosModal()" class="eaios-btn-secondary" style="font-size: 12px; padding: 6px 16px;">Close</button>
           </div>
@@ -1412,21 +1412,21 @@ function updateInspector(node) {
   const activeTenant = simManager?.tenantContext?.activeTenantId || 'GLOBAL-WEALTH-MANAGEMENT';
 
   container.innerHTML = `
-    <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 14px;">
+    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <span style="font-size: 10px; font-weight: 800; color: #38bdf8; text-transform: uppercase;">${(node.category || 'node').replace('_', ' ')}</span>
-          <h3 style="font-size: 14px; font-weight: 700; color: #f8fafc; margin: 2px 0 0 0;">${node.name}</h3>
+          <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 2px 0 0 0;">${node.name}</h3>
         </div>
         <span style="font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; background: ${color}20; color: ${color}; border: 1px solid ${color}50; cursor: default;">
           ${status}
         </span>
       </div>
-      <div style="font-size: 11px; color: #cbd5e1; margin-top: 6px; line-height: 1.4;">${node.description || 'DAG execution node.'}</div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;">${node.description || 'DAG execution node.'}</div>
     </div>
 
     <!-- EAIES AUTHORITY CHECK PANEL -->
-    <div style="background: rgba(10, 11, 16, 0.85); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 12px;">
+    <div style="background: var(--bg-secondary); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 12px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
         <div style="font-size: 11px; text-transform: uppercase; color: #38bdf8; font-weight: 800;">EAIES Sovereign Gate Check</div>
         <span style="font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 3px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); cursor: default;">
@@ -1434,21 +1434,21 @@ function updateInspector(node) {
         </span>
       </div>
       <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11px;">
-        <div><span style="color: #64748b;">Target Identity:</span> <code style="color: #a78bfa;">${node.employeeId || 'N/A (System)'}</code></div>
-        <div><span style="color: #64748b;">Capability ID:</span> <code style="color: #38bdf8;">${node.capabilityId || 'N/A'}</code></div>
-        <div><span style="color: #64748b;">Required Scope:</span> <code style="color: #34d399;">${node.authorityScope || 'orchestrator_internal'}</code></div>
-        <div><span style="color: #64748b;">Tenant Binding:</span> <code style="color: #fbbf24;">${activeTenant} (Engine RLS)</code></div>
-        <div><span style="color: #64748b;">Model Risk Tier:</span> <code style="color: #38bdf8;">MINIMAL / LIMITED (ADR-046)</code></div>
+        <div><span style="color: var(--text-muted);">Target Identity:</span> <code style="color: #a78bfa;">${node.employeeId || 'N/A (System)'}</code></div>
+        <div><span style="color: var(--text-muted);">Capability ID:</span> <code style="color: #38bdf8;">${node.capabilityId || 'N/A'}</code></div>
+        <div><span style="color: var(--text-muted);">Required Scope:</span> <code style="color: #34d399;">${node.authorityScope || 'orchestrator_internal'}</code></div>
+        <div><span style="color: var(--text-muted);">Tenant Binding:</span> <code style="color: #fbbf24;">${activeTenant} (Engine RLS)</code></div>
+        <div><span style="color: var(--text-muted);">Model Risk Tier:</span> <code style="color: #38bdf8;">MINIMAL / LIMITED (ADR-046)</code></div>
       </div>
     </div>
 
     <!-- DURABLE STATE & OCC -->
     <div style="background: rgba(10, 11, 16, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 12px;">
-      <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 4px;">Durable State & Outbox Intent</div>
-      <div style="font-size: 11px; color: #94a3b8;">Worker Lease: <span style="color: #cbd5e1;">${status === 'EXECUTING' ? (node.workerBadge || 'worker [ACTIVE]') : 'Released / Unclaimed'}</span></div>
-      <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">OCC Entity Version: <code style="color: #38bdf8;">v${node.version || 1}</code></div>
-      <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Outbox Coupling: <code style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</code></div>
-      <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Correlation: <code id="eaios-inspector-correlation-id" style="color: #38bdf8;">${simManager?.correlationId || 'INITIALIZING'}</code></div>
+      <div style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;">Durable State & Outbox Intent</div>
+      <div style="font-size: 11px; color: var(--text-secondary);">Worker Lease: <span style="color: var(--text-secondary);">${status === 'EXECUTING' ? (node.workerBadge || 'worker [ACTIVE]') : 'Released / Unclaimed'}</span></div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">OCC Entity Version: <code style="color: #38bdf8;">v${node.version || 1}</code></div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Outbox Coupling: <code style="color: #10b981;">ADR-039 (PostgreSQL Atomic)</code></div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Correlation: <code id="eaios-inspector-correlation-id" style="color: #38bdf8;">${simManager?.correlationId || 'INITIALIZING'}</code></div>
     </div>
   `;
 }
@@ -1482,18 +1482,18 @@ function updateExecutiveDecisionRecord() {
             <span style="font-size: 10.5px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.25);">
               EXECUTIVE DECISION RECORD
             </span>
-            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: #f8fafc;">
+            <span style="font-family: monospace; font-size: 11px; font-weight: 700; color: var(--text-primary);">
               ${rec.incidentId} • ${rec.scenarioName}
             </span>
             <span style="font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35);">
               SEVERITY: ${rec.severity}
             </span>
           </div>
-          <div style="font-size: 11.5px; color: #94a3b8; margin-top: 4px;">
-            Target Service: <strong style="color: #cbd5e1;">${rec.affectedService}</strong>
+          <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">
+            Target Service: <strong style="color: var(--text-secondary);">${rec.affectedService}</strong>
           </div>
         </div>
-        <div style="text-align: right; font-size: 10px; font-family: monospace; color: #64748b;">
+        <div style="text-align: right; font-size: 10px; font-family: monospace; color: var(--text-muted);">
           <div>${rec.syntheticDisclosure}</div>
           <div style="color: #fbbf24; margin-top: 2px;">${rec.traceability.memoryOnlyDisclosure}</div>
         </div>
@@ -1502,28 +1502,28 @@ function updateExecutiveDecisionRecord() {
       <!-- Seven-Pillar Structured Decision Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
         <!-- 1 & 2. Telemetry & Evidence Considered -->
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+        <div style="background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
           <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8; margin-bottom: 6px;">
             1. Evidence & Telemetry Intake
           </div>
-          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.45;">
             <div>Status: <strong style="color: ${rec.evidence.status === 'CONFIRMED' ? '#34d399' : '#fbbf24'};">${rec.evidence.status}</strong></div>
-            <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${rec.evidence.note}</div>
-            <div style="margin-top: 6px; color: #64748b; font-size: 10px;">Impacted IBS:</div>
+            <div style="color: var(--text-secondary); font-size: 10.5px; margin-top: 2px;">${rec.evidence.note}</div>
+            <div style="margin-top: 6px; color: var(--text-muted); font-size: 10px;">Impacted IBS:</div>
             <div style="color: #38bdf8; font-size: 10.5px;">${rec.evidence.impactedIBS.slice(0, 2).join(' • ')}</div>
           </div>
         </div>
 
         <!-- 3. Backend Advisory Assessment -->
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+        <div style="background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">2. Backend Advisory Assessment</span>
             <span style="font-size: 9.5px; font-weight: 700; color: ${rec.assessment.status === 'SYNTHESIS_VERIFIED' ? '#34d399' : (rec.assessment.status.startsWith('FAILED') || rec.assessment.status.startsWith('UNAVAILABLE') ? '#f87171' : '#38bdf8')};">${rec.assessment.status}</span>
           </div>
-          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.45;">
             <div>Advisory Action: <code style="color: #a78bfa;">${rec.assessment.action || 'PENDING_DISPATCH'}</code></div>
-            <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${rec.assessment.rationale}</div>
-            <div style="margin-top: 6px; font-size: 10px; color: #64748b;">
+            <div style="color: var(--text-secondary); font-size: 10.5px; margin-top: 2px;">${rec.assessment.rationale}</div>
+            <div style="margin-top: 6px; font-size: 10px; color: var(--text-muted);">
               Settled Tokens: <strong style="color: #10b981;">${rec.assessment.tokensSettled !== null ? rec.assessment.tokensSettled : '0 (Not billed)'}</strong>
             </div>
             ${rec.assessment.isRetryable ? `
@@ -1535,7 +1535,7 @@ function updateExecutiveDecisionRecord() {
                 <div style="font-size: 10.5px; color: #fecaca; line-height: 1.4;">
                   The live ORO advisory integration is unavailable. No recommendation has been fabricated, and no physical mutation has been authorised or executed.
                 </div>
-                <div style="font-size: 9.5px; color: #94a3b8; line-height: 1.35;">
+                <div style="font-size: 9.5px; color: var(--text-secondary); line-height: 1.35;">
                   The safeguard demonstrates controlled failure behaviour; it does not establish successful end-to-end live agent execution.
                 </div>
                 <button
@@ -1553,16 +1553,16 @@ function updateExecutiveDecisionRecord() {
         </div>
 
         <!-- 4 & 5. Governance Constraints & Dual-Control Decision -->
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+        <div style="background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">3. Governance & Human Decision</span>
             <span style="font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 3px; background: ${decisionBadgeBg}; color: ${decisionBadgeColor}; border: 1px solid ${decisionBorder};">
               ${rec.humanDecision.state}
             </span>
           </div>
-          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.45;">
             <div>Rule: <strong style="color: #fbbf24;">${rec.governance.axiom}</strong></div>
-            <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${rec.governance.constraint}</div>
+            <div style="color: var(--text-secondary); font-size: 10.5px; margin-top: 2px;">${rec.governance.constraint}</div>
             <div style="margin-top: 6px; font-size: 10.5px;">
               Approver: <code style="color: #38bdf8;">${rec.humanDecision.approver || 'Awaiting Gate Action'}</code>
             </div>
@@ -1571,17 +1571,17 @@ function updateExecutiveDecisionRecord() {
         </div>
 
         <!-- 6 & 7. Simulated Outcome & Traceability -->
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
+        <div style="background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">4. Outcome & Traceability</span>
             <span style="font-size: 9.5px; font-weight: 700; color: #38bdf8;">${rec.outcome.workflowState}</span>
           </div>
-          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45;">
-            <div style="color: #94a3b8; font-size: 10.5px;">${rec.outcome.simulatedEffect}</div>
-            <div style="margin-top: 6px; font-family: monospace; font-size: 10px; color: #64748b;">
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.45;">
+            <div style="color: var(--text-secondary); font-size: 10.5px;">${rec.outcome.simulatedEffect}</div>
+            <div style="margin-top: 6px; font-family: monospace; font-size: 10px; color: var(--text-muted);">
               Correlation: <span style="color: #38bdf8;">${rec.traceability.correlationId}</span>
             </div>
-            <div style="font-family: monospace; font-size: 9.5px; color: #64748b; margin-top: 2px;">
+            <div style="font-family: monospace; font-size: 9.5px; color: var(--text-muted); margin-top: 2px;">
               Timestamp: ${rec.outcome.timestamp}
             </div>
           </div>
@@ -1680,18 +1680,18 @@ window.openAdrDrawer = function(adrId) {
   bodyEl.innerHTML = `
     <div style="margin-bottom: 16px;">
       <h4 style="font-size: 12px; font-weight: 800; color: #38bdf8; text-transform: uppercase; margin: 0 0 4px 0;">Context & Problem</h4>
-      <p style="margin: 0; color: #cbd5e1; line-height: 1.5;">${adr.context || 'Context defined in authoritative architecture record repository.'}</p>
+      <p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">${adr.context || 'Context defined in authoritative architecture record repository.'}</p>
     </div>
     <div style="margin-bottom: 16px;">
       <h4 style="font-size: 12px; font-weight: 800; color: #34d399; text-transform: uppercase; margin: 0 0 4px 0;">Architectural Decision</h4>
-      <p style="margin: 0; color: #f8fafc; line-height: 1.5; font-weight: 600;">${adr.decision || 'Authoritative architectural decision accepted.'}</p>
+      <p style="margin: 0; color: var(--text-primary); line-height: 1.5; font-weight: 600;">${adr.decision || 'Authoritative architectural decision accepted.'}</p>
     </div>
     <div style="margin-bottom: 16px;">
       <h4 style="font-size: 12px; font-weight: 800; color: #c084fc; text-transform: uppercase; margin: 0 0 4px 0;">Authority & Invariant Implications</h4>
-      <p style="margin: 0; color: #cbd5e1; line-height: 1.5;">${adr.consequences || 'Enforces non-bypassable host gates and prevents implicit authority propagation.'}</p>
+      <p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">${adr.consequences || 'Enforces non-bypassable host gates and prevents implicit authority propagation.'}</p>
     </div>
-    <div style="background: rgba(10, 11, 16, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px;">
-      <div style="color: #64748b;">// Verification Suite Reference:</div>
+    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px;">
+      <div style="color: var(--text-muted);">// Verification Suite Reference:</div>
       <div style="color: #38bdf8;">tests/test_node6_state_separation.mjs</div>
       <div style="color: #10b981; margin-top: 4px;">Status: VERIFIED IN CI AUTOMATION</div>
     </div>
