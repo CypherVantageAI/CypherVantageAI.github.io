@@ -62,6 +62,13 @@ body {
   flex-direction: column;
 }
 
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 body.dark-mode {
   color-scheme: dark;
 }
@@ -2790,6 +2797,25 @@ body.light-mode {
   --map-dashed-glow: rgba(126, 34, 206, 0.95);
   --dep-canvas-bg: #f8fafc;
   --dep-node-bg: #ffffff;
+}
+
+body.light-mode .eaios-mobile-node-card {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+body.light-mode .eaios-mobile-node-card > div:nth-child(2) {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .eaios-mobile-node-card > div:nth-child(3) {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .eaios-mobile-node-card > div:nth-child(4) {
+  color: var(--text-muted) !important;
+  border-top-color: var(--border-color) !important;
 }
 
 /* Active simulation fiber flow anim */

@@ -431,7 +431,7 @@ export class EaiosRenderer {
   renderAuthoritativeArchitectureDiagram() {
     return `
       <div class="eaios-arch-diagram-wrapper" style="width: 100%; overflow-x: auto; padding: 12px 0;">
-        <svg viewBox="0 0 1100 480" style="width: 100%; min-width: 820px; height: auto; display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <svg viewBox="0 0 1100 480" style="width: 100%; min-width: 820px; height: auto; display: block; font-family: var(--font-body);">
           <defs>
             <linearGradient id="archBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#0b0f19" />
