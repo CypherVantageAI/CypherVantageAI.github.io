@@ -203,8 +203,8 @@ export const EVIDENCE_BADGES = {
 export const EAIOS_BACKEND_CONFIG = {
   baseUrl: (typeof window !== "undefined" && window.__TPRM_API_URL__) ? window.__TPRM_API_URL__ : "https://cyphervantageai.duckdns.org",
   approvedTarget: (typeof window !== "undefined" && window.__TPRM_API_URL__) ? window.__TPRM_API_URL__ : "https://cyphervantageai.duckdns.org",
-  endpointRecommendation: "/api/v1/eaios/oro/recommendation",
-  endpointExecute: "/api/v1/eaios/oro/execute",
+  endpointRecommendation: "/api/v1/showcase/oro/recommendation",
+  endpointExecute: "/api/v1/showcase/oro/execute",
   endpointTprmExecute: "/api/v1/eaios/tprm/execute",
   endpointExecutions: "/api/v1/eaios/executions",
   healthEndpoint: "/health/live"

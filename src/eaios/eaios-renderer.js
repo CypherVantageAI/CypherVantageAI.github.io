@@ -487,7 +487,7 @@ export class EaiosRenderer {
             <rect x="16" y="155" width="208" height="75" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(56, 189, 248, 0.3)" />
             <text x="28" y="178" fill="#38bdf8" font-size="12" font-weight="700">Core Platform BFF API</text>
             <text x="28" y="196" fill="#94a3b8" font-size="10">FastAPI Gateway • Session Minting</text>
-            <text x="28" y="212" fill="#cbd5e1" font-size="9" font-family="monospace">POST /api/v1/eaios/oro</text>
+            <text x="28" y="212" fill="#cbd5e1" font-size="9" font-family="monospace">POST /api/v1/showcase/oro</text>
 
             <!-- Box 1c: Security Context -->
             <rect x="16" y="250" width="208" height="80" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(255, 255, 255, 0.1)" />
