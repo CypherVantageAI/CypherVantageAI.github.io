@@ -577,6 +577,77 @@
       <!-- ============================================== -->
       <section id="view-manager-eaios" class="content-pane">
         <!-- Populated dynamically by eaios-view.js -->
+        <div id="eaios-identity-architecture" class="eaios-identity-section" aria-labelledby="eaios-identity-heading">
+          <div class="eaios-identity-header">
+            <h3 id="eaios-identity-heading">Identity &amp; Delegated-Execution Architecture</h3>
+            <p class="eaios-identity-lead">
+              EAIOS separates human OIDC authentication, advisory AI recommendations, policy approval, RFC 8693 token exchange, and mTLS-bound downstream execution.
+              <a href="https://github.com/CypherVantageAI/enterprise-ai-operating-system/blob/main/docs/identity-delegated-execution-architecture.md" target="_blank" rel="noopener noreferrer">Read authoritative EAIOS Identity &amp; Delegated-Execution Architecture documentation</a>.
+            </p>
+          </div>
+
+          <div class="eaios-arch-panels" role="region" aria-label="Identity and Delegated-Execution Architecture Diagram">
+            <div class="eaios-arch-panel eaios-panel-reference">
+              <div class="eaios-panel-badge eaios-badge-ref">NOT IMPLEMENTED / NOT DEPLOYED</div>
+              <h4>Panel A — Reference Architecture (Not Implemented)</h4>
+              <div class="eaios-flow-steps">
+                <div class="eaios-flow-node">User / Browser</div>
+                <div class="eaios-flow-arrow" aria-hidden="true">&#8595;</div>
+                <div class="eaios-flow-node">Intended Keycloak Identity Provider<br><small>OIDC Authorization Code + PKCE</small></div>
+              </div>
+              <p class="eaios-panel-note">Reference architecture only. Live Keycloak OIDC login and external IdP integration are not implemented or deployed.</p>
+            </div>
+
+            <div class="eaios-arch-panel eaios-panel-implemented">
+              <div class="eaios-panel-badge eaios-badge-impl">IMPLEMENTED &amp; LOCALLY TESTED</div>
+              <h4>Panel B — Implemented Local Security Components</h4>
+              <div class="eaios-flow-steps">
+                <div class="eaios-flow-node">1. EAIOS Identity &amp; Policy Boundary<br><small>RECOMMENDATION != ACTION &bull; Four-Eyes &bull; No AI self-approval</small></div>
+                <div class="eaios-flow-arrow" aria-hidden="true">&#8595;</div>
+                <div class="eaios-flow-node">2. <code>RFC8693TokenExchangeClient</code><br><small>Locally tested via <code>httpx.MockTransport</code> (not live Keycloak)</small></div>
+                <div class="eaios-flow-arrow" aria-hidden="true">&#8595;</div>
+                <div class="eaios-flow-node">3. <code>DelegatedExecutionClient</code><br><small>R7C105 destination-origin validation &bull; Local mTLS</small></div>
+                <div class="eaios-flow-arrow" aria-hidden="true">&#8595;</div>
+                <div class="eaios-flow-node">4. Downstream Auth: <code>MtlsH11Protocol</code> + <code>DelegatedAuthDependency</code><br><small>JWT sig, iss, aud, exp, act.sub, scope &amp; <code>cnf.x5t#S256</code></small></div>
+                <div class="eaios-flow-arrow" aria-hidden="true">&#8595;</div>
+                <div class="eaios-flow-node">5. Protected Reference Route: <code>GET /v1/delegated/whoami</code></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="eaios-controls-card">
+            <h4>Trust Boundaries &amp; Security Controls</h4>
+            <ul>
+              <li><strong>RECOMMENDATION != ACTION:</strong> AI specialists and ORO remain advisory and do not independently authorise physical actions.</li>
+              <li><strong>Four-Eyes &amp; No Self-Approval:</strong> Policy approval is clearance only, not an execution ticket.</li>
+              <li><strong>Fail-Closed Token Exchange:</strong> <code>RFC8693TokenExchangeClient</code> enforces HTTPS/TLS verification, positive timeouts, no automatic <code>POST</code> retries, and zero token logging.</li>
+              <li><strong>Destination-Origin Enforcement (R7C105):</strong> <code>DelegatedExecutionClient</code> validates relative paths against the configured origin before attaching credentials.</li>
+            </ul>
+          </div>
+
+          <div class="eaios-table-scroll" role="region" aria-label="Capability to Evidence Matrix" tabindex="0">
+            <table class="eaios-capability-table">
+              <caption>Capability-to-Evidence Matrix</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Capability</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Keycloak OIDC Authorization Code + PKCE</td><td>Reference only; not implemented/deployed</td></tr>
+                <tr><td>RFC 8693 token exchange client</td><td>Implemented and locally tested with mock transport</td></tr>
+                <tr><td>Delegated mTLS client</td><td>Implemented and locally tested with lab certificates</td></tr>
+                <tr><td>Downstream delegated authentication</td><td>Implemented and locally tested</td></tr>
+                <tr><td>Certificate binding validation</td><td>Implemented and locally tested</td></tr>
+                <tr><td>Protected delegated identity route</td><td>Implemented and locally tested</td></tr>
+                <tr><td>Live external IdP integration</td><td>Not demonstrated</td></tr>
+                <tr><td>Production delegated execution</td><td>Not demonstrated</td></tr>
+                <tr><td>Production certificate lifecycle</td><td>Not demonstrated</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
 
